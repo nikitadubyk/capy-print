@@ -6,15 +6,16 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
+      id,
       username,
-      lastName,
-      firstName,
+      last_name,
+      first_name,
       isPremium,
-      telegramId,
-      languageCode,
+      photo_url,
+      language_code,
     } = body;
 
-    if (!telegramId) {
+    if (!id) {
       return NextResponse.json(
         { error: "Telegram ID обязателен" },
         { status: 400 }
@@ -22,38 +23,35 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await prisma.user.upsert({
-      where: {
-        telegramId: BigInt(telegramId),
-      },
+      where: { telegramId: id },
       update: {
+        photoUrl: photo_url,
         username: username || null,
-        lastName: lastName || null,
-        firstName: firstName || null,
+        lastName: last_name || null,
+        firstName: first_name || null,
         isPremium: isPremium || false,
-        languageCode: languageCode || null,
+        languageCode: language_code || null,
       },
       create: {
+        telegramId: id,
+        photoUrl: photo_url,
         username: username || null,
-        lastName: lastName || null,
-        firstName: firstName || null,
+        lastName: last_name || null,
+        firstName: first_name || null,
         isPremium: isPremium || false,
-        telegramId: BigInt(telegramId),
-        languageCode: languageCode || null,
+        languageCode: language_code || null,
       },
     });
 
     const userResponse = {
       ...user,
       id: user.id,
-      telegramId: user.telegramId.toString(),
+      telegramId: user.id.toString(),
       createdAt: user.createdAt.toISOString(),
       updatedAt: user.updatedAt.toISOString(),
     };
 
-    return NextResponse.json({
-      success: true,
-      user: userResponse,
-    });
+    return NextResponse.json({ ...userResponse });
   } catch (error) {
     console.error("Ошибка при сохранении пользователя:", error);
     return NextResponse.json(

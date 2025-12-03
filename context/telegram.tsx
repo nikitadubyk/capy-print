@@ -8,6 +8,7 @@ import {
   PropsWithChildren,
 } from "react";
 import {
+  isTMA,
   type User,
   backButton,
   init as initSDK,
@@ -15,6 +16,8 @@ import {
   type ThemeParamsType,
   retrieveLaunchParams,
 } from "@tma.js/sdk-react";
+
+import { useUpsertUser } from "@/api/users/hooks";
 
 interface TelegramContextType {
   loading: boolean;
@@ -32,23 +35,34 @@ const TelegramContext = createContext<TelegramContextType>({
   launchParams: null,
 });
 
+const initialState: TelegramContextType = {
+  user: null,
+  error: null,
+  loading: true,
+  themeParams: null,
+  launchParams: null,
+};
+
 export const TelegramProvider = ({ children }: PropsWithChildren) => {
-  const [state, setState] = useState<TelegramContextType>({
-    user: null,
-    error: null,
-    loading: true,
-    themeParams: null,
-    launchParams: null,
-  });
+  const upsertUser = useUpsertUser();
+  const [state, setState] = useState<TelegramContextType>(initialState);
 
   useEffect(() => {
+    if (!isTMA()) {
+      setState({
+        ...initialState,
+        loading: false,
+        error: "Приложение не запущено внутри Telegram",
+      });
+      return;
+    }
+
     try {
       initSDK();
       backButton.mount();
 
       const params = retrieveLaunchParams();
-      const webAppData = params?.tgWebAppData;
-      const user = webAppData?.user ?? null;
+      const user = params?.tgWebAppData?.user ?? null;
 
       setState({
         user,
@@ -57,6 +71,10 @@ export const TelegramProvider = ({ children }: PropsWithChildren) => {
         launchParams: params,
         themeParams: params?.tgWebAppThemeParams ?? null,
       });
+
+      if (user?.id) {
+        upsertUser.mutate(user);
+      }
     } catch (error: any) {
       console.error("Telegram SDK error:", error);
 

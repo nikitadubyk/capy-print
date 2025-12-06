@@ -9,4 +9,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User'
+export type * from './models/Order'
+export type * from './models/PrintJob'
+export type * from './models/PrintFile'
 export type * from './commonInputTypes'

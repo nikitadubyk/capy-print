@@ -1,9 +1,8 @@
 import dayjs from "dayjs";
+import { retrieveLaunchParams } from "@tma.js/sdk-react";
 import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 
 import { Config } from "@/config";
-
-console.log("Config", Config.baseUrl);
 
 export const apiInstance = axios.create({
   baseURL: Config.baseUrl,
@@ -20,8 +19,26 @@ const reportStart = (config: AxiosRequestConfig) =>
 const reportEnd = (response: AxiosResponse) =>
   console.log("finished", getConfigString(response.config));
 
+const getTelegramId = (): number | null => {
+  try {
+    const { tgWebAppData } = retrieveLaunchParams();
+    return tgWebAppData?.user?.id || null;
+  } catch (error) {
+    console.error("Ошибка при получении Telegram ID:", error);
+    return null;
+  }
+};
+
 apiInstance.interceptors.request.use((config) => {
   reportStart(config);
+
+  const telegramId = getTelegramId();
+  if (telegramId) {
+    config.headers["x-telegram-id"] = telegramId;
+  }
+
+  console.log("config.headers", config.headers);
+
   return config;
 });
 

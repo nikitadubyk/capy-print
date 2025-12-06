@@ -44,3 +44,18 @@ export { Prisma }
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model Order
+ * 
+ */
+export type Order = Prisma.OrderModel
+/**
+ * Model PrintJob
+ * 
+ */
+export type PrintJob = Prisma.PrintJobModel
+/**
+ * Model PrintFile
+ * 
+ */
+export type PrintFile = Prisma.PrintFileModel

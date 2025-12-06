@@ -9,7 +9,7 @@ datasource db {
 
 model User {
   id           Int      @id @default(autoincrement())
-  telegramId   BigInt   @unique
+  telegramId   Int      @unique
   username     String?
   firstName    String?
   lastName     String?
@@ -18,4 +18,84 @@ model User {
   photoUrl     String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  role         UserRole @default(USER)
+  orders       Order[]
+}
+
+model Order {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status  OrderStatus @default(PENDING)
+  comment String?
+
+  urgency    UrgencyType @default(ASAP)
+  deadlineAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  printJobs PrintJob[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([urgency])
+}
+
+model PrintJob {
+  id      Int   @id @default(autoincrement())
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  copies    Int       @default(1)
+  isColor   Boolean   @default(false)
+  paperSize PaperSize @default(A4Basic)
+  duplex    Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  files PrintFile[]
+
+  @@index([orderId])
+}
+
+model PrintFile {
+  id         Int      @id @default(autoincrement())
+  printJobId Int
+  printJob   PrintJob @relation(fields: [printJobId], references: [id], onDelete: Cascade)
+
+  fileUrl  String
+  fileName String
+  fileSize Int
+  mimeType String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([printJobId])
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  PRINTING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum UrgencyType {
+  ASAP
+  SCHEDULED
+}
+
+enum PaperSize {
+  A4Basic
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }

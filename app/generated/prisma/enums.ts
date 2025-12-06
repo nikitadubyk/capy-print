@@ -9,7 +9,36 @@
 * 🟢 You can import this file directly.
 */
 
+export const OrderStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  PRINTING: 'PRINTING',
+  READY: 'READY',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const UrgencyType = {
+  ASAP: 'ASAP',
+  SCHEDULED: 'SCHEDULED'
+} as const
+
+export type UrgencyType = (typeof UrgencyType)[keyof typeof UrgencyType]
+
+
+export const PaperSize = {
+  A4Basic: 'A4Basic'
+} as const
+
+export type PaperSize = (typeof PaperSize)[keyof typeof PaperSize]
+
+
+export const UserRole = {
+  USER: 'USER',
+  ADMIN: 'ADMIN'
+} as const
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]

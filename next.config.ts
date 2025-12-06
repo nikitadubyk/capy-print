@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  allowedDevOrigins: ["https://*.ngrok-free.app", "https://*.ngrok.app"],
 };
 
 export default nextConfig;

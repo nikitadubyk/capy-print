@@ -51,7 +51,10 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  User: 'User'
+  User: 'User',
+  Order: 'Order',
+  PrintJob: 'PrintJob',
+  PrintFile: 'PrintFile'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -80,10 +83,53 @@ export const UserScalarFieldEnum = {
   isPremium: 'isPremium',
   photoUrl: 'photoUrl',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  role: 'role'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const OrderScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  status: 'status',
+  comment: 'comment',
+  urgency: 'urgency',
+  deadlineAt: 'deadlineAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+export const PrintJobScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  copies: 'copies',
+  isColor: 'isColor',
+  paperSize: 'paperSize',
+  duplex: 'duplex',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrintJobScalarFieldEnum = (typeof PrintJobScalarFieldEnum)[keyof typeof PrintJobScalarFieldEnum]
+
+
+export const PrintFileScalarFieldEnum = {
+  id: 'id',
+  printJobId: 'printJobId',
+  fileUrl: 'fileUrl',
+  fileName: 'fileName',
+  fileSize: 'fileSize',
+  mimeType: 'mimeType',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrintFileScalarFieldEnum = (typeof PrintFileScalarFieldEnum)[keyof typeof PrintFileScalarFieldEnum]
 
 
 export const SortOrder = {

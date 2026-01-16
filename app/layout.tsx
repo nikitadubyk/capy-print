@@ -28,7 +28,7 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body>
+      <body className="bg-zinc-100">
         <MantineProvider>
           <QueryProvider>
             <TelegramProvider>{children}</TelegramProvider>

@@ -1,19 +1,43 @@
 "use client";
 
-import { useTelegram } from "@/context";
+import Link from "next/link";
+import Image from "next/image";
+import { Button, Title } from "@mantine/core";
+import { FileCheck, Folder } from "lucide-react";
+
+import { Routes } from "@/config";
+import CapybaraWait from "@/public/images/wait.png";
 
 export default function Home() {
-  const { user } = useTelegram();
-
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Mini App Debug</h1>
+    <div className="p-6 flex flex-col gap-4 w-screen h-screen items-center">
+      <Title order={1}>Печать без стресса</Title>
 
-      <div style={{ marginBottom: "20px" }}>
-        <h2>User Data:</h2>
-        <pre style={{ background: "#f5f5f5", padding: "10px" }}>
-          {user ? JSON.stringify(user, null, 2) : "Нет данных"}
-        </pre>
+      <Image src={CapybaraWait} alt="Капибара" />
+
+      <p className="text-center">
+        Загрузите файлы, а мы и капибары все сделаем.
+      </p>
+
+      <div className="flex flex-col gap-2 w-full">
+        <Button
+          fullWidth
+          color="teal"
+          component={Link}
+          href={Routes.Order}
+          leftSection={<FileCheck />}
+        >
+          Новый заказ
+        </Button>
+        <Button
+          fullWidth
+          color="gray"
+          component={Link}
+          leftSection={<Folder />}
+          href={Routes.CompleteOrders}
+        >
+          Мои заказы
+        </Button>
       </div>
     </div>
   );

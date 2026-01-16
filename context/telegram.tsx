@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingOverlay } from "@mantine/core";
 import {
   useState,
   useEffect,
@@ -85,6 +86,10 @@ export const TelegramProvider = ({ children }: PropsWithChildren) => {
       }));
     }
   }, []);
+
+  if (state.loading) {
+    return <LoadingOverlay visible />;
+  }
 
   return (
     <TelegramContext.Provider value={state}>

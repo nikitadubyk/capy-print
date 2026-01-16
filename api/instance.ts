@@ -37,8 +37,6 @@ apiInstance.interceptors.request.use((config) => {
     config.headers["x-telegram-id"] = telegramId;
   }
 
-  console.log("config.headers", config.headers);
-
   return config;
 });
 

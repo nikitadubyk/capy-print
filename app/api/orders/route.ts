@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { prisma, requireRole } from "@/lib";
+import { PaperSize, Urgency } from "@/types";
 
 interface FileInput {
   fileUrl: string;
@@ -10,19 +11,19 @@ interface FileInput {
 }
 
 interface PrintJobInput {
-  files: FileInput[];
   copies?: number;
-  isColor?: boolean;
-  paperSize?: "A4Basic";
   duplex?: boolean;
+  isColor?: boolean;
+  files: FileInput[];
+  paperSize?: PaperSize;
 }
 
 interface CreateOrderRequest {
   comment?: string;
+  urgency: Urgency;
   telegramId: number;
   deadlineAt?: string;
   printJobs: PrintJobInput[];
-  urgency: "ASAP" | "SCHEDULED";
 }
 
 export async function POST(request: NextRequest) {

@@ -18,8 +18,9 @@ import {
 
 import { cn } from "@/lib/utils";
 
+import { acceptFiles, OrderFormData } from "../config";
+
 import { Card } from "./card";
-import { acceptFiles, OrderFormData } from "./config";
 
 interface PrintJobCardProps {
   index: number;
@@ -28,6 +29,19 @@ interface PrintJobCardProps {
   control: Control<OrderFormData>;
   errors: FieldErrors<OrderFormData>;
 }
+
+const getFileInfo = (file: File | { fileName: string; fileSize: number }) => {
+  if (file instanceof File) {
+    return {
+      name: file.name,
+      size: file.size,
+    };
+  }
+  return {
+    name: file.fileName,
+    size: file.fileSize,
+  };
+};
 
 export const PrintJobCard = ({
   index,
@@ -46,16 +60,9 @@ export const PrintJobCard = ({
   });
 
   const handleDrop = async (files: File[]) => {
-    for (const file of files) {
-      const mockFileData = {
-        fileName: file.name,
-        fileSize: file.size,
-        mimeType: file.type,
-        fileUrl: URL.createObjectURL(file),
-      };
-
-      appendFile(mockFileData);
-    }
+    files.forEach((file) => {
+      appendFile(file);
+    });
   };
 
   const fileError = errors.printJobs?.[index]?.files?.message;
@@ -80,7 +87,7 @@ export const PrintJobCard = ({
             onReject={(files) => console.log("rejected files", files)}
             className={cn(
               "border-2 rounded-xl border-dashed p-4 border-gray-200 bg-gray-50",
-              hasError && "border-red-500 bg-red-50"
+              hasError && "border-red-500 bg-red-50",
             )}
           >
             <div className="flex flex-col gap-2 items-center text-gray-400">
@@ -108,25 +115,34 @@ export const PrintJobCard = ({
                 control={control}
                 key={fileField.id}
                 name={`printJobs.${index}.files.${fileIndex}`}
-                render={({ field }) => (
-                  <Paper p="sm" withBorder radius="md" className="bg-gray-200">
-                    <div className="flex justify-between gap-4">
-                      <div className="flex min-w-0 flex-1 flex-col">
-                        <p className="overflow-hidden text-ellipsis whitespace-nowrap">
-                          {field.value.fileName}
-                        </p>
-                        <p>{(field.value.fileSize / 1024).toFixed(0)} КБ</p>
+                render={({ field }) => {
+                  const { name, size } = getFileInfo(field.value);
+
+                  return (
+                    <Paper
+                      p="sm"
+                      withBorder
+                      radius="md"
+                      className="bg-gray-200"
+                    >
+                      <div className="flex justify-between gap-4">
+                        <div className="flex min-w-0 flex-1 flex-col">
+                          <p className="overflow-hidden text-ellipsis whitespace-nowrap">
+                            {name}
+                          </p>
+                          <p>{(size / 1024).toFixed(0)} КБ</p>
+                        </div>
+                        <ActionIcon
+                          color="gray"
+                          variant="subtle"
+                          onClick={() => removeFile(fileIndex)}
+                        >
+                          <X />
+                        </ActionIcon>
                       </div>
-                      <ActionIcon
-                        color="gray"
-                        variant="subtle"
-                        onClick={() => removeFile(fileIndex)}
-                      >
-                        <X />
-                      </ActionIcon>
-                    </div>
-                  </Paper>
-                )}
+                    </Paper>
+                  );
+                }}
               />
             ))}
           </div>

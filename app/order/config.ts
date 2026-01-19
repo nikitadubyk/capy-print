@@ -3,23 +3,26 @@ import { MIME_TYPES } from "@mantine/dropzone";
 
 import { Urgency, PaperSize } from "@/types";
 
-const fileSchema = z.object({
-  fileUrl: z.url("Некорректный URL"),
+const uploadedFileSchema = z.object({
+  fileUrl: z.string().url("Некорректный URL"),
   mimeType: z.string().min(1, "MIME тип обязателен"),
   fileName: z.string().min(1, "Имя файла обязательно"),
   fileSize: z.number().positive("Размер должен быть положительным"),
 });
 
+const fileInputSchema = z.union([z.instanceof(File), uploadedFileSchema]);
+
 const printJobSchema = z.object({
   duplex: z.boolean(),
   isColor: z.boolean(),
-  files: z.array(fileSchema).min(1, "Добавьте хотя бы один файл"),
+  files: z.array(fileInputSchema).min(1, "Добавьте хотя бы один файл"),
   copies: z.number().min(1, "Минимум 1 копия").max(1000, "Максимум 1000 копий"),
   paperSize: z.enum(Object.values(PaperSize), "Выберите формат бумаги"),
 });
 
 export const orderSchema = z.object({
   comment: z.string().optional(),
+  deadlineAt: z.string().optional(),
   telegramId: z.number().positive("ID должен быть положительным"),
   urgency: z.enum(Object.values(Urgency), "Выберите формат бумаги"),
   printJobs: z.array(printJobSchema).min(1, "Добавьте хотя бы одну работу"),

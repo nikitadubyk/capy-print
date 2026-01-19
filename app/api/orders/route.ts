@@ -18,7 +18,7 @@ interface PrintJobInput {
   paperSize?: PaperSize;
 }
 
-interface CreateOrderRequest {
+export interface CreateOrderRequest {
   comment?: string;
   urgency: Urgency;
   telegramId: number;
@@ -41,14 +41,14 @@ export async function POST(request: NextRequest) {
     if (!telegramId) {
       return NextResponse.json(
         { error: "Telegram ID обязателен" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!printJobs || printJobs.length === 0) {
       return NextResponse.json(
         { error: "Необходимо добавить хотя бы один набор файлов для печати" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       if (!job.files || job.files.length === 0) {
         return NextResponse.json(
           { error: "Каждый набор должен содержать хотя бы один файл" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -64,14 +64,14 @@ export async function POST(request: NextRequest) {
     if (!urgency || !["ASAP", "SCHEDULED"].includes(urgency)) {
       return NextResponse.json(
         { error: "Некорректное значение срочности заказа" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (urgency === "SCHEDULED" && !deadlineAt) {
       return NextResponse.json(
         { error: "Для запланированного заказа необходимо указать дату" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
       if (deadline <= new Date()) {
         return NextResponse.json(
           { error: "Дата выполнения должна быть в будущем" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
     console.error("Ошибка при создании заказа:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -182,7 +182,7 @@ export async function GET(request: NextRequest) {
     console.error("Ошибка при получении заказов:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

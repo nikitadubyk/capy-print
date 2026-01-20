@@ -1,6 +1,7 @@
 import { User } from "@tma.js/sdk-react";
 
 import { Urgency } from "./enums";
+import { OrderStatus } from "@/app/generated/prisma/enums";
 
 export * from "./enums";
 
@@ -23,6 +24,7 @@ export interface Order {
   createdAt: Date;
   comment?: string;
   urgency: Urgency;
+  status: OrderStatus;
   deadlineAt?: string;
   user: Partial<User>;
   printJobs: PrintJob[];

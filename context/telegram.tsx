@@ -45,7 +45,7 @@ const initialState: TelegramContextType = {
 };
 
 export const TelegramProvider = ({ children }: PropsWithChildren) => {
-  const upsertUser = useUpsertUser();
+  const { mutate } = useUpsertUser();
   const [state, setState] = useState<TelegramContextType>(initialState);
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export const TelegramProvider = ({ children }: PropsWithChildren) => {
       });
 
       if (user?.id) {
-        upsertUser.mutate(user);
+        mutate(user);
       }
     } catch (error: any) {
       console.error("Telegram SDK error:", error);

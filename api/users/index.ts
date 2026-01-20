@@ -9,13 +9,13 @@ export const key = ["users"];
 
 export const usersApi = {
   upsert: async (payload: User) => {
-    const { data } = await apiInstance.post(URL.UPSERT_USER, payload);
+    const { data } = await apiInstance.post<User>(URL.UPSERT_USER, payload);
     return data;
   },
 
   getByTelegramId: async (telegramId: string) => {
     const { data } = await apiInstance.get(
-      addParamsToUrl(URL.UPSERT_USER, { telegramId })
+      addParamsToUrl(URL.UPSERT_USER, { telegramId }),
     );
     return data;
   },

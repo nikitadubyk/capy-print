@@ -35,8 +35,8 @@ export default function Home() {
           fullWidth
           color="gray"
           component={Link}
+          href={Routes.MyOrders}
           leftSection={<Folder />}
-          href={Routes.CompleteOrders}
         >
           Мои заказы
         </Button>

@@ -132,6 +132,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
+
     const telegramId = searchParams.get("telegramId");
     const status = searchParams.get("status");
     const urgency = searchParams.get("urgency");
@@ -140,11 +141,22 @@ export async function GET(request: NextRequest) {
     const limit = Number(searchParams.get("limit") || 20);
     const skip = (page - 1) * limit;
 
-    const where = {
-      ...(status && { status: status as any }),
-      ...(urgency && { urgency: urgency as any }),
-      ...(telegramId && { telegramId: +telegramId }),
+    const where: Record<string, any> = {
+      ...(status && { status }),
+      ...(urgency && { urgency }),
     };
+
+    if (telegramId) {
+      const user = await prisma.user.findFirst({
+        where: { telegramId: +telegramId },
+      });
+
+      if (!user) {
+        throw new Error("Пользователь не найден");
+      }
+
+      where.userId = user.id;
+    }
 
     const total = await prisma.order.count({ where });
 
@@ -168,8 +180,8 @@ export async function GET(request: NextRequest) {
       page,
       limit,
       total,
-      totalPages: Math.ceil(total / limit),
       orders,
+      totalPages: Math.ceil(total / limit),
     });
   } catch (error) {
     console.error("Ошибка при получении заказов:", error);

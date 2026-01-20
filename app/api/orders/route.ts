@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { prisma, requireRole } from "@/lib";
-import { PaperSize, Urgency } from "@/types";
+import { Config } from "@/config";
+import { Order, PaperSize, Urgency } from "@/types";
+import { prisma, requireRole, sendOrderNotification } from "@/lib";
 
 interface FileInput {
   fileUrl: string;
@@ -61,14 +62,14 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (!urgency || !["ASAP", "SCHEDULED"].includes(urgency)) {
+    if (!urgency || !Object.values(Urgency).includes(urgency)) {
       return NextResponse.json(
         { error: "Некорректное значение срочности заказа" },
         { status: 400 },
       );
     }
 
-    if (urgency === "SCHEDULED" && !deadlineAt) {
+    if (urgency === Urgency.SCHEDULED && !deadlineAt) {
       return NextResponse.json(
         { error: "Для запланированного заказа необходимо указать дату" },
         { status: 400 },
@@ -115,6 +116,8 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    await sendOrderNotification(order as Order, Config.adminChatId);
 
     return NextResponse.json(order, { status: 201 });
   } catch (error) {

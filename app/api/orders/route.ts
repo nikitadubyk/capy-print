@@ -75,22 +75,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (urgency === "SCHEDULED" && deadlineAt) {
-      const deadline = new Date(deadlineAt);
-      if (deadline <= new Date()) {
-        return NextResponse.json(
-          { error: "Дата выполнения должна быть в будущем" },
-          { status: 400 },
-        );
-      }
-    }
-
     const order = await prisma.order.create({
       data: {
         urgency,
         userId: user.id,
         comment: comment || null,
-        deadlineAt: deadlineAt ? new Date(deadlineAt) : null,
+        deadlineAt: deadlineAt || null,
         printJobs: {
           create: printJobs.map((job) => ({
             copies: job.copies || 1,

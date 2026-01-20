@@ -1,18 +1,18 @@
 "use client";
 
 import { Button } from "@mantine/core";
-import { Control, FieldErrors, useFieldArray } from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 
 import { defaultPrintJob, OrderFormData } from "../config";
 
 import { PrintJobCard } from "./print-job-card";
 
-interface CopyDetailsProps {
-  control: Control<OrderFormData>;
-  errors: FieldErrors<OrderFormData>;
-}
+export const CopyDetails = () => {
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext<OrderFormData>();
 
-export const CopyDetails = ({ errors, control }: CopyDetailsProps) => {
   const {
     fields: printJobFields,
     append: appendPrintJob,
@@ -24,26 +24,35 @@ export const CopyDetails = ({ errors, control }: CopyDetailsProps) => {
 
   return (
     <>
-      {printJobFields.map((field, index) => (
-        <PrintJobCard
-          index={index}
-          key={field.id}
-          errors={errors}
-          control={control}
-          canRemove={printJobFields.length > 1}
-          onRemove={() => removePrintJob(index)}
-        />
-      ))}
+      <div className="flex flex-col gap-6">
+        {printJobFields.map((field, index) => (
+          <PrintJobCard
+            index={index}
+            key={field.id}
+            errors={errors}
+            control={control}
+            canRemove={printJobFields.length > 1}
+            onRemove={() => removePrintJob(index)}
+          />
+        ))}
+
+        <Button
+          fullWidth
+          variant="light"
+          className="mb-4"
+          onClick={() => appendPrintJob(defaultPrintJob)}
+        >
+          Добавить еще одну печать
+        </Button>
+      </div>
 
       <Button
+        size="lg"
         fullWidth
-        variant="light"
-        onClick={() => appendPrintJob(defaultPrintJob)}
+        color="teal"
+        type="submit"
+        className="mt-auto"
       >
-        Добавить еще одну работу печати
-      </Button>
-
-      <Button size="lg" fullWidth type="submit" color="teal">
         Далее
       </Button>
     </>

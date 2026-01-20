@@ -1,36 +1,35 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import { Alert, LoadingOverlay } from "@mantine/core";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FormProvider, useForm } from "react-hook-form";
 
 import { Routes } from "@/config";
 import { Urgency } from "@/types";
+import { UploadError } from "@/utils";
 import { useTelegram } from "@/context";
 import { BackButton } from "@/components";
 import { useCreateOrder } from "@/api/orders/hooks";
-import { UploadedFile, UploadError, uploadFiles } from "@/utils";
 
 import { Step } from "./types";
 import { CopyDetails } from "./copy-details";
 import { AdditionalInfo } from "./additional-info";
+import { prepareOrderWithUploads } from "./helpers";
 import { orderSchema, OrderFormData, defaultPrintJob } from "./config";
 
 export default function Order() {
+  const router = useRouter();
   const { user } = useTelegram();
   const [step, setStep] = useState<Step>(Step.CopyDetails);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadErrors, setUploadErrors] = useState<UploadError[]>([]);
 
-  const { mutate, isPending } = useCreateOrder();
+  const { mutateAsync, isPending } = useCreateOrder();
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<OrderFormData>({
+  const methods = useForm<OrderFormData>({
     resolver: zodResolver(orderSchema),
     defaultValues: {
       comment: "",
@@ -40,6 +39,8 @@ export default function Order() {
       printJobs: [defaultPrintJob],
     },
   });
+
+  const { handleSubmit } = methods;
 
   const isFirstStep = step === Step.CopyDetails;
   const isLastStep = step === Step.AdditionalInfo;
@@ -52,43 +53,21 @@ export default function Order() {
 
     try {
       setUploadErrors([]);
-
-      const filesToUpload: File[] = [];
-
-      data.printJobs.forEach((job) => {
-        job.files.forEach((file) => {
-          if (file instanceof File) {
-            filesToUpload.push(file);
-          }
-        });
-      });
-
       setIsUploading(true);
-      const uploadResult = await uploadFiles(filesToUpload);
-      setIsUploading(false);
 
-      if (uploadResult.errors && uploadResult.errors.length > 0) {
-        setUploadErrors(uploadResult.errors);
+      const result = await prepareOrderWithUploads(data);
+
+      if (!result.success) {
+        setUploadErrors(result.errors);
         return;
       }
 
-      let uploadedIndex = 0;
-      const orderData = {
-        ...data,
-        printJobs: data.printJobs.map((job) => ({
-          ...job,
-          files: job.files.map((file) => {
-            if (file instanceof File) {
-              return uploadResult.uploaded[uploadedIndex++];
-            }
-            return file as UploadedFile;
-          }),
-        })),
-      };
-
-      await mutate(orderData);
+      const response = await mutateAsync(result.data);
+      if (response.id) {
+        router.push(Routes.SuccessOrder.replace(":id", String(response.id)));
+      }
     } catch (error) {
-      console.error("Ошибка:", error);
+      console.error("Ошибка заказа:", error);
     } finally {
       setIsUploading(false);
     }
@@ -97,8 +76,12 @@ export default function Order() {
   return (
     <>
       <LoadingOverlay visible={isPending || isUploading} />
-      <div className="p-4 m-auto h-full">
-        {isFirstStep && <BackButton url={Routes.Home} className="mb-2" />}
+      <div className="flex flex-col min-h-dvh p-4">
+        {isFirstStep && (
+          <div>
+            <BackButton url={Routes.Home} className="mb-2" />
+          </div>
+        )}
 
         {uploadErrors.length > 0 && (
           <Alert
@@ -117,18 +100,17 @@ export default function Order() {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-6">
-            {isFirstStep && <CopyDetails errors={errors} control={control} />}
+        <FormProvider {...methods}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col flex-1"
+          >
+            {isFirstStep && <CopyDetails />}
             {isLastStep && (
-              <AdditionalInfo
-                errors={errors}
-                control={control}
-                onBack={() => setStep(Step.CopyDetails)}
-              />
+              <AdditionalInfo onBack={() => setStep(Step.CopyDetails)} />
             )}
-          </div>
-        </form>
+          </form>
+        </FormProvider>
       </div>
     </>
   );

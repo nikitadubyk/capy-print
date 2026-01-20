@@ -4,7 +4,7 @@ import { MIME_TYPES } from "@mantine/dropzone";
 import { Urgency, PaperSize } from "@/types";
 
 const uploadedFileSchema = z.object({
-  fileUrl: z.string().url("Некорректный URL"),
+  fileUrl: z.url("Некорректный URL"),
   mimeType: z.string().min(1, "MIME тип обязателен"),
   fileName: z.string().min(1, "Имя файла обязательно"),
   fileSize: z.number().positive("Размер должен быть положительным"),
@@ -20,13 +20,23 @@ const printJobSchema = z.object({
   paperSize: z.enum(Object.values(PaperSize), "Выберите формат бумаги"),
 });
 
-export const orderSchema = z.object({
-  comment: z.string().optional(),
-  deadlineAt: z.string().optional(),
-  telegramId: z.number().positive("ID должен быть положительным"),
-  urgency: z.enum(Object.values(Urgency), "Выберите формат бумаги"),
-  printJobs: z.array(printJobSchema).min(1, "Добавьте хотя бы одну работу"),
-});
+export const orderSchema = z
+  .object({
+    comment: z.string().optional(),
+    deadlineAt: z.string().optional(),
+    telegramId: z.number().positive("ID должен быть положительным"),
+    urgency: z.enum(Object.values(Urgency), "Выберите формат бумаги"),
+    printJobs: z.array(printJobSchema).min(1, "Добавьте хотя бы одну работу"),
+  })
+  .superRefine((data, ctx) => {
+    if (data.urgency === Urgency.SCHEDULED && !data.deadlineAt) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["deadlineAt"],
+        message: "Выберите время выполнения заказа",
+      });
+    }
+  });
 
 export type OrderFormData = z.infer<typeof orderSchema>;
 

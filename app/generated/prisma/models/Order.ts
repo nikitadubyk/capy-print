@@ -42,7 +42,7 @@ export type OrderMinAggregateOutputType = {
   status: $Enums.OrderStatus | null
   comment: string | null
   urgency: $Enums.UrgencyType | null
-  deadlineAt: Date | null
+  deadlineAt: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -53,7 +53,7 @@ export type OrderMaxAggregateOutputType = {
   status: $Enums.OrderStatus | null
   comment: string | null
   urgency: $Enums.UrgencyType | null
-  deadlineAt: Date | null
+  deadlineAt: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -207,7 +207,7 @@ export type OrderGroupByOutputType = {
   status: $Enums.OrderStatus
   comment: string | null
   urgency: $Enums.UrgencyType
-  deadlineAt: Date | null
+  deadlineAt: string | null
   createdAt: Date
   updatedAt: Date
   _count: OrderCountAggregateOutputType | null
@@ -241,7 +241,7 @@ export type OrderWhereInput = {
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   comment?: Prisma.StringNullableFilter<"Order"> | string | null
   urgency?: Prisma.EnumUrgencyTypeFilter<"Order"> | $Enums.UrgencyType
-  deadlineAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  deadlineAt?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -270,7 +270,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   comment?: Prisma.StringNullableFilter<"Order"> | string | null
   urgency?: Prisma.EnumUrgencyTypeFilter<"Order"> | $Enums.UrgencyType
-  deadlineAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  deadlineAt?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -302,7 +302,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
   comment?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   urgency?: Prisma.EnumUrgencyTypeWithAggregatesFilter<"Order"> | $Enums.UrgencyType
-  deadlineAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+  deadlineAt?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
 }
@@ -311,7 +311,7 @@ export type OrderCreateInput = {
   status?: $Enums.OrderStatus
   comment?: string | null
   urgency?: $Enums.UrgencyType
-  deadlineAt?: Date | string | null
+  deadlineAt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
@@ -324,7 +324,7 @@ export type OrderUncheckedCreateInput = {
   status?: $Enums.OrderStatus
   comment?: string | null
   urgency?: $Enums.UrgencyType
-  deadlineAt?: Date | string | null
+  deadlineAt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutOrderInput
@@ -334,7 +334,7 @@ export type OrderUpdateInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
-  deadlineAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
@@ -347,7 +347,7 @@ export type OrderUncheckedUpdateInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
-  deadlineAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutOrderNestedInput
@@ -359,7 +359,7 @@ export type OrderCreateManyInput = {
   status?: $Enums.OrderStatus
   comment?: string | null
   urgency?: $Enums.UrgencyType
-  deadlineAt?: Date | string | null
+  deadlineAt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -368,7 +368,7 @@ export type OrderUpdateManyMutationInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
-  deadlineAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -379,7 +379,7 @@ export type OrderUncheckedUpdateManyInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
-  deadlineAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -492,10 +492,6 @@ export type EnumUrgencyTypeFieldUpdateOperationsInput = {
   set?: $Enums.UrgencyType
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type OrderCreateNestedOneWithoutPrintJobsInput = {
   create?: Prisma.XOR<Prisma.OrderCreateWithoutPrintJobsInput, Prisma.OrderUncheckedCreateWithoutPrintJobsInput>
   connectOrCreate?: Prisma.OrderCreateOrConnectWithoutPrintJobsInput
@@ -514,7 +510,7 @@ export type OrderCreateWithoutUserInput = {
   status?: $Enums.OrderStatus
   comment?: string | null
   urgency?: $Enums.UrgencyType
-  deadlineAt?: Date | string | null
+  deadlineAt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   printJobs?: Prisma.PrintJobCreateNestedManyWithoutOrderInput
@@ -525,7 +521,7 @@ export type OrderUncheckedCreateWithoutUserInput = {
   status?: $Enums.OrderStatus
   comment?: string | null
   urgency?: $Enums.UrgencyType
-  deadlineAt?: Date | string | null
+  deadlineAt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   printJobs?: Prisma.PrintJobUncheckedCreateNestedManyWithoutOrderInput
@@ -566,7 +562,7 @@ export type OrderScalarWhereInput = {
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   comment?: Prisma.StringNullableFilter<"Order"> | string | null
   urgency?: Prisma.EnumUrgencyTypeFilter<"Order"> | $Enums.UrgencyType
-  deadlineAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  deadlineAt?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
 }
@@ -575,7 +571,7 @@ export type OrderCreateWithoutPrintJobsInput = {
   status?: $Enums.OrderStatus
   comment?: string | null
   urgency?: $Enums.UrgencyType
-  deadlineAt?: Date | string | null
+  deadlineAt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
@@ -587,7 +583,7 @@ export type OrderUncheckedCreateWithoutPrintJobsInput = {
   status?: $Enums.OrderStatus
   comment?: string | null
   urgency?: $Enums.UrgencyType
-  deadlineAt?: Date | string | null
+  deadlineAt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -612,7 +608,7 @@ export type OrderUpdateWithoutPrintJobsInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
-  deadlineAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
@@ -624,7 +620,7 @@ export type OrderUncheckedUpdateWithoutPrintJobsInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
-  deadlineAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -634,7 +630,7 @@ export type OrderCreateManyUserInput = {
   status?: $Enums.OrderStatus
   comment?: string | null
   urgency?: $Enums.UrgencyType
-  deadlineAt?: Date | string | null
+  deadlineAt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -643,7 +639,7 @@ export type OrderUpdateWithoutUserInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
-  deadlineAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   printJobs?: Prisma.PrintJobUpdateManyWithoutOrderNestedInput
@@ -654,7 +650,7 @@ export type OrderUncheckedUpdateWithoutUserInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
-  deadlineAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   printJobs?: Prisma.PrintJobUncheckedUpdateManyWithoutOrderNestedInput
@@ -665,7 +661,7 @@ export type OrderUncheckedUpdateManyWithoutUserInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
-  deadlineAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -775,7 +771,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     status: $Enums.OrderStatus
     comment: string | null
     urgency: $Enums.UrgencyType
-    deadlineAt: Date | null
+    deadlineAt: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["order"]>
@@ -1208,7 +1204,7 @@ export interface OrderFieldRefs {
   readonly status: Prisma.FieldRef<"Order", 'OrderStatus'>
   readonly comment: Prisma.FieldRef<"Order", 'String'>
   readonly urgency: Prisma.FieldRef<"Order", 'UrgencyType'>
-  readonly deadlineAt: Prisma.FieldRef<"Order", 'DateTime'>
+  readonly deadlineAt: Prisma.FieldRef<"Order", 'String'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Order", 'DateTime'>
 }

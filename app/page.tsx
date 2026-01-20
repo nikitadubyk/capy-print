@@ -10,16 +10,18 @@ import CapybaraWait from "@/public/images/wait.png";
 
 export default function Home() {
   return (
-    <div className="p-6 flex flex-col gap-4 w-screen h-screen items-center">
-      <Title order={1}>Печать без стресса</Title>
+    <div className="p-6 flex flex-col gap-4 min-h-dvh items-center">
+      <div className="flex flex-col gap-4 m-auto">
+        <Title order={1}>Печать без стресса</Title>
 
-      <Image src={CapybaraWait} alt="Капибара" />
+        <Image src={CapybaraWait} alt="Капибара" />
 
-      <p className="text-center">
-        Загрузите файлы, а мы и капибары все сделаем.
-      </p>
+        <p className="text-center">
+          Загрузите файлы, а мы и капибары все сделаем.
+        </p>
+      </div>
 
-      <div className="flex flex-col gap-2 w-full">
+      <div className="flex flex-col gap-2 w-full mt-auto">
         <Button
           fullWidth
           color="teal"

@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    await sendOrderNotification(order as Order, Config.adminChatId);
+    sendOrderNotification(order as Order, Config.adminChatId);
 
     return NextResponse.json(order, { status: 201 });
   } catch (error) {

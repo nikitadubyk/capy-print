@@ -48,8 +48,8 @@ export const OrderList = ({ data, page, isAdmin, setPage }: OrderListProps) => {
   const rows = data?.orders?.map((value) => {
     const { filesCount, copiesCount } = value?.printJobs?.reduce(
       (acc, job) => {
-        acc.copiesCount = job.copies;
-        acc.filesCount = job.files?.length;
+        acc.copiesCount += job.copies || 0;
+        acc.filesCount += job.files?.length || 0;
         return acc;
       },
       { filesCount: 0, copiesCount: 0 },

@@ -89,64 +89,9 @@ export const formatOrderNotification = (order: Order): string => {
     message += `\n⏰ Дедлайн: ${order.deadlineAt}`;
   }
 
-  message += `\n\n📅 Создан: ${dayjs(order.createdAt).format("DD/MM/YYYY")}`;
+  message += `\n\n📅 Создан: ${dayjs(order.createdAt).format("DD.MM.YYYY HH:mm")}`;
 
   return message;
-};
-
-export const sendDocument = async ({
-  chatId,
-  fileUrl,
-  caption,
-}: {
-  fileUrl: string;
-  caption?: string;
-  chatId: string | number;
-}) => {
-  try {
-    const { data }: AxiosResponse<TelegramResponse> = await axios.post(
-      `https://api.telegram.org/bot${Config.botToken}/sendDocument`,
-      {
-        chat_id: chatId,
-        document: fileUrl,
-        caption,
-        parse_mode: "HTML",
-      },
-    );
-
-    return data.ok;
-  } catch (error) {
-    console.error("Ошибка при отправке документа:", error);
-    return false;
-  }
-};
-
-export const sendDocuments = async ({
-  files,
-  chatId,
-}: {
-  files: FileToSend[];
-  chatId: string | number;
-}) => {
-  try {
-    const mediaGroup = files.slice(0, 10).map((file) => ({
-      type: "document" as const,
-      media: file.fileUrl,
-    }));
-
-    const { data }: AxiosResponse<TelegramResponse> = await axios.post(
-      `https://api.telegram.org/bot${Config.botToken}/sendMediaGroup`,
-      {
-        chat_id: chatId,
-        media: mediaGroup,
-      },
-    );
-
-    return data.ok;
-  } catch (error) {
-    console.error("Ошибка при отправке группы документов:", error);
-    return false;
-  }
 };
 
 export const sendOrderNotification = async (
@@ -167,16 +112,6 @@ export const sendOrderNotification = async (
       });
     });
   });
-
-  if (allFiles.length <= 10) {
-    await sendDocuments({ chatId, files: allFiles });
-  } else {
-    for (let i = 0; i < allFiles.length; i += 10) {
-      const batch = allFiles.slice(i, i + 10);
-      await sendDocuments({ chatId, files: batch });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-  }
 
   return true;
 };

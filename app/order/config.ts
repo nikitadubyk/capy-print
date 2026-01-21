@@ -66,9 +66,12 @@ export type OrderFormData = z.infer<typeof orderSchema>;
 export const acceptFiles = [
   MIME_TYPES.pdf,
   MIME_TYPES.doc,
+  MIME_TYPES.png,
+  MIME_TYPES.xls,
+  MIME_TYPES.svg,
   MIME_TYPES.docx,
   MIME_TYPES.jpeg,
-  MIME_TYPES.png,
+  MIME_TYPES.xlsx,
 ];
 
 export const defaultPrintJob = {

@@ -1,23 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { prisma, requireRole } from "@/lib";
+import { prisma, requireRole, sendTelegramMessage } from "@/lib";
+import { OrderStatus } from "@/app/generated/prisma/enums";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
-    const authResult = await requireRole(request, "ADMIN");
-    if (authResult instanceof NextResponse) {
-      return authResult;
-    }
-
     const { id } = await params;
 
     if (!id) {
       return NextResponse.json(
         { error: "Неверный ID заказа" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -50,14 +46,14 @@ export async function GET(
     console.error("Ошибка при получении заказа:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const authResult = await requireRole(request, "ADMIN");
@@ -72,11 +68,27 @@ export async function PATCH(
     if (!id) {
       return NextResponse.json(
         { error: "Неверный ID заказа" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const updateData: any = {};
+    const currentOrder = await prisma.order.findUnique({
+      where: { id: +id },
+      include: {
+        user: {
+          select: {
+            telegramId: true,
+            firstName: true,
+          },
+        },
+      },
+    });
+
+    if (!currentOrder) {
+      return NextResponse.json({ error: "Заказ не найден" }, { status: 404 });
+    }
+
+    const updateData: Record<string, any> = {};
 
     if (status) updateData.status = status;
     if (comment !== undefined) updateData.comment = comment;
@@ -106,19 +118,36 @@ export async function PATCH(
       },
     });
 
+    if (status && status !== currentOrder.status) {
+      const statusMessages = {
+        [OrderStatus.CANCELLED]: `❌ <b>Ваш заказ #${id} отменен</b>\n\n`,
+        [OrderStatus.COMPLETED]: `✅ <b>Ваш заказ #${id} готов!</b>\n\nМожете забрать его по адресу: Изотова 7 (Центральный рынок).`,
+        PRINTING: `🖨️ <b>Ваш заказ #${id} принят в работу!</b>\n\nМы начали печатать ваши документы. Как только заказ будет готов, вы получите уведомление.`,
+      };
+
+      const message = statusMessages[status as keyof typeof statusMessages];
+
+      if (message && order.user.telegramId) {
+        await sendTelegramMessage({
+          text: message,
+          chatId: order.user.telegramId,
+        });
+      }
+    }
+
     return NextResponse.json(order);
   } catch (error) {
     console.error("Ошибка при обновлении заказа:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { id } = await params;
@@ -126,7 +155,7 @@ export async function DELETE(
     if (!id) {
       return NextResponse.json(
         { error: "Неверный ID заказа" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -139,7 +168,7 @@ export async function DELETE(
     console.error("Ошибка при удалении заказа:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

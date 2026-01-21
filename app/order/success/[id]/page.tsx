@@ -9,15 +9,14 @@ import { Routes } from "@/config";
 import CapybaraDelivery from "@/public/images/delivery.png";
 
 export default function Success() {
-  const params = useParams<{ id: string }>();
-  const orderId = params.id;
+  const { id } = useParams<{ id: string }>();
 
   return (
     <div className="flex flex-col min-h-dvh p-4">
       <div className="flex flex-col gap-4 items-center text-center m-auto">
         <Image src={CapybaraDelivery} alt="Доставка капибара" height={250} />
 
-        <Title order={2}>Заказ #{orderId} принят!</Title>
+        <Title order={2}>Заказ #{id} принят!</Title>
         <div>
           <p>Мы уже греем принтеры.</p>
           <p>Пришлем вам уведомление в чат когда все будет готово.</p>

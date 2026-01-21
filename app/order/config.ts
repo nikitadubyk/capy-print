@@ -36,6 +36,29 @@ export const orderSchema = z
         message: "Выберите время выполнения заказа",
       });
     }
+
+    data.printJobs.forEach((job, index) => {
+      const isPhotoPaper = job.paperSize.includes("Photo");
+
+      if (isPhotoPaper) {
+        if (job.duplex) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["printJobs", index, "duplex"],
+            message: "Фотопечать доступна только односторонняя",
+          });
+        }
+      } else {
+        if (job.paperSize !== PaperSize.A4Basic) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["printJobs", index, "paperSize"],
+            message:
+              "Для ч/б и цветной печати доступна только А4 простая бумага",
+          });
+        }
+      }
+    });
   });
 
 export type OrderFormData = z.infer<typeof orderSchema>;

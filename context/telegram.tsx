@@ -18,18 +18,21 @@ import {
   retrieveLaunchParams,
 } from "@tma.js/sdk-react";
 
+import { UserRole } from "@/lib";
 import { useUpsertUser } from "@/api/users/hooks";
 
 interface TelegramContextType {
   loading: boolean;
   user: User | null;
   error: string | null;
+  role: UserRole | null;
   launchParams: LaunchParams | null;
   themeParams: ThemeParamsType | null;
 }
 
 const TelegramContext = createContext<TelegramContextType>({
   user: null,
+  role: null,
   error: null,
   loading: true,
   themeParams: null,
@@ -38,6 +41,7 @@ const TelegramContext = createContext<TelegramContextType>({
 
 const initialState: TelegramContextType = {
   user: null,
+  role: null,
   error: null,
   loading: true,
   themeParams: null,
@@ -45,46 +49,52 @@ const initialState: TelegramContextType = {
 };
 
 export const TelegramProvider = ({ children }: PropsWithChildren) => {
-  const { mutate } = useUpsertUser();
+  const { mutateAsync } = useUpsertUser();
   const [state, setState] = useState<TelegramContextType>(initialState);
 
   useEffect(() => {
-    if (!isTMA()) {
-      setState({
-        ...initialState,
-        loading: false,
-        error: "Приложение не запущено внутри Telegram",
-      });
-      return;
-    }
-
-    try {
-      initSDK();
-      backButton.mount();
-
-      const params = retrieveLaunchParams();
-      const user = params?.tgWebAppData?.user ?? null;
-
-      setState({
-        user,
-        error: null,
-        loading: false,
-        launchParams: params,
-        themeParams: params?.tgWebAppThemeParams ?? null,
-      });
-
-      if (user?.id) {
-        mutate(user);
+    const initUserInfo = async () => {
+      if (!isTMA()) {
+        setState({
+          ...initialState,
+          loading: false,
+          error: "Приложение не запущено внутри Telegram",
+        });
+        return;
       }
-    } catch (error: any) {
-      console.error("Telegram SDK error:", error);
 
-      setState((prev) => ({
-        ...prev,
-        loading: false,
-        error: error.message ?? "Неизвестная ошибка",
-      }));
-    }
+      try {
+        initSDK();
+        backButton.mount();
+
+        const params = retrieveLaunchParams();
+        const user = params?.tgWebAppData?.user ?? null;
+
+        setState({
+          user,
+          role: null,
+          error: null,
+          loading: false,
+          launchParams: params,
+          themeParams: params?.tgWebAppThemeParams ?? null,
+        });
+
+        if (user?.id) {
+          const response = await mutateAsync(user);
+          setState((prev) => ({ ...prev, role: response?.role || null }));
+        }
+      } catch (error: any) {
+        console.error("Telegram SDK error:", error);
+
+        setState((prev) => ({
+          ...prev,
+          loading: false,
+          error: error.message ?? "Неизвестная ошибка",
+        }));
+      }
+    };
+
+    initUserInfo();
   }, []);
 
   if (state.loading) {

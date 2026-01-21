@@ -13,7 +13,6 @@ export const OrderStatus = {
   PENDING: 'PENDING',
   PROCESSING: 'PROCESSING',
   PRINTING: 'PRINTING',
-  READY: 'READY',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED'
 } as const
@@ -30,7 +29,13 @@ export type UrgencyType = (typeof UrgencyType)[keyof typeof UrgencyType]
 
 
 export const PaperSize = {
-  A4Basic: 'A4Basic'
+  A4Basic: 'A4Basic',
+  A4PhotoMatte: 'A4PhotoMatte',
+  A4PhotoGlossy: 'A4PhotoGlossy',
+  A5PhotoMatte: 'A5PhotoMatte',
+  A5PhotoGlossy: 'A5PhotoGlossy',
+  A6PhotoMatte: 'A6PhotoMatte',
+  A6PhotoGlossy: 'A6PhotoGlossy'
 } as const
 
 export type PaperSize = (typeof PaperSize)[keyof typeof PaperSize]

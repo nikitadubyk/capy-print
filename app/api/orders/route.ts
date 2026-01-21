@@ -170,6 +170,15 @@ export async function GET(request: NextRequest) {
             files: true,
           },
         },
+        user: {
+          select: {
+            id: true,
+            username: true,
+            lastName: true,
+            firstName: true,
+            telegramId: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",

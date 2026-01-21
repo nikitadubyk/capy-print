@@ -81,7 +81,6 @@ enum OrderStatus {
   PENDING
   PROCESSING
   PRINTING
-  READY
   COMPLETED
   CANCELLED
 }
@@ -92,7 +91,13 @@ enum UrgencyType {
 }
 
 enum PaperSize {
-  A4Basic
+  A4Basic // А4 простая бумага (для ч/б и цветной)
+  A4PhotoMatte // А4 21×30 матовая фотобумага
+  A4PhotoGlossy // А4 21×30 глянцевая фотобумага
+  A5PhotoMatte // А5 14×21 матовая фотобумага
+  A5PhotoGlossy // А5 14×21 глянцевая фотобумага
+  A6PhotoMatte // А6 10×15 матовая фотобумага
+  A6PhotoGlossy // А6 10×15 глянцевая фотобумага
 }
 
 enum UserRole {

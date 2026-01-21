@@ -1,8 +1,9 @@
 import { URL } from "@/config";
 
 import { addParamsToUrl } from "@/utils";
-import { Order } from "@/app/generated/prisma/client";
+import { Order as OrderDTO } from "@/types";
 import { CreateOrderRequest } from "@/app/api/orders/route";
+import { Order, OrderStatus } from "@/app/generated/prisma/client";
 
 import { apiInstance } from "../instance";
 
@@ -19,6 +20,28 @@ export const ordersApi = {
   list: async (params: ListRequest) => {
     const { data } = await apiInstance.get<ListResponse>(
       addParamsToUrl(URL.CREATE_ORDER, params),
+    );
+    return data;
+  },
+
+  details: async (id: string) => {
+    const { data } = await apiInstance.get<OrderDTO>(
+      URL.ORDER_DETAILS.replace(":id", id),
+    );
+    return data;
+  },
+
+  updateStatus: async (id: string, status: OrderStatus) => {
+    const { data } = await apiInstance.patch<OrderDTO>(
+      URL.ORDER_DETAILS.replace(":id", id),
+      { status },
+    );
+    return data;
+  },
+
+  delete: async (id: string) => {
+    const { data } = await apiInstance.delete(
+      URL.ORDER_DETAILS.replace(":id", id),
     );
     return data;
   },

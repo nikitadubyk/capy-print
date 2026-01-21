@@ -13,7 +13,7 @@ export interface AuthUser {
 }
 
 export async function getUserByTelegramId(
-  telegramId: number
+  telegramId: number,
 ): Promise<AuthUser | null> {
   try {
     const user = await prisma.user.findUnique({
@@ -37,7 +37,7 @@ export async function getUserByTelegramId(
 
 export function checkPermission(
   user: AuthUser | null,
-  requiredRole: UserRole
+  requiredRole: UserRole,
 ): boolean {
   if (!user) return false;
 
@@ -50,7 +50,7 @@ export function checkPermission(
 
 export async function requireRole(
   request: NextRequest,
-  requiredRole: UserRole
+  requiredRole: UserRole,
 ): Promise<{ user: AuthUser } | NextResponse> {
   try {
     const telegramIdHeader = request.headers.get("x-telegram-id");
@@ -62,7 +62,7 @@ export async function requireRole(
     if (!telegramId) {
       return NextResponse.json(
         { error: "Telegram ID обязателен" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -71,14 +71,14 @@ export async function requireRole(
     if (!user) {
       return NextResponse.json(
         { error: "Пользователь не найден" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (!checkPermission(user, requiredRole)) {
       return NextResponse.json(
         { error: "Недостаточно прав для выполнения этого действия" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -91,7 +91,7 @@ export async function requireRole(
 
 export async function checkOrderAccess(
   user: AuthUser,
-  orderId: number
+  orderId: number,
 ): Promise<boolean> {
   try {
     const order = await prisma.order.findUnique({

@@ -1,10 +1,11 @@
+import { useEffect } from "react";
 import { Dropzone } from "@mantine/dropzone";
 import { Trash, Upload, X, Minus, Plus, AlertCircle } from "lucide-react";
 import {
-  Control,
+  useWatch,
   Controller,
-  FieldErrors,
   useFieldArray,
+  useFormContext,
 } from "react-hook-form";
 import {
   Text,
@@ -17,6 +18,7 @@ import {
 } from "@mantine/core";
 
 import { cn } from "@/lib/utils";
+import { PaperSize, PaperSizeTitle } from "@/types";
 
 import { acceptFiles, OrderFormData } from "../config";
 
@@ -26,8 +28,6 @@ interface PrintJobCardProps {
   index: number;
   canRemove: boolean;
   onRemove: () => void;
-  control: Control<OrderFormData>;
-  errors: FieldErrors<OrderFormData>;
 }
 
 const getFileInfo = (file: File | { fileName: string; fileSize: number }) => {
@@ -43,13 +43,22 @@ const getFileInfo = (file: File | { fileName: string; fileSize: number }) => {
   };
 };
 
+const paperOptions = Object.values(PaperSize).map((value) => ({
+  value,
+  label: PaperSizeTitle[value],
+}));
+
 export const PrintJobCard = ({
   index,
-  errors,
-  control,
   onRemove,
   canRemove,
 }: PrintJobCardProps) => {
+  const {
+    control,
+    setValue,
+    formState: { errors },
+  } = useFormContext<OrderFormData>();
+
   const {
     fields: fileFields,
     append: appendFile,
@@ -64,6 +73,18 @@ export const PrintJobCard = ({
       appendFile(file);
     });
   };
+
+  const watchPaperSize = useWatch({
+    control,
+    name: `printJobs.${index}.paperSize`,
+  });
+  const isPhotoPaper = watchPaperSize?.includes("Photo");
+
+  useEffect(() => {
+    if (isPhotoPaper) {
+      setValue(`printJobs.${index}.duplex`, false);
+    }
+  }, [isPhotoPaper, index, setValue]);
 
   const fileError = errors.printJobs?.[index]?.files?.message;
   const hasError = !!fileError;
@@ -189,13 +210,21 @@ export const PrintJobCard = ({
             <Controller
               control={control}
               name={`printJobs.${index}.paperSize`}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  radius="md"
-                  className="min-w[160px]"
-                  data={[{ value: "A4Basic", label: "A4 Обычная" }]}
-                />
+              render={({ field, fieldState: { error } }) => (
+                <div>
+                  <Select
+                    {...field}
+                    error={!!error}
+                    data={paperOptions}
+                    className="min-w-40"
+                  />
+                  {error && (
+                    <div className="flex items-center gap-1 mt-2 text-red-600 text-xs">
+                      <AlertCircle size={14} />
+                      <span>{error.message}</span>
+                    </div>
+                  )}
+                </div>
               )}
             />
           </Card>
@@ -204,16 +233,27 @@ export const PrintJobCard = ({
             <Controller
               control={control}
               name={`printJobs.${index}.isColor`}
-              render={({ field: { value, onChange } }) => (
-                <SegmentedControl
-                  radius="md"
-                  value={value ? "color" : "bw"}
-                  onChange={(val) => onChange(val === "color")}
-                  data={[
-                    { label: "Ч/Б", value: "bw" },
-                    { label: "Цвет", value: "color" },
-                  ]}
-                />
+              render={({
+                fieldState: { error },
+                field: { value, onChange },
+              }) => (
+                <div>
+                  <SegmentedControl
+                    radius="md"
+                    value={value ? "color" : "bw"}
+                    onChange={(val) => onChange(val === "color")}
+                    data={[
+                      { label: "Ч/Б", value: "bw" },
+                      { label: "Цвет", value: "color" },
+                    ]}
+                  />
+                  {error && (
+                    <div className="flex items-center gap-1 mt-2 text-red-600 text-xs">
+                      <AlertCircle size={14} />
+                      <span>{error.message}</span>
+                    </div>
+                  )}
+                </div>
               )}
             />
           </Card>
@@ -222,16 +262,36 @@ export const PrintJobCard = ({
             <Controller
               control={control}
               name={`printJobs.${index}.duplex`}
-              render={({ field: { value, onChange } }) => (
-                <SegmentedControl
-                  radius="md"
-                  value={value ? "yes" : "no"}
-                  onChange={(val) => onChange(val === "yes")}
-                  data={[
-                    { label: "Нет", value: "no" },
-                    { label: "Да", value: "yes" },
-                  ]}
-                />
+              render={({
+                fieldState: { error },
+                field: { value, onChange },
+              }) => (
+                <div className="flex flex-col justify-end">
+                  <div className="flex justify-end">
+                    <SegmentedControl
+                      radius="md"
+                      disabled={isPhotoPaper}
+                      value={value ? "yes" : "no"}
+                      onChange={(val) => onChange(val === "yes")}
+                      data={[
+                        { label: "Нет", value: "no" },
+                        { label: "Да", value: "yes" },
+                      ]}
+                    />
+                  </div>
+                  {error && (
+                    <div className="flex items-center gap-1 mt-2 text-red-600 text-xs">
+                      <AlertCircle size={14} />
+                      <span>{error.message}</span>
+                    </div>
+                  )}
+                  {isPhotoPaper && !error && (
+                    <div className="flex items-center gap-1 mt-2 text-gray-500 text-xs">
+                      <AlertCircle size={14} />
+                      <span>Фотопечать доступна только односторонняя</span>
+                    </div>
+                  )}
+                </div>
               )}
             />
           </Card>

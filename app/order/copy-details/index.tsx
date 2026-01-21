@@ -8,10 +8,7 @@ import { defaultPrintJob, OrderFormData } from "../config";
 import { PrintJobCard } from "./print-job-card";
 
 export const CopyDetails = () => {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext<OrderFormData>();
+  const { control } = useFormContext<OrderFormData>();
 
   const {
     fields: printJobFields,
@@ -29,8 +26,6 @@ export const CopyDetails = () => {
           <PrintJobCard
             index={index}
             key={field.id}
-            errors={errors}
-            control={control}
             canRemove={printJobFields.length > 1}
             onRemove={() => removePrintJob(index)}
           />

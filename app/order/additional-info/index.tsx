@@ -5,11 +5,9 @@ import { TimePicker } from "@mantine/dates";
 import { Controller, useFormContext } from "react-hook-form";
 import { Button, Paper, Radio, TextInput } from "@mantine/core";
 
-import { Urgency } from "@/types";
+import { Urgency, UrgencyTitle } from "@/types";
 
 import { OrderFormData } from "../config";
-
-import { UrgencyTitle } from "./config";
 
 interface AdditionalInfoProps {
   onBack: () => void;

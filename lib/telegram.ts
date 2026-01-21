@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import axios, { AxiosResponse } from "axios";
 
 import { Config } from "@/config";
-import { Urgency, Order } from "@/types";
+import { Urgency, Order, PaperSizeTitle } from "@/types";
 
 interface SendMessageParams {
   text: string;
@@ -57,7 +57,7 @@ export const formatOrderNotification = (order: Order): string => {
     <b>Новый заказ #${order.id}</b>
 
     ${urgencyText}
-    👤 Клиент: ${order.user.first_name} ${order.user.last_name || ""}
+    👤 Клиент: ${order.user.firstName} ${order.user.lastName || ""}
     📱 Username: @${order.user.username || "не указан"}
 
     📋 <b>Детали заказа:</b>
@@ -68,7 +68,7 @@ export const formatOrderNotification = (order: Order): string => {
       <b>Набор ${index + 1}:</b>
       - Копий: ${job.copies}
       - Цветная: ${job.isColor ? "Да" : "Нет"}
-      - Размер: ${job.paperSize}
+      - Размер: ${PaperSizeTitle[job.paperSize || ""]}
       - Двухсторонняя печать: ${job.duplex ? "Да" : "Нет"}
       - Файлов: ${job.files.length}
       📎 <b>Файлы:</b>

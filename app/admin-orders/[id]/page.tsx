@@ -1,0 +1,36 @@
+"use client";
+
+import { useParams } from "next/navigation";
+import { LoadingOverlay } from "@mantine/core";
+
+import { Routes } from "@/config";
+import { useDetailsQuery } from "@/api/orders/hooks";
+import { BackButton, OrderDetails } from "@/components";
+
+export default function AdminOrder() {
+  const { id } = useParams<{ id: string }>();
+  const { data, isLoading } = useDetailsQuery(id);
+
+  if (isLoading) {
+    return <LoadingOverlay visible={isLoading} />;
+  }
+
+  if (!data) {
+    return (
+      <div className="p-4">
+        <BackButton url={Routes.AdminOrders} />
+        <p className="mt-4 text-gray-500">Заказ не найден</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 max-w-4xl mx-auto">
+      <div>
+        <BackButton url={Routes.AdminOrders} />
+      </div>
+
+      <OrderDetails data={data} id={id} />
+    </div>
+  );
+}

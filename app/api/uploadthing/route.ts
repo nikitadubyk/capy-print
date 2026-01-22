@@ -6,8 +6,5 @@ import { ourFileRouter } from "./core";
 
 export const { GET, POST } = createRouteHandler({
   router: ourFileRouter,
-  config: {
-    logLevel: "All",
-    token: Config.uploadthingToken,
-  },
+  config: { token: Config.uploadthingToken },
 });

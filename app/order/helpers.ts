@@ -1,15 +1,16 @@
-import { UploadError, uploadFiles } from "@/utils";
-
 import { CreateOrderRequest } from "../api/orders/route";
 
 import { OrderFormData } from "./config";
 
 type PrepareOrderResult =
   | { success: true; data: CreateOrderRequest }
-  | { success: false; errors: UploadError[] };
+  | { success: false; error: string };
+
+type StartUploadFn = (files: File[]) => Promise<any[] | undefined>;
 
 export const prepareOrderWithUploads = async (
   data: OrderFormData,
+  startUpload: StartUploadFn,
 ): Promise<PrepareOrderResult> => {
   const filesToUpload: File[] = [];
 
@@ -21,27 +22,44 @@ export const prepareOrderWithUploads = async (
     });
   });
 
-  const uploadResult = await uploadFiles(filesToUpload);
+  try {
+    const uploadedFiles = await startUpload(filesToUpload);
 
-  if (uploadResult.errors?.length) {
-    return { success: false, errors: uploadResult.errors };
+    if (!uploadedFiles) {
+      return {
+        success: false,
+        error: "Не удалось загрузить файлы",
+      };
+    }
+
+    let uploadedIndex = 0;
+
+    const preparedData: CreateOrderRequest = {
+      ...data,
+      printJobs: data.printJobs.map((job) => ({
+        ...job,
+        files: job.files.map((file) => {
+          if (file instanceof File) {
+            const uploaded = uploadedFiles[uploadedIndex++];
+            return {
+              fileUrl: uploaded.url,
+              fileName: uploaded.name,
+              fileSize: uploaded.size,
+              mimeType: uploaded.type,
+            };
+          }
+
+          return file;
+        }),
+      })),
+    };
+
+    return { success: true, data: preparedData };
+  } catch (error) {
+    console.error("Upload error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Ошибка загрузки",
+    };
   }
-
-  let uploadedIndex = 0;
-
-  const preparedData: CreateOrderRequest = {
-    ...data,
-    printJobs: data.printJobs.map((job) => ({
-      ...job,
-      files: job.files.map((file) => {
-        if (file instanceof File) {
-          return uploadResult.uploaded[uploadedIndex++];
-        }
-
-        return file;
-      }),
-    })),
-  };
-
-  return { success: true, data: preparedData };
 };

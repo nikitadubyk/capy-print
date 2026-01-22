@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { prisma, requireRole, sendTelegramMessage } from "@/lib";
 import { OrderStatus } from "@/app/generated/prisma/enums";
+import { prisma, requireRole, sendTelegramMessage } from "@/lib";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -53,7 +53,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const authResult = await requireRole(request, "ADMIN");
@@ -147,7 +147,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;

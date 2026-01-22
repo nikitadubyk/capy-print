@@ -24,9 +24,10 @@ export const ourFileRouter = {
 
       return { uploadedBy: "user" };
     })
-    .onUploadComplete(async ({ metadata, file }) => {
-      return { uploadedBy: metadata.uploadedBy, fileUrl: file.ufsUrl };
-    }),
+    .onUploadComplete(async ({ metadata, file }) => ({
+      uploadedBy: metadata.uploadedBy,
+      fileUrl: file.ufsUrl,
+    })),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-
+import { Toaster } from "react-hot-toast";
 import {
   MantineProvider,
   mantineHtmlProps,
@@ -41,6 +41,7 @@ export default function RootLayout({
             <TelegramProvider>{children}</TelegramProvider>
           </QueryProvider>
         </MantineProvider>
+        <Toaster position="top-center" />
       </body>
     </html>
   );

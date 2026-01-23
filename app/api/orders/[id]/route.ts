@@ -1,11 +1,10 @@
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
 
 import { OrderStatus } from "@/app/generated/prisma/enums";
 import { prisma, requireRole, sendTelegramMessage } from "@/lib";
-
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-export const dynamicParams = true;
 
 export async function GET(
   request: NextRequest,

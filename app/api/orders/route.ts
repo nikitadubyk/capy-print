@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { Config } from "@/config";
 import { Order, PaperSize, Urgency } from "@/types";
-import { prisma, requireRole, sendOrderNotification } from "@/lib";
+import {
+  prisma,
+  requireRole,
+  serializeBigInt,
+  sendOrderNotification,
+} from "@/lib";
 
 interface FileInput {
   fileUrl: string;
@@ -119,7 +124,7 @@ export async function POST(request: NextRequest) {
 
     await sendOrderNotification(order as Order, Config.adminChatId);
 
-    return NextResponse.json(order, { status: 201 });
+    return NextResponse.json(serializeBigInt(order), { status: 201 });
   } catch (error) {
     console.error("Ошибка при создании заказа:", error);
     return NextResponse.json(
@@ -185,13 +190,15 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({
-      page,
-      limit,
-      total,
-      orders,
-      totalPages: Math.ceil(total / limit),
-    });
+    return NextResponse.json(
+      serializeBigInt({
+        page,
+        limit,
+        total,
+        orders,
+        totalPages: Math.ceil(total / limit),
+      }),
+    );
   } catch (error) {
     console.error("Ошибка при получении заказов:", error);
     return NextResponse.json(

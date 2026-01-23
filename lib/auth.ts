@@ -6,7 +6,7 @@ export type UserRole = "USER" | "ADMIN";
 export interface AuthUser {
   id: number;
   role: UserRole;
-  telegramId: number;
+  telegramId: bigint;
   username?: string | null;
   lastName?: string | null;
   firstName?: string | null;

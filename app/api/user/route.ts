@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { serializeBigInt } from "@/lib";
 
 export async function POST(request: NextRequest) {
   try {
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest) {
       updatedAt: user.updatedAt.toISOString(),
     };
 
-    return NextResponse.json({ user: userResponse });
+    return NextResponse.json(serializeBigInt({ user: userResponse }));
   } catch (error) {
     console.error("Ошибка при получении пользователя:", error);
     return NextResponse.json(

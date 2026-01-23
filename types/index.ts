@@ -14,7 +14,7 @@ export interface UserDTO {
   username: string;
   lastName: string;
   firstName: string;
-  telegramId: number;
+  telegramId: bigint;
 }
 
 export interface OrderFile {

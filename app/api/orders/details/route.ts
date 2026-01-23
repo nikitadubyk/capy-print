@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { OrderStatus } from "@/app/generated/prisma/enums";
-import { prisma, requireRole, sendTelegramMessage } from "@/lib";
+import {
+  prisma,
+  requireRole,
+  sendTelegramMessage,
+  serializeBigInt,
+} from "@/lib";
 
 export async function GET(request: NextRequest) {
   try {
@@ -38,7 +43,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Заказ не найден" }, { status: 404 });
     }
 
-    return NextResponse.json(order);
+    return NextResponse.json(serializeBigInt(order));
   } catch (error) {
     console.error("Ошибка при получении заказа:", error);
     return NextResponse.json(
@@ -124,12 +129,12 @@ export async function PATCH(request: NextRequest) {
       if (message && order.user.telegramId) {
         await sendTelegramMessage({
           text: message,
-          chatId: order.user.telegramId,
+          chatId: Number(order.user.telegramId),
         });
       }
     }
 
-    return NextResponse.json(order);
+    return NextResponse.json(serializeBigInt(order));
   } catch (error) {
     console.error("Ошибка при обновлении заказа:", error);
     return NextResponse.json(

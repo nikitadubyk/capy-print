@@ -16,7 +16,7 @@ interface PrintJobInput {
   duplex?: boolean;
   isColor?: boolean;
   files: FileInput[];
-  paperSize?: PaperSize;
+  paperSize?: string;
 }
 
 export interface CreateOrderRequest {
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
           create: printJobs.map((job) => ({
             copies: job.copies || 1,
             isColor: job.isColor || false,
-            paperSize: job.paperSize || "A4Basic",
+            paperSize: job.paperSize || PaperSize.A4Basic,
             duplex: job.duplex || false,
             files: {
               create: job.files.map((file) => ({

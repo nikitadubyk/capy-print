@@ -67,7 +67,9 @@ export const OrderList = ({ data, page, isAdmin, setPage }: OrderListProps) => {
         {isAdmin && (
           <>
             <Table.Td>{value.user?.username}</Table.Td>
-            <Table.Td>{`${value.user?.firstName || ""} ${value.user?.lastName || ""}`}</Table.Td>
+            <Table.Td
+              miw={150}
+            >{`${value.user?.firstName || ""} ${value.user?.lastName || ""}`}</Table.Td>
           </>
         )}
         <Table.Td miw={150}>

@@ -112,7 +112,7 @@ export const AdditionalInfo = ({ onBack }: AdditionalInfoProps) => {
           Назад
         </Button>
 
-        <Button size="lg" fullWidth type="submit" color="teal">
+        <Button size="lg" radius="md" fullWidth type="submit" color="teal">
           Оформить заказ
         </Button>
       </div>

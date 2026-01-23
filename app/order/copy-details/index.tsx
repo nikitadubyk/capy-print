@@ -44,6 +44,7 @@ export const CopyDetails = () => {
       <Button
         size="lg"
         fullWidth
+        radius="md"
         color="teal"
         type="submit"
         className="mt-auto"

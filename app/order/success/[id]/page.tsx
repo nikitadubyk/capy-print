@@ -24,6 +24,8 @@ export default function Success() {
       </div>
 
       <Button
+        size="lg"
+        radius="md"
         color="gray"
         component={Link}
         href={Routes.Home}

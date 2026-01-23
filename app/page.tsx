@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Button, Title } from "@mantine/core";
-import { FileCheck, Folder } from "lucide-react";
+import { Badge, Button, Title } from "@mantine/core";
+import { FileCheck, Folder, Sparkles } from "lucide-react";
 
 import { Routes } from "@/config";
 import { useTelegram } from "@/context";
@@ -16,11 +16,20 @@ export default function Home() {
   const isAdmin = role === UserRole.ADMIN;
 
   return (
-    <div className="p-6 flex flex-col gap-4 min-h-dvh items-center">
-      <div className="flex flex-col gap-4 m-auto text-center">
+    <div className="min-h-dvh flex flex-col bg-linear-to-b from-teal-50 to-white px-4 py-6">
+      <div className="flex flex-col gap-4 m-auto text-center items-center">
+        <Badge
+          size="lg"
+          color="teal"
+          variant="light"
+          className="mx-auto"
+          leftSection={<Sparkles size={14} />}
+        >
+          Быстро и удобно
+        </Badge>
         <Title order={1}>Печать без стресса</Title>
 
-        <Image src={CapybaraWait} alt="Капибара" />
+        <Image height={264} alt="Капибара" loading="eager" src={CapybaraWait} />
 
         <p>Загрузите файлы, а мы и капибары все сделаем.</p>
       </div>
@@ -28,6 +37,8 @@ export default function Home() {
       {isAdmin && (
         <Button
           fullWidth
+          size="lg"
+          radius="md"
           color="teal"
           component={Link}
           leftSection={<Folder />}
@@ -40,7 +51,9 @@ export default function Home() {
       {!isAdmin && (
         <div className="flex flex-col gap-2 w-full mt-auto">
           <Button
+            size="lg"
             fullWidth
+            radius="md"
             color="teal"
             component={Link}
             href={Routes.Order}
@@ -50,6 +63,8 @@ export default function Home() {
           </Button>
           <Button
             fullWidth
+            size="lg"
+            radius="md"
             color="gray"
             component={Link}
             href={Routes.MyOrders}

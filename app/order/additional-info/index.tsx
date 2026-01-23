@@ -1,13 +1,14 @@
 "use client";
 
+import dayjs from "dayjs";
 import { ArrowLeft } from "lucide-react";
-import { TimePicker } from "@mantine/dates";
+import { DateTimePicker } from "@mantine/dates";
 import { Controller, useFormContext } from "react-hook-form";
 import { Button, Paper, Radio, TextInput } from "@mantine/core";
 
 import { Urgency, UrgencyTitle } from "@/types";
 
-import { OrderFormData } from "../config";
+import { OrderFormData, getWorkingHoursDescription } from "../config";
 
 interface AdditionalInfoProps {
   onBack: () => void;
@@ -15,10 +16,24 @@ interface AdditionalInfoProps {
 
 export const AdditionalInfo = ({ onBack }: AdditionalInfoProps) => {
   const {
-    setValue,
+    watch,
     control,
+    setValue,
     formState: { errors },
   } = useFormContext<OrderFormData>();
+
+  const minDate = new Date();
+  const maxDate = dayjs().add(3, "day").toDate();
+
+  const excludeDate = (date: string) => {
+    const day = dayjs(date);
+    return day.day() === 1;
+  };
+
+  const deadlineAt = watch("deadlineAt");
+  const workingHoursHint = deadlineAt
+    ? getWorkingHoursDescription(dayjs(deadlineAt))
+    : "Будние дни: 8:00-13:00, Выходные: 8:00-11:30";
 
   return (
     <>
@@ -61,15 +76,32 @@ export const AdditionalInfo = ({ onBack }: AdditionalInfoProps) => {
                     control={control}
                     render={({ field: timeField }) => (
                       <div className="flex flex-col gap-1">
-                        <TimePicker
+                        <DateTimePicker
                           className="mt-2"
-                          label="Выберите время"
-                          value={timeField.value}
-                          onChange={timeField.onChange}
+                          minDate={minDate}
+                          maxDate={maxDate}
+                          excludeDate={excludeDate}
+                          label="Выберите дату и время"
+                          valueFormat="DD.MM.YYYY HH:mm"
+                          placeholder="Выберите дату и время"
+                          value={
+                            timeField.value
+                              ? dayjs(timeField.value).toDate()
+                              : null
+                          }
+                          onChange={(date) =>
+                            timeField.onChange(
+                              date ? dayjs(date).toISOString() : "",
+                            )
+                          }
                           error={errors.deadlineAt?.message}
+                          clearable
                         />
                         <p className="text-gray-500 text-xs">
-                          Принимаем заказы только в рабочее время
+                          {workingHoursHint}
+                        </p>
+                        <p className="text-gray-500 text-xs">
+                          Понедельник - выходной. Максимум на 3 дня вперед
                         </p>
                       </div>
                     )}

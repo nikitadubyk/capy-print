@@ -12,7 +12,7 @@ export const OrderStatusTitle = {
 
 export const UrgencyTitle = {
   [Urgency.ASAP]: "Как можно скорее",
-  [Urgency.SCHEDULED]: "Выбрать время",
+  [Urgency.SCHEDULED]: "Выбрать дату и время",
 };
 
 export const UrgencyViewTitle = {

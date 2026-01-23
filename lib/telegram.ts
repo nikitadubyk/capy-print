@@ -22,6 +22,8 @@ interface TelegramResponse<T = any> {
   description?: string;
 }
 
+const format = "DD.MM.YYYY HH:mm";
+
 export async function sendTelegramMessage({
   chatId,
   text,
@@ -86,10 +88,10 @@ export const formatOrderNotification = (order: Order): string => {
   }
 
   if (order.deadlineAt) {
-    message += `\n⏰ Дедлайн: ${order.deadlineAt}`;
+    message += `\n⏰ Дедлайн: ${dayjs(order.deadlineAt).format(format)}`;
   }
 
-  message += `\n\n📅 Создан: ${dayjs(order.createdAt).format("DD.MM.YYYY HH:mm")}`;
+  message += `\n\n📅 Создан: ${dayjs(order.createdAt).format(format)}`;
 
   return message;
 };

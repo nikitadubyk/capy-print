@@ -21,8 +21,9 @@ const reportEnd = (response: AxiosResponse) =>
 
 const getTelegramId = (): number | null => {
   try {
-    const { tgWebAppData } = retrieveLaunchParams();
-    return tgWebAppData?.user?.id || null;
+    // const { tgWebAppData } = retrieveLaunchParams();
+    // return tgWebAppData?.user?.id || null;
+    return 248391610;
   } catch (error) {
     console.error("Ошибка при получении Telegram ID:", error);
     return null;

@@ -12,6 +12,7 @@ import "@mantine/dates/styles.css";
 
 import { TelegramProvider } from "@/context";
 
+import { DatesProvider } from "./dates-provider";
 import { QueryProvider } from "./query-provider";
 
 export const metadata: Metadata = {
@@ -37,9 +38,11 @@ export default function RootLayout({
       </head>
       <body className="bg-zinc-100">
         <MantineProvider>
-          <QueryProvider>
-            <TelegramProvider>{children}</TelegramProvider>
-          </QueryProvider>
+          <DatesProvider>
+            <QueryProvider>
+              <TelegramProvider>{children}</TelegramProvider>
+            </QueryProvider>
+          </DatesProvider>
         </MantineProvider>
         <Toaster position="top-center" />
       </body>

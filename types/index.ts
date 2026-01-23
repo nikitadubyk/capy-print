@@ -52,3 +52,14 @@ export const OrderStatusColor: Record<OrderStatus, DefaultMantineColor> = {
   [OrderStatus.PRINTING]: "yellow",
   [OrderStatus.PROCESSING]: "yellow",
 };
+
+export const WorkSchedule = {
+  Weekday: {
+    start: 8, // 8:00
+    end: 13, // 13:00
+  },
+  Weekend: {
+    start: 8, // 8:00
+    end: 11.5, // 11:30
+  },
+};

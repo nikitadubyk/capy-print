@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     if (!id) {
       return NextResponse.json(
         { error: "Telegram ID обязателен" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     const userResponse = {
       ...user,
       id: user.id,
-      telegramId: user.id.toString(),
+      telegramId: user.telegramId.toString(),
       createdAt: user.createdAt.toISOString(),
       updatedAt: user.updatedAt.toISOString(),
     };
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     console.error("Ошибка при сохранении пользователя:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     if (!telegramId) {
       return NextResponse.json(
         { error: "Telegram ID обязателен" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Пользователь не найден" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
     console.error("Ошибка при получении пользователя:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

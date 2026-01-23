@@ -1,17 +1,11 @@
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 import { NextRequest, NextResponse } from "next/server";
 
 import { OrderStatus } from "@/app/generated/prisma/enums";
 import { prisma, requireRole, sendTelegramMessage } from "@/lib";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(request: NextRequest) {
   try {
-    const { id } = await params;
+    const id = request.nextUrl.searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
@@ -54,17 +48,14 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function PATCH(request: NextRequest) {
   try {
     const authResult = await requireRole(request, "ADMIN");
     if (authResult instanceof NextResponse) {
       return authResult;
     }
 
-    const { id } = await params;
+    const id = request.nextUrl.searchParams.get("id");
     const body = await request.json();
     const { status, comment, urgency, deadlineAt } = body;
 
@@ -148,12 +139,9 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function DELETE(request: NextRequest) {
   try {
-    const { id } = await params;
+    const id = request.nextUrl.searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(

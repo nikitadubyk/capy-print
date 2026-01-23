@@ -4,9 +4,23 @@ import axios, { AxiosResponse } from "axios";
 import { Config } from "@/config";
 import { Urgency, Order, PaperSizeTitle } from "@/types";
 
+interface ReplyMarkup {
+  inline_keyboard?: Array<
+    Array<{
+      text: string;
+      callback_data?: string;
+      url?: string;
+      web_app?: {
+        url: string;
+      };
+    }>
+  >;
+}
+
 interface SendMessageParams {
   text: string;
   chatId: string | number;
+  replyMarkup?: ReplyMarkup;
   parseMode?: "HTML" | "Markdown" | "MarkdownV2";
 }
 
@@ -25,8 +39,9 @@ interface TelegramResponse<T = any> {
 const format = "DD.MM.YYYY HH:mm";
 
 export async function sendTelegramMessage({
-  chatId,
   text,
+  chatId,
+  replyMarkup,
   parseMode = "HTML",
 }: SendMessageParams) {
   try {
@@ -36,6 +51,7 @@ export async function sendTelegramMessage({
         text,
         chat_id: chatId,
         parse_mode: parseMode,
+        ...(replyMarkup && { reply_markup: replyMarkup }),
       },
     );
 

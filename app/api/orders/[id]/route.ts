@@ -3,14 +3,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { OrderStatus } from "@/app/generated/prisma/enums";
 import { prisma, requireRole, sendTelegramMessage } from "@/lib";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
-
-    console.log("ID in GET orders", { id, params });
 
     if (!id) {
       return NextResponse.json(
@@ -38,8 +40,6 @@ export async function GET(
         },
       },
     });
-
-    console.log("ORDER RESULT", { order });
 
     if (!order) {
       return NextResponse.json({ error: "Заказ не найден" }, { status: 404 });

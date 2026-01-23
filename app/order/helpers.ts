@@ -1,4 +1,4 @@
-import { CreateOrderRequest } from "../api/orders/route";
+import { CreateOrderRequest } from "../api/orders/list/route";
 
 import { OrderFormData } from "./config";
 

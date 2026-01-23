@@ -11,8 +11,6 @@ export default function MyOrder() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading } = useDetailsQuery(id);
 
-  console.log("id in page", { id, data });
-
   if (isLoading) {
     return <LoadingOverlay visible={isLoading} />;
   }

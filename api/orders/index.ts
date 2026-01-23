@@ -2,7 +2,7 @@ import { URL } from "@/config";
 
 import { addParamsToUrl } from "@/utils";
 import { Order as OrderDTO } from "@/types";
-import { CreateOrderRequest } from "@/app/api/orders/route";
+import { CreateOrderRequest } from "@/app/api/orders/list/route";
 import { Order, OrderStatus } from "@/app/generated/prisma/client";
 
 import { apiInstance } from "../instance";

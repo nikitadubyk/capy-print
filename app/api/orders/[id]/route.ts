@@ -10,6 +10,8 @@ export async function GET(
   try {
     const { id } = await params;
 
+    console.log("ID in GET orders", { id, params });
+
     if (!id) {
       return NextResponse.json(
         { error: "Неверный ID заказа" },
@@ -36,6 +38,8 @@ export async function GET(
         },
       },
     });
+
+    console.log("ORDER RESULT", { order });
 
     if (!order) {
       return NextResponse.json({ error: "Заказ не найден" }, { status: 404 });

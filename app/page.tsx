@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Badge, Button, Title } from "@mantine/core";
-import { FileCheck, Folder, Sparkles } from "lucide-react";
+import { Badge, Button, Title, ActionIcon } from "@mantine/core";
+import { FileCheck, Folder, Sparkles, CircleQuestionMark } from "lucide-react";
 
 import { Routes } from "@/config";
 import { useTelegram } from "@/context";
@@ -18,15 +18,26 @@ export default function Home() {
   return (
     <div className="min-h-dvh flex flex-col bg-linear-to-b from-teal-50 to-white px-4 py-6">
       <div className="flex flex-col gap-4 m-auto text-center items-center">
-        <Badge
-          size="lg"
-          color="teal"
-          variant="light"
-          className="mx-auto"
-          leftSection={<Sparkles size={14} />}
-        >
-          Быстро и удобно
-        </Badge>
+        <div className="flex justify-between gap-4 items-center">
+          <Badge
+            size="lg"
+            color="teal"
+            variant="light"
+            className="mx-auto"
+            leftSection={<Sparkles size={14} />}
+          >
+            Быстро и удобно
+          </Badge>
+
+          <ActionIcon
+            radius="md"
+            color="gray"
+            component={Link}
+            href={Routes.Info}
+          >
+            <CircleQuestionMark size={16} />
+          </ActionIcon>
+        </div>
         <Title order={1}>Печать без стресса</Title>
 
         <Image height={264} alt="Капибара" loading="eager" src={CapybaraWait} />

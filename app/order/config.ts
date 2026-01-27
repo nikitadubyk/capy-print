@@ -36,14 +36,14 @@ export const isWorkingTime = (date: dayjs.Dayjs): boolean => {
 
   if (dayOfWeek === 0 || dayOfWeek === 6) {
     return (
-      timeInHours >= WorkSchedule.Weekday.start &&
+      timeInHours >= WorkSchedule.Weekend.start &&
       timeInHours <= WorkSchedule.Weekend.end
     );
   }
 
   return (
     timeInHours >= WorkSchedule.Weekday.start &&
-    timeInHours <= WorkSchedule.Weekend.end
+    timeInHours <= WorkSchedule.Weekday.end
   );
 };
 

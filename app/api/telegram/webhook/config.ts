@@ -4,7 +4,7 @@ export const MAIN_MENU_KEYBOARD = {
   inline_keyboard: [
     [
       {
-        text: "🖨 Открыть приложение",
+        text: "🖨 Сделать заказ",
         web_app: { url: Config.miniAppUrl! },
       },
     ],

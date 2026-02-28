@@ -1,85 +1,99 @@
+import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 import { Config } from "@/config";
 import { sendTelegramMessage } from "@/lib";
 
-interface TelegramUser {
-  id: number;
-  is_bot: boolean;
-  first_name: string;
-  last_name?: string;
-  username?: string;
-  language_code?: string;
-}
-
-interface TelegramChat {
-  id: number;
-  type: "private" | "group" | "supergroup" | "channel";
-}
-
-interface TelegramMessage {
-  date: number;
-  text?: string;
-  message_id: number;
-  chat: TelegramChat;
-  from?: TelegramUser;
-}
-
-interface TelegramUpdate {
-  update_id: number;
-  message?: TelegramMessage;
-}
+import { MAIN_MENU_KEYBOARD, BACK_KEYBOARD } from "./config";
+import {
+  TelegramUpdate,
+  TelegramMessage,
+  TelegramCallbackQuery,
+} from "./types";
 
 const handleStartCommand = (chatId: number) =>
   sendTelegramMessage({
     chatId,
-    text: `🐹 Привет! Мы — капибары Capy Print и уже греем принтер 🔥🖨
-Ты можешь отправить файлы на печать онлайн
-и забрать готовый заказ в нашем копицентре в Горловке.`,
-    replyMarkup: {
-      inline_keyboard: [
-        [
-          {
-            text: "Открыть приложение",
-            web_app: { url: Config.miniAppUrl! },
-          },
-        ],
-      ],
-    },
+    parseMode: "Markdown",
+    replyMarkup: MAIN_MENU_KEYBOARD,
+    text: `🐹 Привет! Мы — капибары *Capy Print* и уже греем принтер 🔥🖨\n\nТы можешь отправить файлы на печать онлайн и забрать готовый заказ в нашем копицентре в Горловке.\n\nВыбери, что тебя интересует:`,
   });
 
-const handleHelpCommand = (chatId: number) =>
+const handleHoursCallback = (chatId: number) =>
   sendTelegramMessage({
     chatId,
-    text: `ℹ️ Как это работает:
-    1. Нажми «Открыть приложение»
-    2. Загрузи файлы
-    3. Забери печать в копицентре`,
+    parseMode: "Markdown",
+    replyMarkup: BACK_KEYBOARD,
+    text: `🕐 *Режим работы*\n
+    📅 Вт–Пт: 8:00 – 13:30
+    📅 Суббота: 8:00 – 12:00
+    ❌ Понедельник: выходной\n
+    Заказ через приложение принимается круглосуточно 🌙
+    Исполнение — в рабочие часы.`,
   });
 
-const handleOpenCommand = (chatId: number) =>
+const handleAddressCallback = (chatId: number) =>
   sendTelegramMessage({
     chatId,
-    text: "Открываю приложение 🐹",
-    replyMarkup: {
-      inline_keyboard: [
-        [
-          {
-            text: "Открыть приложение",
-            web_app: { url: Config.miniAppUrl! },
-          },
-        ],
-      ],
-    },
+    parseMode: "Markdown",
+    replyMarkup: BACK_KEYBOARD,
+    text: `📍 *Как нас найти*\n
+    🏢 г. Горловка, ул. Изотова 7\n_(Центральный рынок)_\n
+    🚶 Ориентир — торгорвый дом Донбасс (Стройленд), мы рядом.\n
+    🗺 [Открыть в картах](https://maps.google.com/?q=Горловка+Изотова+7)`,
   });
+
+const handleContactsCallback = (chatId: number) =>
+  sendTelegramMessage({
+    chatId,
+    parseMode: "Markdown",
+    replyMarkup: BACK_KEYBOARD,
+    text: `📞 *Контакты*\n
+      💬 Написать нам:\n
+      📘 [ВКонтакте](https://vk.com/kopibara24)
+      📘 [Telegram](https://t.me/fotomail24)`,
+  });
+
+const handleFaqCallback = (chatId: number) =>
+  sendTelegramMessage({
+    chatId,
+    parseMode: "Markdown",
+    replyMarkup: BACK_KEYBOARD,
+    text: `❓ *Частые вопросы*\n
+      *Какие форматы файлов поддерживаются?*
+      PDF, JPG, PNG, DOCX и XLSX. Если файл нестандартный — попробуй сохранить его в PDF.\n
+      *Можно ли печатать в цвете?*
+      Да, цветная и черно-белая печать доступны при оформлении заказа.\n
+      *Сколько времени занимает печать?*
+      Обычно от 5 до 15 минут, в зависимости от количества страниц и загруженности нашей точки.\n
+      *Как происходит оплата?*
+      Оплата производится при получении заказа.\n
+      *Где можно забрать заказ?*
+      г. Горловка, ул. Изотова 7 (Центральный рынок).\n
+      *Какой график работы?*
+      Вт–Пт: 8:00 – 13:30
+      Сб–Вс: 8:00 – 12:00
+      Понедельник — выходной.`,
+  });
+
+const handleMainMenuCallback = (chatId: number) =>
+  sendTelegramMessage({
+    chatId,
+    replyMarkup: MAIN_MENU_KEYBOARD,
+    text: `🐹 Главное меню — выбери, что тебя интересует:`,
+  });
+
+const answerCallbackQuery = (callbackQueryId: string) =>
+  axios.post(
+    `https://api.telegram.org/bot${Config.botToken!}/answerCallbackQuery`,
+    { callback_query_id: callbackQueryId },
+  );
 
 const processMessage = async (message: TelegramMessage) => {
   const chatId = message.chat.id;
   const text = message.text?.trim();
 
-  if (!text) {
-    return;
-  }
+  if (!text) return;
 
   const command = text.split(" ")[0].split("@")[0];
 
@@ -88,21 +102,41 @@ const processMessage = async (message: TelegramMessage) => {
       await handleStartCommand(chatId);
       break;
 
-    case "/help":
-      await handleHelpCommand(chatId);
-      break;
-
-    case "/open":
-      await handleOpenCommand(chatId);
-      break;
-
     default:
-      if (text.startsWith("/")) {
+      if (!text.startsWith("/")) {
+        await handleStartCommand(chatId);
+      } else {
         await sendTelegramMessage({
           chatId,
-          text: "Неизвестная команда. Используйте /help для получения информации.",
+          text: "Используй кнопки меню 👇",
+          replyMarkup: MAIN_MENU_KEYBOARD,
         });
       }
+      break;
+  }
+};
+
+const processCallbackQuery = async (callbackQuery: TelegramCallbackQuery) => {
+  const chatId = callbackQuery.message?.chat.id;
+  if (!chatId) return;
+
+  await answerCallbackQuery(callbackQuery.id);
+
+  switch (callbackQuery.data) {
+    case "hours":
+      await handleHoursCallback(chatId);
+      break;
+    case "address":
+      await handleAddressCallback(chatId);
+      break;
+    case "contacts":
+      await handleContactsCallback(chatId);
+      break;
+    case "faq":
+      await handleFaqCallback(chatId);
+      break;
+    case "main_menu":
+      await handleMainMenuCallback(chatId);
       break;
   }
 };
@@ -115,14 +149,14 @@ export async function POST(request: NextRequest) {
       await processMessage(body.message);
     }
 
+    if (body.callback_query) {
+      await processCallbackQuery(body.callback_query);
+    }
+
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {
     console.error("Ошибка обработки Telegram webhook:", error);
-
-    return NextResponse.json(
-      { ok: false, error: "Internal server error" },
-      { status: 200 },
-    );
+    return NextResponse.json({ ok: false }, { status: 200 });
   }
 }
 

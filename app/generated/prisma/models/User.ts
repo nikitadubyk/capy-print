@@ -221,7 +221,7 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type UserGroupByOutputType = {
   id: number
-  telegramId: bigint
+  telegramId: bigint | null
   username: string | null
   firstName: string | null
   lastName: string | null
@@ -258,7 +258,7 @@ export type UserWhereInput = {
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.IntFilter<"User"> | number
-  telegramId?: Prisma.BigIntFilter<"User"> | bigint | number
+  telegramId?: Prisma.BigIntNullableFilter<"User"> | bigint | number | null
   username?: Prisma.StringNullableFilter<"User"> | string | null
   firstName?: Prisma.StringNullableFilter<"User"> | string | null
   lastName?: Prisma.StringNullableFilter<"User"> | string | null
@@ -269,11 +269,12 @@ export type UserWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
   orders?: Prisma.OrderListRelationFilter
+  identities?: Prisma.UserIdentityListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  telegramId?: Prisma.SortOrder
+  telegramId?: Prisma.SortOrderInput | Prisma.SortOrder
   username?: Prisma.SortOrderInput | Prisma.SortOrder
   firstName?: Prisma.SortOrderInput | Prisma.SortOrder
   lastName?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -284,6 +285,7 @@ export type UserOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   role?: Prisma.SortOrder
   orders?: Prisma.OrderOrderByRelationAggregateInput
+  identities?: Prisma.UserIdentityOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -302,11 +304,12 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
   orders?: Prisma.OrderListRelationFilter
+  identities?: Prisma.UserIdentityListRelationFilter
 }, "id" | "telegramId">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  telegramId?: Prisma.SortOrder
+  telegramId?: Prisma.SortOrderInput | Prisma.SortOrder
   username?: Prisma.SortOrderInput | Prisma.SortOrder
   firstName?: Prisma.SortOrderInput | Prisma.SortOrder
   lastName?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -328,7 +331,7 @@ export type UserScalarWhereWithAggregatesInput = {
   OR?: Prisma.UserScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"User"> | number
-  telegramId?: Prisma.BigIntWithAggregatesFilter<"User"> | bigint | number
+  telegramId?: Prisma.BigIntNullableWithAggregatesFilter<"User"> | bigint | number | null
   username?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   firstName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   lastName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -341,7 +344,7 @@ export type UserScalarWhereWithAggregatesInput = {
 }
 
 export type UserCreateInput = {
-  telegramId: bigint | number
+  telegramId?: bigint | number | null
   username?: string | null
   firstName?: string | null
   lastName?: string | null
@@ -352,11 +355,12 @@ export type UserCreateInput = {
   updatedAt?: Date | string
   role?: $Enums.UserRole
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  identities?: Prisma.UserIdentityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
   id?: number
-  telegramId: bigint | number
+  telegramId?: bigint | number | null
   username?: string | null
   firstName?: string | null
   lastName?: string | null
@@ -367,10 +371,11 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string
   role?: $Enums.UserRole
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  identities?: Prisma.UserIdentityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
-  telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  telegramId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -381,11 +386,12 @@ export type UserUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  identities?: Prisma.UserIdentityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  telegramId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -396,11 +402,12 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  identities?: Prisma.UserIdentityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
   id?: number
-  telegramId: bigint | number
+  telegramId?: bigint | number | null
   username?: string | null
   firstName?: string | null
   lastName?: string | null
@@ -413,7 +420,7 @@ export type UserCreateManyInput = {
 }
 
 export type UserUpdateManyMutationInput = {
-  telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  telegramId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -427,7 +434,7 @@ export type UserUpdateManyMutationInput = {
 
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  telegramId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -496,8 +503,8 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput
 }
 
-export type BigIntFieldUpdateOperationsInput = {
-  set?: bigint | number
+export type NullableBigIntFieldUpdateOperationsInput = {
+  set?: bigint | number | null
   increment?: bigint | number
   decrement?: bigint | number
   multiply?: bigint | number
@@ -528,6 +535,20 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type UserCreateNestedOneWithoutIdentitiesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutIdentitiesInput, Prisma.UserUncheckedCreateWithoutIdentitiesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutIdentitiesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutIdentitiesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutIdentitiesInput, Prisma.UserUncheckedCreateWithoutIdentitiesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutIdentitiesInput
+  upsert?: Prisma.UserUpsertWithoutIdentitiesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutIdentitiesInput, Prisma.UserUpdateWithoutIdentitiesInput>, Prisma.UserUncheckedUpdateWithoutIdentitiesInput>
+}
+
 export type UserCreateNestedOneWithoutOrdersInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutOrdersInput, Prisma.UserUncheckedCreateWithoutOrdersInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutOrdersInput
@@ -542,8 +563,8 @@ export type UserUpdateOneRequiredWithoutOrdersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOrdersInput, Prisma.UserUpdateWithoutOrdersInput>, Prisma.UserUncheckedUpdateWithoutOrdersInput>
 }
 
-export type UserCreateWithoutOrdersInput = {
-  telegramId: bigint | number
+export type UserCreateWithoutIdentitiesInput = {
+  telegramId?: bigint | number | null
   username?: string | null
   firstName?: string | null
   lastName?: string | null
@@ -553,11 +574,86 @@ export type UserCreateWithoutOrdersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   role?: $Enums.UserRole
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutIdentitiesInput = {
+  id?: number
+  telegramId?: bigint | number | null
+  username?: string | null
+  firstName?: string | null
+  lastName?: string | null
+  languageCode?: string | null
+  isPremium?: boolean
+  photoUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: $Enums.UserRole
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutIdentitiesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutIdentitiesInput, Prisma.UserUncheckedCreateWithoutIdentitiesInput>
+}
+
+export type UserUpsertWithoutIdentitiesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutIdentitiesInput, Prisma.UserUncheckedUpdateWithoutIdentitiesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutIdentitiesInput, Prisma.UserUncheckedCreateWithoutIdentitiesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutIdentitiesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutIdentitiesInput, Prisma.UserUncheckedUpdateWithoutIdentitiesInput>
+}
+
+export type UserUpdateWithoutIdentitiesInput = {
+  telegramId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  languageCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  photoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutIdentitiesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  telegramId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  languageCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  photoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutOrdersInput = {
+  telegramId?: bigint | number | null
+  username?: string | null
+  firstName?: string | null
+  lastName?: string | null
+  languageCode?: string | null
+  isPremium?: boolean
+  photoUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: $Enums.UserRole
+  identities?: Prisma.UserIdentityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOrdersInput = {
   id?: number
-  telegramId: bigint | number
+  telegramId?: bigint | number | null
   username?: string | null
   firstName?: string | null
   lastName?: string | null
@@ -567,6 +663,7 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   role?: $Enums.UserRole
+  identities?: Prisma.UserIdentityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOrdersInput = {
@@ -586,7 +683,7 @@ export type UserUpdateToOneWithWhereWithoutOrdersInput = {
 }
 
 export type UserUpdateWithoutOrdersInput = {
-  telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  telegramId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -596,11 +693,12 @@ export type UserUpdateWithoutOrdersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  identities?: Prisma.UserIdentityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrdersInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  telegramId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -610,6 +708,7 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  identities?: Prisma.UserIdentityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -619,10 +718,12 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
 
 export type UserCountOutputType = {
   orders: number
+  identities: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   orders?: boolean | UserCountOutputTypeCountOrdersArgs
+  identities?: boolean | UserCountOutputTypeCountIdentitiesArgs
 }
 
 /**
@@ -642,6 +743,13 @@ export type UserCountOutputTypeCountOrdersArgs<ExtArgs extends runtime.Types.Ext
   where?: Prisma.OrderWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountIdentitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserIdentityWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -656,6 +764,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   role?: boolean
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>
+  identities?: boolean | Prisma.User$identitiesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -704,6 +813,7 @@ export type UserSelectScalar = {
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "telegramId" | "username" | "firstName" | "lastName" | "languageCode" | "isPremium" | "photoUrl" | "createdAt" | "updatedAt" | "role", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>
+  identities?: boolean | Prisma.User$identitiesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -713,10 +823,11 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     orders: Prisma.$OrderPayload<ExtArgs>[]
+    identities: Prisma.$UserIdentityPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
-    telegramId: bigint
+    telegramId: bigint | null
     username: string | null
     firstName: string | null
     lastName: string | null
@@ -1121,6 +1232,7 @@ readonly fields: UserFieldRefs;
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   orders<T extends Prisma.User$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  identities<T extends Prisma.User$identitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$identitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserIdentityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1570,6 +1682,30 @@ export type User$ordersArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.OrderScalarFieldEnum | Prisma.OrderScalarFieldEnum[]
+}
+
+/**
+ * User.identities
+ */
+export type User$identitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserIdentity
+   */
+  select?: Prisma.UserIdentitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserIdentity
+   */
+  omit?: Prisma.UserIdentityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserIdentityInclude<ExtArgs> | null
+  where?: Prisma.UserIdentityWhereInput
+  orderBy?: Prisma.UserIdentityOrderByWithRelationInput | Prisma.UserIdentityOrderByWithRelationInput[]
+  cursor?: Prisma.UserIdentityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserIdentityScalarFieldEnum | Prisma.UserIdentityScalarFieldEnum[]
 }
 
 /**

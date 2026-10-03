@@ -52,6 +52,8 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  UserIdentity: 'UserIdentity',
+  Session: 'Session',
   Order: 'Order',
   PrintJob: 'PrintJob',
   PrintFile: 'PrintFile'
@@ -88,6 +90,25 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const UserIdentityScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  externalUserId: 'externalUserId',
+  userId: 'userId'
+} as const
+
+export type UserIdentityScalarFieldEnum = (typeof UserIdentityScalarFieldEnum)[keyof typeof UserIdentityScalarFieldEnum]
+
+
+export const SessionScalarFieldEnum = {
+  tokenHash: 'tokenHash',
+  identityId: 'identityId',
+  createdAt: 'createdAt'
+} as const
+
+export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
 
 
 export const OrderScalarFieldEnum = {

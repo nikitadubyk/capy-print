@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { Config } from "@/config";
+import type { Prisma } from "@/app/generated/prisma/client";
 import { Order, PaperSize, Urgency } from "@/types";
 import {
+  createOrderSchema,
+  listOrdersSchema,
+  sessionHeaders,
   prisma,
   requireRole,
   serializeBigInt,
@@ -27,7 +31,6 @@ interface PrintJobInput {
 export interface CreateOrderRequest {
   comment?: string;
   urgency: Urgency;
-  telegramId: number;
   deadlineAt?: string;
   printJobs: PrintJobInput[];
 }
@@ -41,45 +44,15 @@ export async function POST(request: NextRequest) {
 
     const { user } = authResult;
 
-    const body: CreateOrderRequest = await request.json();
-    const { telegramId, printJobs, comment, urgency, deadlineAt } = body;
-
-    if (!telegramId) {
+    const parsed = createOrderSchema.safeParse(
+      await request.json().catch(() => null)
+    );
+    if (!parsed.success)
       return NextResponse.json(
-        { error: "Telegram ID обязателен" },
-        { status: 400 },
+        { error: "Некорректные параметры заказа" },
+        { status: 400, headers: sessionHeaders }
       );
-    }
-
-    if (!printJobs || printJobs.length === 0) {
-      return NextResponse.json(
-        { error: "Необходимо добавить хотя бы один набор файлов для печати" },
-        { status: 400 },
-      );
-    }
-
-    for (const job of printJobs) {
-      if (!job.files || job.files.length === 0) {
-        return NextResponse.json(
-          { error: "Каждый набор должен содержать хотя бы один файл" },
-          { status: 400 },
-        );
-      }
-    }
-
-    if (!urgency || !Object.values(Urgency).includes(urgency)) {
-      return NextResponse.json(
-        { error: "Некорректное значение срочности заказа" },
-        { status: 400 },
-      );
-    }
-
-    if (urgency === Urgency.SCHEDULED && !deadlineAt) {
-      return NextResponse.json(
-        { error: "Для запланированного заказа необходимо указать дату" },
-        { status: 400 },
-      );
-    }
+    const { printJobs, comment, urgency, deadlineAt } = parsed.data;
 
     const order = await prisma.order.create({
       data: {
@@ -124,44 +97,42 @@ export async function POST(request: NextRequest) {
 
     await sendOrderNotification(order as Order, Config.adminChatId);
 
-    return NextResponse.json(serializeBigInt(order), { status: 201 });
+    return NextResponse.json(serializeBigInt(order), {
+      status: 201,
+      headers: sessionHeaders,
+    });
   } catch (error) {
     console.error("Ошибка при создании заказа:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await requireRole(request, "USER");
+    if (auth instanceof NextResponse) return auth;
     const searchParams = request.nextUrl.searchParams;
-
-    const telegramId = searchParams.get("telegramId");
-    const status = searchParams.get("status");
-    const urgency = searchParams.get("urgency");
-
-    const page = Number(searchParams.get("page") || 1);
-    const limit = Number(searchParams.get("limit") || 20);
+    const parsed = listOrdersSchema.safeParse(Object.fromEntries(searchParams));
+    if (!parsed.success)
+      return NextResponse.json(
+        { error: "Некорректные параметры списка" },
+        { status: 400, headers: sessionHeaders }
+      );
+    const { page, limit, status, urgency, scope } = parsed.data;
+    if (scope === "all" && auth.user.role !== "ADMIN")
+      return NextResponse.json(
+        { error: "Недостаточно прав" },
+        { status: 403, headers: sessionHeaders }
+      );
     const skip = (page - 1) * limit;
-
-    const where: Record<string, any> = {
+    const where: Prisma.OrderWhereInput = {
+      ...(scope === "mine" && { userId: auth.user.id }),
       ...(status && { status }),
       ...(urgency && { urgency }),
     };
-
-    if (telegramId) {
-      const user = await prisma.user.findFirst({
-        where: { telegramId: +telegramId },
-      });
-
-      if (!user) {
-        throw new Error("Пользователь не найден");
-      }
-
-      where.userId = user.id;
-    }
 
     const total = await prisma.order.count({ where });
 
@@ -198,12 +169,13 @@ export async function GET(request: NextRequest) {
         orders,
         totalPages: Math.ceil(total / limit),
       }),
+      { headers: sessionHeaders }
     );
   } catch (error) {
     console.error("Ошибка при получении заказов:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

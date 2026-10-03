@@ -4,17 +4,15 @@ import { useState } from "react";
 import { LoadingOverlay, Title } from "@mantine/core";
 
 import { Routes } from "@/config";
-import { useTelegram } from "@/context";
 import { useListQuery } from "@/api/orders/hooks";
 import { BackButton, OrderList } from "@/components";
 
 export default function MyOrders() {
-  const { user } = useTelegram();
   const [page, setPage] = useState(1);
 
   const { data, isPending } = useListQuery({
     page,
-    telegramId: String(user?.id),
+    scope: "mine",
   });
 
   if (isPending) {

@@ -6,14 +6,14 @@ import { Badge, Button, Title, ActionIcon } from "@mantine/core";
 import { FileCheck, Folder, Sparkles, CircleQuestionMark } from "lucide-react";
 
 import { Routes } from "@/config";
-import { useTelegram } from "@/context";
+import { useMiniApp } from "@/context";
 import CapybaraWait from "@/public/images/wait.png";
 
 import { UserRole } from "./generated/prisma/enums";
 
 export default function Home() {
-  const { role } = useTelegram();
-  const isAdmin = role === UserRole.ADMIN;
+  const { user } = useMiniApp();
+  const isAdmin = user?.role === UserRole.ADMIN;
 
   return (
     <div className="min-h-dvh flex flex-col bg-linear-to-b from-teal-50 to-white px-4 py-6">

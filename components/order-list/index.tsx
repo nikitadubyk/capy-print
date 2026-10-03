@@ -52,7 +52,7 @@ export const OrderList = ({ data, page, isAdmin, setPage }: OrderListProps) => {
         acc.filesCount += job.files?.length || 0;
         return acc;
       },
-      { filesCount: 0, copiesCount: 0 },
+      { filesCount: 0, copiesCount: 0 }
     );
 
     return (

@@ -10,7 +10,7 @@ import "./globals.css";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 
-import { TelegramProvider } from "@/context";
+import { MiniAppProvider } from "@/context";
 
 import { DatesProvider } from "./dates-provider";
 import { QueryProvider } from "./query-provider";
@@ -40,7 +40,7 @@ export default function RootLayout({
         <MantineProvider>
           <DatesProvider>
             <QueryProvider>
-              <TelegramProvider>{children}</TelegramProvider>
+              <MiniAppProvider>{children}</MiniAppProvider>
             </QueryProvider>
           </DatesProvider>
         </MantineProvider>

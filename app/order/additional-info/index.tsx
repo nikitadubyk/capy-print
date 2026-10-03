@@ -91,7 +91,7 @@ export const AdditionalInfo = ({ onBack }: AdditionalInfoProps) => {
                           }
                           onChange={(date) =>
                             timeField.onChange(
-                              date ? dayjs(date).toISOString() : "",
+                              date ? dayjs(date).toISOString() : ""
                             )
                           }
                           error={errors.deadlineAt?.message}

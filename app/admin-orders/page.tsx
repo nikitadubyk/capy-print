@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { LoadingOverlay, Title } from "@mantine/core";
 
 import { Routes } from "@/config";
-import { useTelegram } from "@/context";
+import { useMiniApp } from "@/context";
 import { useListQuery } from "@/api/orders/hooks";
 import { OrderList, BackButton } from "@/components";
 
@@ -14,11 +14,12 @@ import { UserRole } from "../generated/prisma/enums";
 export default function AdminOrders() {
   const router = useRouter();
   const [page, setPage] = useState(1);
-  const { role, loading } = useTelegram();
+  const { user, loading } = useMiniApp();
+  const role = user?.role;
 
   const isAdmin = role === UserRole.ADMIN;
 
-  const { data, isPending } = useListQuery({ page });
+  const { data, isPending } = useListQuery({ page, scope: "all" });
 
   useEffect(() => {
     if (!loading && !isAdmin && role) {

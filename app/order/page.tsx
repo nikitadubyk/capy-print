@@ -1,5 +1,7 @@
 "use client";
 
+import { clearClientSession, getSessionHeaders } from "@/api/session";
+
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -8,7 +10,6 @@ import { FormProvider, useForm } from "react-hook-form";
 
 import { Routes } from "@/config";
 import { Urgency } from "@/types";
-import { useTelegram } from "@/context";
 import { BackButton } from "@/components";
 import { useUploadThing } from "@/lib/uploadthing";
 import { useCreateOrder } from "@/api/orders/hooks";
@@ -22,7 +23,6 @@ import { orderSchema, OrderFormData, defaultPrintJob } from "./config";
 
 export default function Order() {
   const router = useRouter();
-  const { user } = useTelegram();
   const [step, setStep] = useState<Step>(Step.CopyDetails);
   const [stage, setStage] = useState<ProcessStage>("idle");
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -30,6 +30,7 @@ export default function Order() {
   const { mutateAsync } = useCreateOrder();
 
   const { startUpload } = useUploadThing("fileUploader", {
+    headers: getSessionHeaders,
     onUploadProgress: (p) => {
       setUploadProgress(p);
     },
@@ -38,7 +39,8 @@ export default function Order() {
       setStage("creating");
     },
     onUploadError: (error) => {
-      console.error("Ошибка загрузки файлов:", error);
+      if (error.code === "FORBIDDEN") clearClientSession();
+      console.error("Ошибка загрузки файлов");
       toast.error("Не удалось загрузить файлы. Попробуйте еще раз.");
       setStage("idle");
     },
@@ -49,7 +51,6 @@ export default function Order() {
     defaultValues: {
       comment: "",
       deadlineAt: "",
-      telegramId: user?.id,
       urgency: Urgency.ASAP,
       printJobs: [defaultPrintJob],
     },
@@ -81,8 +82,9 @@ export default function Order() {
       if (response.id) {
         router.push(Routes.SuccessOrder.replace(":id", String(response.id)));
       }
-    } catch (error) {
-      console.error("Ошибка заказа:", error);
+    } catch {
+      console.error("Ошибка создания заказа");
+      toast.error("Не удалось создать заказ. Попробуйте ещё раз.");
     } finally {
       setStage("idle");
     }

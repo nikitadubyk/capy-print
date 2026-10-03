@@ -1,0 +1,6 @@
+app/generated/prisma/
+next-env.d.ts
+.codex/
+.agents/
+.env*
+.npmrc

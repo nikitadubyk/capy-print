@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.npmrc
+.codex
+.agents
+.env*
+env*.example
+app/generated/prisma
+*.tsbuildinfo
+npm-debug.log*
+docs

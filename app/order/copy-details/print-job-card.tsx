@@ -108,7 +108,7 @@ export const PrintJobCard = ({
             onReject={(files) => console.log("rejected files", files)}
             className={cn(
               "border-2 rounded-xl border-dashed p-4 border-gray-200 bg-gray-50",
-              hasError && "border-red-500 bg-red-50",
+              hasError && "border-red-500 bg-red-50"
             )}
           >
             <div className="flex flex-col gap-2 items-center text-gray-400">

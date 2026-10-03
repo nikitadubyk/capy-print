@@ -1,1 +1,1 @@
-export { useTelegram, TelegramProvider } from "./telegram";
+export { useMiniApp, MiniAppProvider } from "./mini-app";

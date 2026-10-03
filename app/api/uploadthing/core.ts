@@ -2,6 +2,8 @@ import { UploadThingError } from "uploadthing/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
 import { allowedMimeTypes } from "@/config";
+import { requireRole } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 const f = createUploadthing();
 
@@ -12,7 +14,13 @@ export const ourFileRouter = {
     blob: { maxFileSize: "16MB", maxFileCount: 20 },
     image: { maxFileSize: "16MB", maxFileCount: 20 },
   })
-    .middleware(async ({ files }) => {
+    .middleware(async ({ files, req }) => {
+      const auth = await requireRole(req, "USER");
+      if (auth instanceof NextResponse)
+        throw new UploadThingError({
+          code: "FORBIDDEN",
+          message: "Сессия недействительна. Откройте приложение заново.",
+        });
       for (const file of files) {
         if (!allowedMimeTypes.includes(file.type)) {
           throw new UploadThingError({
@@ -22,7 +30,7 @@ export const ourFileRouter = {
         }
       }
 
-      return { uploadedBy: "user" };
+      return { uploadedBy: auth.user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => ({
       uploadedBy: metadata.uploadedBy,

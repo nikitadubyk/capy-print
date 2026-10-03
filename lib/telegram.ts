@@ -52,7 +52,7 @@ export async function sendTelegramMessage({
         chat_id: chatId,
         parse_mode: parseMode,
         ...(replyMarkup && { reply_markup: replyMarkup }),
-      },
+      }
     );
 
     if (!data.ok) {
@@ -93,7 +93,7 @@ export const formatOrderNotification = (order: Order): string => {
         ${job.files
           .map(
             (file, i) =>
-              `${i + 1}. <a href="${file.fileUrl}">${file.fileName}</a>`,
+              `${i + 1}. <a href="${file.fileUrl}">${file.fileName}</a>`
           )
           .join("\n")}
     `;
@@ -114,7 +114,7 @@ export const formatOrderNotification = (order: Order): string => {
 
 export const sendOrderNotification = async (
   order: Order,
-  chatId: string | number,
+  chatId: string | number
 ) => {
   const message = formatOrderNotification(order);
   await sendTelegramMessage({ chatId, text: message });

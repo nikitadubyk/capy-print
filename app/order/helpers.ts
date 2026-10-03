@@ -1,16 +1,25 @@
-import { CreateOrderRequest } from "../api/orders/route";
+import { Urgency } from "@/types";
+import type { CreateOrderRequest } from "../api/orders/route";
 
-import { OrderFormData } from "./config";
+import type { OrderFormData } from "./config";
 
 type PrepareOrderResult =
   | { success: true; data: CreateOrderRequest }
   | { success: false; error: string };
 
-type StartUploadFn = (files: File[]) => Promise<any[] | undefined>;
+type StartUploadFn = (files: File[]) => Promise<
+  | {
+      url: string;
+      name: string;
+      size: number;
+      type: string;
+    }[]
+  | undefined
+>;
 
 export const prepareOrderWithUploads = async (
   data: OrderFormData,
-  startUpload: StartUploadFn,
+  startUpload: StartUploadFn
 ): Promise<PrepareOrderResult> => {
   const filesToUpload: File[] = [];
 
@@ -34,8 +43,10 @@ export const prepareOrderWithUploads = async (
 
     let uploadedIndex = 0;
 
+    const { deadlineAt, ...orderData } = data;
     const preparedData: CreateOrderRequest = {
-      ...data,
+      ...orderData,
+      ...(data.urgency === Urgency.SCHEDULED ? { deadlineAt } : {}),
       printJobs: data.printJobs.map((job) => ({
         ...job,
         files: job.files.map((file) => {

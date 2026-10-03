@@ -9,7 +9,7 @@ datasource db {
 
 model User {
   id           Int      @id @default(autoincrement())
-  telegramId   BigInt   @unique
+  telegramId   BigInt?  @unique
   username     String?
   firstName    String?
   lastName     String?
@@ -20,6 +20,33 @@ model User {
   updatedAt    DateTime @updatedAt
   role         UserRole @default(USER)
   orders       Order[]
+  identities   UserIdentity[]
+}
+
+enum IdentityProvider {
+  TELEGRAM
+  VK
+}
+
+model UserIdentity {
+  id             Int              @id @default(autoincrement())
+  provider       IdentityProvider
+  externalUserId String
+  userId         Int
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions       Session[]
+
+  @@unique([provider, externalUserId])
+  @@index([userId])
+}
+
+model Session {
+  tokenHash  String       @id
+  identityId Int
+  identity   UserIdentity @relation(fields: [identityId], references: [id], onDelete: Cascade)
+  createdAt  DateTime     @default(now())
+
+  @@index([identityId])
 }
 
 model Order {

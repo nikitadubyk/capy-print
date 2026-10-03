@@ -86,7 +86,7 @@ const handleMainMenuCallback = (chatId: number) =>
 const answerCallbackQuery = (callbackQueryId: string) =>
   axios.post(
     `https://api.telegram.org/bot${Config.botToken!}/answerCallbackQuery`,
-    { callback_query_id: callbackQueryId },
+    { callback_query_id: callbackQueryId }
   );
 
 const processMessage = async (message: TelegramMessage) => {

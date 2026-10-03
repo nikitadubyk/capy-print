@@ -19,14 +19,14 @@ export const ordersApi = {
 
   list: async (params: ListRequest) => {
     const { data } = await apiInstance.get<ListResponse>(
-      addParamsToUrl(URL.CREATE_ORDER, params),
+      addParamsToUrl(URL.CREATE_ORDER, params)
     );
     return data;
   },
 
   details: async (id: string) => {
     const { data } = await apiInstance.get<OrderDTO>(
-      addParamsToUrl(URL.ORDER_DETAILS, { id }),
+      addParamsToUrl(URL.ORDER_DETAILS, { id })
     );
     return data;
   },
@@ -34,14 +34,14 @@ export const ordersApi = {
   updateStatus: async (id: string, status: OrderStatus) => {
     const { data } = await apiInstance.patch<OrderDTO>(
       addParamsToUrl(URL.ORDER_DETAILS, { id }),
-      { status },
+      { status }
     );
     return data;
   },
 
   delete: async (id: string) => {
     const { data } = await apiInstance.delete(
-      addParamsToUrl(URL.ORDER_DETAILS, { id }),
+      addParamsToUrl(URL.ORDER_DETAILS, { id })
     );
     return data;
   },

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { OrderStatus } from "@/app/generated/prisma/enums";
 import {
+  orderId,
+  updateOrderSchema,
+  sessionHeaders,
   prisma,
   requireRole,
   sendTelegramMessage,
@@ -10,17 +13,22 @@ import {
 
 export async function GET(request: NextRequest) {
   try {
-    const id = request.nextUrl.searchParams.get("id");
+    const auth = await requireRole(request, "USER");
+    if (auth instanceof NextResponse) return auth;
+    const id = orderId(request.nextUrl.searchParams.get("id"));
 
     if (!id) {
       return NextResponse.json(
         { error: "Неверный ID заказа" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
-    const order = await prisma.order.findUnique({
-      where: { id: +id },
+    const order = await prisma.order.findFirst({
+      where: {
+        id,
+        ...(auth.user.role !== "ADMIN" && { userId: auth.user.id }),
+      },
       include: {
         printJobs: {
           include: {
@@ -43,12 +51,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Заказ не найден" }, { status: 404 });
     }
 
-    return NextResponse.json(serializeBigInt(order));
+    return NextResponse.json(serializeBigInt(order), {
+      headers: sessionHeaders,
+    });
   } catch (error) {
     console.error("Ошибка при получении заказа:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -60,14 +70,21 @@ export async function PATCH(request: NextRequest) {
       return authResult;
     }
 
-    const id = request.nextUrl.searchParams.get("id");
-    const body = await request.json();
-    const { status, comment, urgency, deadlineAt } = body;
+    const id = orderId(request.nextUrl.searchParams.get("id"));
+    const parsed = updateOrderSchema.safeParse(
+      await request.json().catch(() => null)
+    );
+    if (!parsed.success)
+      return NextResponse.json(
+        { error: "Некорректные параметры заказа" },
+        { status: 400, headers: sessionHeaders }
+      );
+    const { status } = parsed.data;
 
     if (!id) {
       return NextResponse.json(
         { error: "Неверный ID заказа" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -87,14 +104,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "Заказ не найден" }, { status: 404 });
     }
 
-    const updateData: Record<string, any> = {};
-
-    if (status) updateData.status = status;
-    if (comment !== undefined) updateData.comment = comment;
-    if (urgency) updateData.urgency = urgency;
-    if (deadlineAt !== undefined) {
-      updateData.deadlineAt = deadlineAt ? new Date(deadlineAt) : null;
-    }
+    const updateData = { ...parsed.data };
 
     const order = await prisma.order.update({
       where: { id: +id },
@@ -134,24 +144,28 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(serializeBigInt(order));
+    return NextResponse.json(serializeBigInt(order), {
+      headers: sessionHeaders,
+    });
   } catch (error) {
     console.error("Ошибка при обновлении заказа:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(request: NextRequest) {
   try {
-    const id = request.nextUrl.searchParams.get("id");
+    const auth = await requireRole(request, "ADMIN");
+    if (auth instanceof NextResponse) return auth;
+    const id = orderId(request.nextUrl.searchParams.get("id"));
 
     if (!id) {
       return NextResponse.json(
         { error: "Неверный ID заказа" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -164,7 +178,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Ошибка при удалении заказа:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

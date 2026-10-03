@@ -1,6 +1,6 @@
 import { DefaultMantineColor } from "@mantine/core";
 
-import { UserRole } from "@/lib";
+import type { UserRole } from "@/lib/auth";
 import { OrderStatus } from "@/app/generated/prisma/enums";
 
 import { Urgency } from "./enums";
@@ -11,10 +11,10 @@ export * from "./titles";
 export interface UserDTO {
   id: number;
   role?: UserRole;
-  username: string;
-  lastName: string;
-  firstName: string;
-  telegramId: bigint;
+  username: string | null;
+  lastName: string | null;
+  firstName: string | null;
+  telegramId: string | null;
 }
 
 export interface OrderFile {

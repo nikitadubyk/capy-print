@@ -20,7 +20,7 @@ const printJobSchema = z.object({
   copies: z.number().min(1, "Минимум 1 копия").max(1000, "Максимум 1000 копий"),
   paperSize: z.enum(
     Object.values(PaperSize) as [string, ...string[]],
-    "Выберите формат бумаги",
+    "Выберите формат бумаги"
   ),
 });
 
@@ -66,7 +66,6 @@ export const orderSchema = z
     comment: z.string().optional(),
     deadlineAt: z.string().optional(),
     urgency: z.enum(Object.values(Urgency), "Выберите срочность"),
-    telegramId: z.number().positive("ID должен быть положительным"),
     printJobs: z.array(printJobSchema).min(1, "Добавьте хотя бы одну работу"),
   })
   .superRefine((data, ctx) => {

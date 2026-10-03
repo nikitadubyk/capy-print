@@ -478,10 +478,6 @@ export type PrintFileUncheckedUpdateManyWithoutPrintJobNestedInput = {
   deleteMany?: Prisma.PrintFileScalarWhereInput | Prisma.PrintFileScalarWhereInput[]
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
-}
-
 export type PrintFileCreateWithoutPrintJobInput = {
   fileUrl: string
   fileName: string

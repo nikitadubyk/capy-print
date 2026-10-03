@@ -5,7 +5,7 @@ export interface ListRequest {
   limit?: number;
   status?: string;
   urgency?: string;
-  telegramId?: string;
+  scope?: "mine" | "all";
 }
 
 export interface ListResponse {

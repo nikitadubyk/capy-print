@@ -9,6 +9,14 @@
 * 🟢 You can import this file directly.
 */
 
+export const IdentityProvider = {
+  TELEGRAM: 'TELEGRAM',
+  VK: 'VK'
+} as const
+
+export type IdentityProvider = (typeof IdentityProvider)[keyof typeof IdentityProvider]
+
+
 export const OrderStatus = {
   PENDING: 'PENDING',
   PROCESSING: 'PROCESSING',

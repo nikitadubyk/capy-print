@@ -16,8 +16,8 @@ import {
   getClientSession,
   subscribeSession,
   updateClientSessionUser,
-} from "@/api/session";
-import { usersApi } from "@/api/users";
+} from "@/store/api/session";
+import { usersApi } from "@/store/api/users";
 import { getMiniAppAdapter } from "@/lib/mini-app";
 import type { MiniAppPlatform } from "@/types/mini-app-auth";
 import type { SessionUser } from "@/types/session";

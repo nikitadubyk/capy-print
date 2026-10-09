@@ -31,6 +31,8 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
+Служебные API-модули находятся в `store/api/`, HTTP-обработчики Next.js — в `app/api/`. Не создавайте корневой каталог `api/` для клиентских запросов или общих типов: Vercel превращает его TypeScript-файлы в отдельные функции, что может превысить лимит 12 функций тарифа Hobby даже после успешного `next build`.
+
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

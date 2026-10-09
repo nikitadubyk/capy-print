@@ -2,12 +2,12 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import axios from "axios";
 import { QueryClient, QueryObserver } from "@tanstack/react-query";
-import { apiInstance } from "@/api/instance";
-import { clearClientSession, establishSession } from "@/api/session";
+import { apiInstance } from "@/store/api/instance";
+import { clearClientSession, establishSession } from "@/store/api/session";
 import {
   saveVkMessagesPreferenceOptions,
   vkMessagesPermissionOptions,
-} from "@/api/vk-messages/queries";
+} from "@/store/api/vk-messages/queries";
 
 test("VK permission query waits for initialization and caches a saved decision only for its owner", async (t) => {
   clearClientSession();

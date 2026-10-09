@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { VK_API } from "@/config/url";
 import { getVkMessagingConfig, vkPeerIdSchema } from "@/config/vk-server";
-import { callVkMessages } from "@/api/vk/server";
-import { VkMessagingError } from "@/api/vk/types";
+import { callVkMessages } from "@/store/api/vk/server";
+import { VkMessagingError } from "@/store/api/vk/types";
 
 export { getVkMessagingConfig } from "@/config/vk-server";
-export { VkMessagingError } from "@/api/vk/types";
+export { VkMessagingError } from "@/store/api/vk/types";
 
 const positiveId = z.coerce
   .number()

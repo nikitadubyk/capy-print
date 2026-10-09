@@ -5,10 +5,10 @@ import { Dispatch, SetStateAction } from "react";
 import { Table, Pagination, Select, Button } from "@mantine/core";
 
 import { Routes } from "@/config";
-import { ListResponse } from "@/api/orders/types";
+import { ListResponse } from "@/store/api/orders/types";
 import { Urgency, UrgencyViewTitle } from "@/types";
 import { OrderStatus } from "@/app/generated/prisma/enums";
-import { useDeleteOrder, useUpdateStatus } from "@/api/orders/hooks";
+import { useDeleteOrder, useUpdateStatus } from "@/store/api/orders/hooks";
 
 import { OrderStatusBadge } from "../order-status-badge";
 

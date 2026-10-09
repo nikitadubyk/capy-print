@@ -6,9 +6,9 @@ import {
   establishSession,
   getClientSession,
   updateClientSessionUser,
-} from "@/api/session";
-import { apiInstance } from "@/api/instance";
-import { usersApi } from "@/api/users";
+} from "@/store/api/session";
+import { apiInstance } from "@/store/api/instance";
+import { usersApi } from "@/store/api/users";
 
 test("profile loading saves via Bearer before updating session and ignores revoked sessions", async (t) => {
   clearClientSession();

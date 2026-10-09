@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { LoadingOverlay } from "@mantine/core";
 
 import { Routes } from "@/config";
-import { useDetailsQuery } from "@/api/orders/hooks";
+import { useDetailsQuery } from "@/store/api/orders/hooks";
 import { BackButton, OrderDetails } from "@/components";
 
 export default function MyOrder() {

@@ -7,7 +7,7 @@ import {
   getSessionHeaders,
   getClientSession,
   subscribeSession,
-} from "@/api/session";
+} from "@/store/api/session";
 
 test("Axios startup shares a request, uses prefixed Bearer and notifies React without DOM events", async (t) => {
   clearClientSession();

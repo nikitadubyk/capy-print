@@ -6,7 +6,7 @@ import { LoadingOverlay, Title } from "@mantine/core";
 
 import { Routes } from "@/config";
 import { useMiniApp } from "@/context";
-import { useListQuery } from "@/api/orders/hooks";
+import { useListQuery } from "@/store/api/orders/hooks";
 import { OrderList, BackButton } from "@/components";
 
 import { UserRole } from "../generated/prisma/enums";

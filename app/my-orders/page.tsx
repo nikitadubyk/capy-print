@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Alert, Button, LoadingOverlay, Title } from "@mantine/core";
 
 import { Routes } from "@/config";
-import { useListQuery } from "@/api/orders/hooks";
+import { useListQuery } from "@/store/api/orders/hooks";
 import { BackButton, OrderList } from "@/components";
 
 export default function MyOrders() {

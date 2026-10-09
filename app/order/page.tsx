@@ -1,6 +1,6 @@
 "use client";
 
-import { clearClientSession, getSessionHeaders } from "@/api/session";
+import { clearClientSession, getSessionHeaders } from "@/store/api/session";
 
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -12,7 +12,7 @@ import { Routes } from "@/config";
 import { Urgency } from "@/types";
 import { BackButton } from "@/components";
 import { useUploadThing } from "@/lib/uploadthing";
-import { useCreateOrder } from "@/api/orders/hooks";
+import { useCreateOrder } from "@/store/api/orders/hooks";
 
 import { Step, ProcessStage } from "./types";
 import { CopyDetails } from "./copy-details";

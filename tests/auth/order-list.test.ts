@@ -4,9 +4,12 @@ import axios from "axios";
 import { NextRequest } from "next/server";
 import { QueryClient, QueryObserver } from "@tanstack/react-query";
 import { installDatabaseStub } from "./database-stub";
-import { clearClientSession, establishSession } from "@/api/session";
-import { apiInstance } from "@/api/instance";
-import { createOrderOptions, orderListOptions } from "@/api/orders/queries";
+import { clearClientSession, establishSession } from "@/store/api/session";
+import { apiInstance } from "@/store/api/instance";
+import {
+  createOrderOptions,
+  orderListOptions,
+} from "@/store/api/orders/queries";
 import { Urgency } from "@/types";
 
 test("VK creation refreshes the cached My orders list using the same Bearer owner", async (t) => {

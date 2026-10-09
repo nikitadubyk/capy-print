@@ -64,9 +64,9 @@ VK_ADMIN_PEER_IDS=123456789,987654321
 
 `lib/notifications.ts` формирует один текст статуса в двух представлениях: Telegram HTML и обычный VK-текст. Получатель VK выбирается по `UserIdentity.externalUserId`, а не внутреннему `User.id`. Для старых Telegram-аккаунтов сохранён fallback на `User.telegramId`.
 
-`api/vk/server.ts` содержит серверный Axios transport с токеном сообщества в Authorization header. Адреса, версия `5.199` и таймаут находятся в `config/url.ts`, секретное окружение — в `config/vk-server.ts`. `lib/vk.ts` проверяет параметры и ответы, `lib/notifications.ts` выбирает отдельную функцию отправки VK или Telegram, её типы вынесены в `lib/types.ts`. Для `messages.send` передаются положительный `user_id` и `random_id`. Ошибки API могут приходить при HTTP 200 и обрабатываются отдельно. В логах нет Axios config, токенов или полных ответов VK.
+`store/api/vk/server.ts` содержит серверный Axios transport с токеном сообщества в Authorization header. Адреса, версия `5.199` и таймаут находятся в `config/url.ts`, секретное окружение — в `config/vk-server.ts`. `lib/vk.ts` проверяет параметры и ответы, `lib/notifications.ts` выбирает отдельную функцию отправки VK или Telegram, её типы вынесены в `lib/types.ts`. Для `messages.send` передаются положительный `user_id` и `random_id`. Ошибки API могут приходить при HTTP 200 и обрабатываются отдельно. В логах нет Axios config, токенов или полных ответов VK.
 
-Клиентские запросы находятся в `api/vk-messages/index.ts`, query/mutation options и ключи кеша — в `queries.ts`, React hooks — в `hooks.ts`. После сохранения выбора mutation обновляет только кеш текущего пользователя. Тексты диалога вынесены в `config/vk-messages.ts`.
+Клиентские запросы находятся в `store/api/vk-messages/index.ts`, query/mutation options и ключи кеша — в `queries.ts`, React hooks — в `hooks.ts`. После сохранения выбора mutation обновляет только кеш текущего пользователя. Тексты диалога вынесены в `config/vk-messages.ts`.
 
 PATCH сохраняет заказ до отправки. При конкурентных изменениях проверяет прежние `status` и `updatedAt`; проигравший запрос получает 409 и не отправляет сообщение. `random_id` стабилен для одного сохранённого перехода и меняется при новом переходе. Успешный API-ответ означает принятие сообщения VK, а не прочтение.
 

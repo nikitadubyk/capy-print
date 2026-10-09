@@ -6,7 +6,7 @@ import { Button, Modal, Stack, Text } from "@mantine/core";
 import {
   useVkMessagesPermissionQuery,
   useSaveVkMessagesPreference,
-} from "@/api/vk-messages/hooks";
+} from "@/store/api/vk-messages/hooks";
 import { vkMessagesPermissionTexts } from "@/config/vk-messages";
 import { useMiniApp } from "@/context";
 import { vkAdapter } from "@/lib/mini-app/vk";

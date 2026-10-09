@@ -1,135 +1,64 @@
-import dayjs from "dayjs";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
+import { TELEGRAM_API } from "@/config/url";
+import {
+  notificationTransportCodes,
+  telegramFailureReasons,
+} from "@/config/notifications";
+import type { SendMessageParams, TelegramResponse } from "./types";
 
-import { Config } from "@/config";
-import { Urgency, Order, PaperSizeTitle } from "@/types";
+const getApiErrorDetails = (data: TelegramResponse | undefined) => ({
+  apiErrorCode: typeof data?.error_code === "number" ? data.error_code : null,
+  reason:
+    typeof data?.description === "string"
+      ? (telegramFailureReasons.find(({ pattern }) =>
+          pattern.test(data.description!)
+        )?.reason ?? "api_error")
+      : "unknown",
+});
 
-interface ReplyMarkup {
-  inline_keyboard?: Array<
-    Array<{
-      text: string;
-      callback_data?: string;
-      url?: string;
-      web_app?: {
-        url: string;
-      };
-    }>
-  >;
-}
-
-interface SendMessageParams {
-  text: string;
-  chatId: string | number;
-  replyMarkup?: ReplyMarkup;
-  parseMode?: "HTML" | "Markdown" | "MarkdownV2";
-}
-
-interface FileToSend {
-  fileUrl: string;
-  fileName: string;
-  mimeType?: string;
-}
-
-interface TelegramResponse<T = any> {
-  ok: boolean;
-  result?: T;
-  description?: string;
-}
-
-const format = "DD.MM.YYYY HH:mm";
-
-export async function sendTelegramMessage({
+export const sendTelegramMessage = async ({
   text,
   chatId,
   replyMarkup,
   parseMode = "HTML",
-}: SendMessageParams) {
+}: SendMessageParams) => {
+  const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
+  if (!token || chatId == null || !String(chatId).trim()) {
+    console.error("Ошибка при отправке в Telegram:", { code: "config" });
+    return false;
+  }
   try {
-    const { data }: AxiosResponse<TelegramResponse> = await axios.post(
-      `https://api.telegram.org/bot${Config.botToken}/sendMessage`,
+    const { data } = await axios.post<TelegramResponse>(
+      `${TELEGRAM_API.BASE_URL}/bot${token}/sendMessage`,
       {
         text,
         chat_id: chatId,
         parse_mode: parseMode,
         ...(replyMarkup && { reply_markup: replyMarkup }),
-      }
+      },
+      { timeout: TELEGRAM_API.TIMEOUT }
     );
-
     if (!data.ok) {
-      console.error("Ошибка отправки Telegram сообщения:", data.description);
+      console.error(
+        "Ошибка отправки Telegram сообщения:",
+        getApiErrorDetails(data)
+      );
       return false;
     }
-
     return true;
   } catch (error) {
-    console.error("Ошибка при отправке в Telegram:", error);
+    const transportError = axios.isAxiosError<TelegramResponse>(error)
+      ? error
+      : null;
+    console.error("Ошибка при отправке в Telegram:", {
+      status: transportError?.response?.status ?? null,
+      code:
+        transportError?.code &&
+        notificationTransportCodes.has(transportError.code)
+          ? transportError.code
+          : "unknown",
+      ...getApiErrorDetails(transportError?.response?.data),
+    });
     return false;
   }
-}
-
-export const formatOrderNotification = (order: Order): string => {
-  const urgencyText =
-    order.urgency === Urgency.ASAP ? "🔴 СРОЧНО" : "📅 Запланирован";
-
-  let message = `
-    <b>Новый заказ #${order.id}</b>
-
-    ${urgencyText}
-    👤 Клиент: ${order.user.firstName} ${order.user.lastName || ""}
-    📱 Username: @${order.user.username || "не указан"}
-
-    📋 <b>Детали заказа:</b>
-  `;
-
-  order.printJobs.forEach((job, index) => {
-    message += `
-      <b>Набор ${index + 1}:</b>
-      - Копий: ${job.copies}
-      - Цветная: ${job.isColor ? "Да" : "Нет"}
-      - Размер: ${PaperSizeTitle[job.paperSize || ""]}
-      - Двухсторонняя печать: ${job.duplex ? "Да" : "Нет"}
-      - Файлов: ${job.files.length}
-      📎 <b>Файлы:</b>
-        ${job.files
-          .map(
-            (file, i) =>
-              `${i + 1}. <a href="${file.fileUrl}">${file.fileName}</a>`
-          )
-          .join("\n")}
-    `;
-  });
-
-  if (order.comment) {
-    message += `\n💬 Комментарий: ${order.comment}`;
-  }
-
-  if (order.deadlineAt) {
-    message += `\n⏰ Дедлайн: ${dayjs(order.deadlineAt).format(format)}`;
-  }
-
-  message += `\n\n📅 Создан: ${dayjs(order.createdAt).format(format)}`;
-
-  return message;
-};
-
-export const sendOrderNotification = async (
-  order: Order,
-  chatId: string | number
-) => {
-  const message = formatOrderNotification(order);
-  await sendTelegramMessage({ chatId, text: message });
-
-  const allFiles: FileToSend[] = [];
-
-  order.printJobs.forEach((job) => {
-    job.files.forEach((file) => {
-      allFiles.push({
-        fileUrl: file.fileUrl,
-        fileName: file.fileName,
-        mimeType: file.mimeType,
-      });
-    });
-  });
-
-  return true;
 };

@@ -11,6 +11,7 @@ import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 
 import { MiniAppProvider } from "@/context";
+import { VkMessagesPermission } from "@/components/vk-messages-permission";
 
 import { DatesProvider } from "./dates-provider";
 import { QueryProvider } from "./query-provider";
@@ -40,7 +41,10 @@ export default function RootLayout({
         <MantineProvider>
           <DatesProvider>
             <QueryProvider>
-              <MiniAppProvider>{children}</MiniAppProvider>
+              <MiniAppProvider>
+                {children}
+                <VkMessagesPermission />
+              </MiniAppProvider>
             </QueryProvider>
           </DatesProvider>
         </MantineProvider>

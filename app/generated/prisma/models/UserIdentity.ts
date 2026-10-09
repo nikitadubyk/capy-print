@@ -40,6 +40,7 @@ export type UserIdentityMinAggregateOutputType = {
   id: number | null
   provider: $Enums.IdentityProvider | null
   externalUserId: string | null
+  vkMessagesEnabled: boolean | null
   userId: number | null
 }
 
@@ -47,6 +48,7 @@ export type UserIdentityMaxAggregateOutputType = {
   id: number | null
   provider: $Enums.IdentityProvider | null
   externalUserId: string | null
+  vkMessagesEnabled: boolean | null
   userId: number | null
 }
 
@@ -54,6 +56,7 @@ export type UserIdentityCountAggregateOutputType = {
   id: number
   provider: number
   externalUserId: number
+  vkMessagesEnabled: number
   userId: number
   _all: number
 }
@@ -73,6 +76,7 @@ export type UserIdentityMinAggregateInputType = {
   id?: true
   provider?: true
   externalUserId?: true
+  vkMessagesEnabled?: true
   userId?: true
 }
 
@@ -80,6 +84,7 @@ export type UserIdentityMaxAggregateInputType = {
   id?: true
   provider?: true
   externalUserId?: true
+  vkMessagesEnabled?: true
   userId?: true
 }
 
@@ -87,6 +92,7 @@ export type UserIdentityCountAggregateInputType = {
   id?: true
   provider?: true
   externalUserId?: true
+  vkMessagesEnabled?: true
   userId?: true
   _all?: true
 }
@@ -181,6 +187,7 @@ export type UserIdentityGroupByOutputType = {
   id: number
   provider: $Enums.IdentityProvider
   externalUserId: string
+  vkMessagesEnabled: boolean | null
   userId: number
   _count: UserIdentityCountAggregateOutputType | null
   _avg: UserIdentityAvgAggregateOutputType | null
@@ -211,6 +218,7 @@ export type UserIdentityWhereInput = {
   id?: Prisma.IntFilter<"UserIdentity"> | number
   provider?: Prisma.EnumIdentityProviderFilter<"UserIdentity"> | $Enums.IdentityProvider
   externalUserId?: Prisma.StringFilter<"UserIdentity"> | string
+  vkMessagesEnabled?: Prisma.BoolNullableFilter<"UserIdentity"> | boolean | null
   userId?: Prisma.IntFilter<"UserIdentity"> | number
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   sessions?: Prisma.SessionListRelationFilter
@@ -220,6 +228,7 @@ export type UserIdentityOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   externalUserId?: Prisma.SortOrder
+  vkMessagesEnabled?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
@@ -233,6 +242,7 @@ export type UserIdentityWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserIdentityWhereInput | Prisma.UserIdentityWhereInput[]
   provider?: Prisma.EnumIdentityProviderFilter<"UserIdentity"> | $Enums.IdentityProvider
   externalUserId?: Prisma.StringFilter<"UserIdentity"> | string
+  vkMessagesEnabled?: Prisma.BoolNullableFilter<"UserIdentity"> | boolean | null
   userId?: Prisma.IntFilter<"UserIdentity"> | number
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   sessions?: Prisma.SessionListRelationFilter
@@ -242,6 +252,7 @@ export type UserIdentityOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   externalUserId?: Prisma.SortOrder
+  vkMessagesEnabled?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   _count?: Prisma.UserIdentityCountOrderByAggregateInput
   _avg?: Prisma.UserIdentityAvgOrderByAggregateInput
@@ -257,12 +268,14 @@ export type UserIdentityScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"UserIdentity"> | number
   provider?: Prisma.EnumIdentityProviderWithAggregatesFilter<"UserIdentity"> | $Enums.IdentityProvider
   externalUserId?: Prisma.StringWithAggregatesFilter<"UserIdentity"> | string
+  vkMessagesEnabled?: Prisma.BoolNullableWithAggregatesFilter<"UserIdentity"> | boolean | null
   userId?: Prisma.IntWithAggregatesFilter<"UserIdentity"> | number
 }
 
 export type UserIdentityCreateInput = {
   provider: $Enums.IdentityProvider
   externalUserId: string
+  vkMessagesEnabled?: boolean | null
   user: Prisma.UserCreateNestedOneWithoutIdentitiesInput
   sessions?: Prisma.SessionCreateNestedManyWithoutIdentityInput
 }
@@ -271,6 +284,7 @@ export type UserIdentityUncheckedCreateInput = {
   id?: number
   provider: $Enums.IdentityProvider
   externalUserId: string
+  vkMessagesEnabled?: boolean | null
   userId: number
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutIdentityInput
 }
@@ -278,6 +292,7 @@ export type UserIdentityUncheckedCreateInput = {
 export type UserIdentityUpdateInput = {
   provider?: Prisma.EnumIdentityProviderFieldUpdateOperationsInput | $Enums.IdentityProvider
   externalUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  vkMessagesEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   user?: Prisma.UserUpdateOneRequiredWithoutIdentitiesNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutIdentityNestedInput
 }
@@ -286,6 +301,7 @@ export type UserIdentityUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   provider?: Prisma.EnumIdentityProviderFieldUpdateOperationsInput | $Enums.IdentityProvider
   externalUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  vkMessagesEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutIdentityNestedInput
 }
@@ -294,18 +310,21 @@ export type UserIdentityCreateManyInput = {
   id?: number
   provider: $Enums.IdentityProvider
   externalUserId: string
+  vkMessagesEnabled?: boolean | null
   userId: number
 }
 
 export type UserIdentityUpdateManyMutationInput = {
   provider?: Prisma.EnumIdentityProviderFieldUpdateOperationsInput | $Enums.IdentityProvider
   externalUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  vkMessagesEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
 
 export type UserIdentityUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   provider?: Prisma.EnumIdentityProviderFieldUpdateOperationsInput | $Enums.IdentityProvider
   externalUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  vkMessagesEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -328,6 +347,7 @@ export type UserIdentityCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   externalUserId?: Prisma.SortOrder
+  vkMessagesEnabled?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -340,6 +360,7 @@ export type UserIdentityMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   externalUserId?: Prisma.SortOrder
+  vkMessagesEnabled?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -347,6 +368,7 @@ export type UserIdentityMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   externalUserId?: Prisma.SortOrder
+  vkMessagesEnabled?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -410,6 +432,10 @@ export type StringFieldUpdateOperationsInput = {
   set?: string
 }
 
+export type NullableBoolFieldUpdateOperationsInput = {
+  set?: boolean | null
+}
+
 export type UserIdentityCreateNestedOneWithoutSessionsInput = {
   create?: Prisma.XOR<Prisma.UserIdentityCreateWithoutSessionsInput, Prisma.UserIdentityUncheckedCreateWithoutSessionsInput>
   connectOrCreate?: Prisma.UserIdentityCreateOrConnectWithoutSessionsInput
@@ -427,6 +453,7 @@ export type UserIdentityUpdateOneRequiredWithoutSessionsNestedInput = {
 export type UserIdentityCreateWithoutUserInput = {
   provider: $Enums.IdentityProvider
   externalUserId: string
+  vkMessagesEnabled?: boolean | null
   sessions?: Prisma.SessionCreateNestedManyWithoutIdentityInput
 }
 
@@ -434,6 +461,7 @@ export type UserIdentityUncheckedCreateWithoutUserInput = {
   id?: number
   provider: $Enums.IdentityProvider
   externalUserId: string
+  vkMessagesEnabled?: boolean | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutIdentityInput
 }
 
@@ -470,12 +498,14 @@ export type UserIdentityScalarWhereInput = {
   id?: Prisma.IntFilter<"UserIdentity"> | number
   provider?: Prisma.EnumIdentityProviderFilter<"UserIdentity"> | $Enums.IdentityProvider
   externalUserId?: Prisma.StringFilter<"UserIdentity"> | string
+  vkMessagesEnabled?: Prisma.BoolNullableFilter<"UserIdentity"> | boolean | null
   userId?: Prisma.IntFilter<"UserIdentity"> | number
 }
 
 export type UserIdentityCreateWithoutSessionsInput = {
   provider: $Enums.IdentityProvider
   externalUserId: string
+  vkMessagesEnabled?: boolean | null
   user: Prisma.UserCreateNestedOneWithoutIdentitiesInput
 }
 
@@ -483,6 +513,7 @@ export type UserIdentityUncheckedCreateWithoutSessionsInput = {
   id?: number
   provider: $Enums.IdentityProvider
   externalUserId: string
+  vkMessagesEnabled?: boolean | null
   userId: number
 }
 
@@ -505,6 +536,7 @@ export type UserIdentityUpdateToOneWithWhereWithoutSessionsInput = {
 export type UserIdentityUpdateWithoutSessionsInput = {
   provider?: Prisma.EnumIdentityProviderFieldUpdateOperationsInput | $Enums.IdentityProvider
   externalUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  vkMessagesEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   user?: Prisma.UserUpdateOneRequiredWithoutIdentitiesNestedInput
 }
 
@@ -512,6 +544,7 @@ export type UserIdentityUncheckedUpdateWithoutSessionsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   provider?: Prisma.EnumIdentityProviderFieldUpdateOperationsInput | $Enums.IdentityProvider
   externalUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  vkMessagesEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -519,11 +552,13 @@ export type UserIdentityCreateManyUserInput = {
   id?: number
   provider: $Enums.IdentityProvider
   externalUserId: string
+  vkMessagesEnabled?: boolean | null
 }
 
 export type UserIdentityUpdateWithoutUserInput = {
   provider?: Prisma.EnumIdentityProviderFieldUpdateOperationsInput | $Enums.IdentityProvider
   externalUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  vkMessagesEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   sessions?: Prisma.SessionUpdateManyWithoutIdentityNestedInput
 }
 
@@ -531,6 +566,7 @@ export type UserIdentityUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   provider?: Prisma.EnumIdentityProviderFieldUpdateOperationsInput | $Enums.IdentityProvider
   externalUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  vkMessagesEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutIdentityNestedInput
 }
 
@@ -538,6 +574,7 @@ export type UserIdentityUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   provider?: Prisma.EnumIdentityProviderFieldUpdateOperationsInput | $Enums.IdentityProvider
   externalUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  vkMessagesEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
 
 
@@ -575,6 +612,7 @@ export type UserIdentitySelect<ExtArgs extends runtime.Types.Extensions.Internal
   id?: boolean
   provider?: boolean
   externalUserId?: boolean
+  vkMessagesEnabled?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   sessions?: boolean | Prisma.UserIdentity$sessionsArgs<ExtArgs>
@@ -585,6 +623,7 @@ export type UserIdentitySelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   provider?: boolean
   externalUserId?: boolean
+  vkMessagesEnabled?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userIdentity"]>
@@ -593,6 +632,7 @@ export type UserIdentitySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   provider?: boolean
   externalUserId?: boolean
+  vkMessagesEnabled?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userIdentity"]>
@@ -601,10 +641,11 @@ export type UserIdentitySelectScalar = {
   id?: boolean
   provider?: boolean
   externalUserId?: boolean
+  vkMessagesEnabled?: boolean
   userId?: boolean
 }
 
-export type UserIdentityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "provider" | "externalUserId" | "userId", ExtArgs["result"]["userIdentity"]>
+export type UserIdentityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "provider" | "externalUserId" | "vkMessagesEnabled" | "userId", ExtArgs["result"]["userIdentity"]>
 export type UserIdentityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   sessions?: boolean | Prisma.UserIdentity$sessionsArgs<ExtArgs>
@@ -627,6 +668,7 @@ export type $UserIdentityPayload<ExtArgs extends runtime.Types.Extensions.Intern
     id: number
     provider: $Enums.IdentityProvider
     externalUserId: string
+    vkMessagesEnabled: boolean | null
     userId: number
   }, ExtArgs["result"]["userIdentity"]>
   composites: {}
@@ -1056,6 +1098,7 @@ export interface UserIdentityFieldRefs {
   readonly id: Prisma.FieldRef<"UserIdentity", 'Int'>
   readonly provider: Prisma.FieldRef<"UserIdentity", 'IdentityProvider'>
   readonly externalUserId: Prisma.FieldRef<"UserIdentity", 'String'>
+  readonly vkMessagesEnabled: Prisma.FieldRef<"UserIdentity", 'Boolean'>
   readonly userId: Prisma.FieldRef<"UserIdentity", 'Int'>
 }
     

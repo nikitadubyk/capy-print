@@ -15,7 +15,9 @@ import {
   establishSession,
   getClientSession,
   subscribeSession,
+  updateClientSessionUser,
 } from "@/api/session";
+import { usersApi } from "@/api/users";
 import { getMiniAppAdapter } from "@/lib/mini-app";
 import type { MiniAppPlatform } from "@/types/mini-app-auth";
 import type { SessionUser } from "@/types/session";
@@ -35,7 +37,7 @@ const initialState = {
   initialized: false,
 };
 
-export function MiniAppProvider({ children }: PropsWithChildren) {
+export const MiniAppProvider = ({ children }: PropsWithChildren) => {
   const session = useSyncExternalStore(
     subscribeSession,
     getClientSession,
@@ -51,11 +53,21 @@ export function MiniAppProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     let active = true;
-    async function initialize() {
+    const initialize = async () => {
       try {
         const adapter = await getMiniAppAdapter(window.location.search);
         const rawLaunchData = await adapter.initialize();
-        await establishSession(adapter.platform, rawLaunchData);
+        const { token } = await establishSession(
+          adapter.platform,
+          rawLaunchData
+        );
+        if (!active) return;
+        if (adapter.getProfile) {
+          const profile = await adapter.getProfile();
+          if (!active) return;
+          const user = await usersApi.updateVkProfile(profile);
+          updateClientSessionUser(user, token);
+        }
         if (active)
           setState({ loading: false, error: null, initialized: true });
       } catch (error) {
@@ -69,7 +81,7 @@ export function MiniAppProvider({ children }: PropsWithChildren) {
                 : "Не удалось войти. Попробуйте ещё раз.",
           }));
       }
-    }
+    };
     void initialize();
     return () => {
       active = false;
@@ -110,11 +122,11 @@ export function MiniAppProvider({ children }: PropsWithChildren) {
       )}
     </MiniAppContext.Provider>
   );
-}
+};
 
-export function useMiniApp() {
+export const useMiniApp = () => {
   const context = useContext(MiniAppContext);
   if (!context)
     throw new Error("useMiniApp должен использоваться внутри MiniAppProvider");
   return context;
-}
+};

@@ -30,6 +30,7 @@ test("Axios startup shares a request, uses prefixed Bearer and notifies React wi
     async function (this: Axios, config: any) {
       assert.equal(this.defaults.baseURL, "/api/auth/");
       assert.equal(this.defaults.withCredentials, false);
+      assert.equal(this.defaults.timeout, 10_000);
       assert.equal(config.url, "session");
       assert.equal(config.method, "post");
       assert.equal(config.headers.Authorization, "vk test-only-launch-data");

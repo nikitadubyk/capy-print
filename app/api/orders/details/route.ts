@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { OrderStatus } from "@/app/generated/prisma/enums";
+import { orderUserSelect } from "@/lib/customer";
+import { sendCustomerStatusNotification } from "@/lib/notifications";
 import {
   orderId,
   updateOrderSchema,
   sessionHeaders,
   prisma,
   requireRole,
-  sendTelegramMessage,
   serializeBigInt,
 } from "@/lib";
 
-export async function GET(request: NextRequest) {
+export const GET = async (request: NextRequest) => {
   try {
     const auth = await requireRole(request, "USER");
     if (auth instanceof NextResponse) return auth;
@@ -36,13 +36,7 @@ export async function GET(request: NextRequest) {
           },
         },
         user: {
-          select: {
-            id: true,
-            username: true,
-            lastName: true,
-            firstName: true,
-            telegramId: true,
-          },
+          select: orderUserSelect,
         },
       },
     });
@@ -61,9 +55,9 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};
 
-export async function PATCH(request: NextRequest) {
+export const PATCH = async (request: NextRequest) => {
   try {
     const authResult = await requireRole(request, "ADMIN");
     if (authResult instanceof NextResponse) {
@@ -90,14 +84,7 @@ export async function PATCH(request: NextRequest) {
 
     const currentOrder = await prisma.order.findUnique({
       where: { id: +id },
-      include: {
-        user: {
-          select: {
-            telegramId: true,
-            firstName: true,
-          },
-        },
-      },
+      select: { status: true, updatedAt: true },
     });
 
     if (!currentOrder) {
@@ -107,7 +94,14 @@ export async function PATCH(request: NextRequest) {
     const updateData = { ...parsed.data };
 
     const order = await prisma.order.update({
-      where: { id: +id },
+      // Only one competing status transition can update this version.
+      where: {
+        id: +id,
+        ...(status && {
+          status: currentOrder.status,
+          updatedAt: currentOrder.updatedAt,
+        }),
+      },
       data: updateData,
       include: {
         printJobs: {
@@ -116,47 +110,38 @@ export async function PATCH(request: NextRequest) {
           },
         },
         user: {
-          select: {
-            id: true,
-            telegramId: true,
-            username: true,
-            firstName: true,
-            lastName: true,
-          },
+          select: orderUserSelect,
         },
       },
     });
 
     if (status && status !== currentOrder.status) {
-      const statusMessages = {
-        [OrderStatus.CANCELLED]: `❌ <b>Ваш заказ #${id} отменен</b>\n\n`,
-        [OrderStatus.COMPLETED]: `✅ <b>Ваш заказ #${id} готов!</b>\n\nМожете забрать его по адресу: Изотова 7 (Центральный рынок).`,
-        PRINTING: `🖨️ <b>Ваш заказ #${id} принят в работу!</b>\n\nМы начали печатать ваши документы. Как только заказ будет готов, вы получите уведомление.`,
-      };
-
-      const message = statusMessages[status as keyof typeof statusMessages];
-
-      if (message && order.user.telegramId) {
-        await sendTelegramMessage({
-          text: message,
-          chatId: Number(order.user.telegramId),
-        });
-      }
+      await sendCustomerStatusNotification(order);
     }
 
     return NextResponse.json(serializeBigInt(order), {
       headers: sessionHeaders,
     });
   } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "P2025"
+    )
+      return NextResponse.json(
+        { error: "Заказ уже изменён. Обновите страницу и попробуйте снова." },
+        { status: 409, headers: sessionHeaders }
+      );
     console.error("Ошибка при обновлении заказа:", error);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
       { status: 500 }
     );
   }
-}
+};
 
-export async function DELETE(request: NextRequest) {
+export const DELETE = async (request: NextRequest) => {
   try {
     const auth = await requireRole(request, "ADMIN");
     if (auth instanceof NextResponse) return auth;
@@ -181,4 +166,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

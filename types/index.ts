@@ -15,6 +15,10 @@ export interface UserDTO {
   lastName: string | null;
   firstName: string | null;
   telegramId: string | null;
+  identities?: Array<{
+    provider: "TELEGRAM" | "VK";
+    externalUserId: string;
+  }>;
 }
 
 export interface OrderFile {

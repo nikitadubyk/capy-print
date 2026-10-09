@@ -1,11 +1,14 @@
 import type { MiniAppAdapter } from "./types";
 
-export async function getMiniAppAdapter(
+export const getMiniAppAdapter = async (
   search: string
-): Promise<MiniAppAdapter> {
+): Promise<MiniAppAdapter> => {
   // This only selects the SDK. The server verifies the launch data and identity.
   if (new URLSearchParams(search).has("vk_app_id")) {
     return (await import("./vk")).vkAdapter;
   }
-  return (await import("./telegram")).telegramAdapter;
-}
+  const { telegramAdapter, isTelegramMiniApp } = await import("./telegram");
+  if (isTelegramMiniApp()) return telegramAdapter;
+  const { vkAdapter, isVkMiniApp } = await import("./vk");
+  return isVkMiniApp() ? vkAdapter : telegramAdapter;
+};

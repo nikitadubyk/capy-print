@@ -8,17 +8,17 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  telegramId   BigInt?  @unique
+  id           Int            @id @default(autoincrement())
+  telegramId   BigInt?        @unique
   username     String?
   firstName    String?
   lastName     String?
   languageCode String?
-  isPremium    Boolean  @default(false)
+  isPremium    Boolean        @default(false)
   photoUrl     String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  role         UserRole @default(USER)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  role         UserRole       @default(USER)
   orders       Order[]
   identities   UserIdentity[]
 }
@@ -29,12 +29,13 @@ enum IdentityProvider {
 }
 
 model UserIdentity {
-  id             Int              @id @default(autoincrement())
-  provider       IdentityProvider
-  externalUserId String
-  userId         Int
-  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sessions       Session[]
+  id                Int              @id @default(autoincrement())
+  provider          IdentityProvider
+  externalUserId    String
+  vkMessagesEnabled Boolean?
+  userId            Int
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions          Session[]
 
   @@unique([provider, externalUserId])
   @@index([userId])

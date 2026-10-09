@@ -913,6 +913,7 @@ export const UserIdentityScalarFieldEnum = {
   id: 'id',
   provider: 'provider',
   externalUserId: 'externalUserId',
+  vkMessagesEnabled: 'vkMessagesEnabled',
   userId: 'userId'
 } as const
 

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { Config } from "@/config";
 import type { Prisma } from "@/app/generated/prisma/client";
 import { Order, PaperSize, Urgency } from "@/types";
+import { orderUserSelect } from "@/lib/customer";
 import {
   createOrderSchema,
   listOrdersSchema,
@@ -35,7 +35,7 @@ export interface CreateOrderRequest {
   printJobs: PrintJobInput[];
 }
 
-export async function POST(request: NextRequest) {
+export const POST = async (request: NextRequest) => {
   try {
     const authResult = await requireRole(request, "USER");
     if (authResult instanceof NextResponse) {
@@ -84,18 +84,12 @@ export async function POST(request: NextRequest) {
           },
         },
         user: {
-          select: {
-            id: true,
-            username: true,
-            lastName: true,
-            firstName: true,
-            telegramId: true,
-          },
+          select: orderUserSelect,
         },
       },
     });
 
-    await sendOrderNotification(order as Order, Config.adminChatId);
+    await sendOrderNotification(order as Order);
 
     return NextResponse.json(serializeBigInt(order), {
       status: 201,
@@ -108,9 +102,9 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};
 
-export async function GET(request: NextRequest) {
+export const GET = async (request: NextRequest) => {
   try {
     const auth = await requireRole(request, "USER");
     if (auth instanceof NextResponse) return auth;
@@ -147,13 +141,7 @@ export async function GET(request: NextRequest) {
           },
         },
         user: {
-          select: {
-            id: true,
-            username: true,
-            lastName: true,
-            firstName: true,
-            telegramId: true,
-          },
+          select: orderUserSelect,
         },
       },
       orderBy: {
@@ -178,4 +166,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

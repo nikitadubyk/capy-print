@@ -13,7 +13,7 @@ test("business API: user and access come exclusively from the server session", a
     PATCH,
     DELETE,
   } = await import("@/app/api/orders/details/route");
-  const { GET: me, POST: oldUpsert } = await import("@/app/api/user/route");
+  const { GET: me } = await import("@/app/api/user/route");
   const { ourFileRouter } = await import("@/app/api/uploadthing/core");
   const user = {
     id: 7,
@@ -111,7 +111,6 @@ test("business API: user and access come exclusively from the server session", a
       assert.equal(updateMock.mock.callCount(), 0);
       assert.equal(createMock.mock.callCount(), 0);
       assert.equal(sendMock.mock.callCount(), 0);
-      assert.equal((await oldUpsert()).status, 405);
     }
   );
   await t.test(

@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { MiniAppPlatform } from "@/types/mini-app-auth";
-import type { SessionResponse } from "@/types/session";
+import type { SessionResponse, SessionUser } from "@/types/session";
+import { MINI_APP_STARTUP_TIMEOUT_MS } from "@/config/mini-app";
 
 // Intentionally memory-only: works when third-party cookies and storage are blocked.
 let current: SessionResponse | null = null;
@@ -9,36 +10,34 @@ const listeners = new Set<() => void>();
 const authInstance = axios.create({
   baseURL: "/api/auth/",
   withCredentials: false,
+  timeout: MINI_APP_STARTUP_TIMEOUT_MS,
 });
 
-export function getClientSession() {
-  return current;
-}
+export const getClientSession = () => current;
 
-export function subscribeSession(listener: () => void) {
+export const subscribeSession = (listener: () => void) => {
   listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
-  };
-}
+  return () => listeners.delete(listener);
+};
 
-function setClientSession(session: SessionResponse | null) {
+const setClientSession = (session: SessionResponse | null) => {
   current = session;
   listeners.forEach((listener) => listener());
-}
+};
 
-export function getSessionHeaders(): Record<string, string> {
-  return current ? { Authorization: `Bearer ${current.token}` } : {};
-}
+export const getSessionHeaders = (): Record<string, string> =>
+  current ? { Authorization: `Bearer ${current.token}` } : {};
 
-export function clearClientSession() {
-  setClientSession(null);
-}
+export const clearClientSession = () => setClientSession(null);
 
-async function requestSession(
+export const updateClientSessionUser = (user: SessionUser, token: string) => {
+  if (current?.token === token) setClientSession({ ...current, user });
+};
+
+const requestSession = async (
   platform: MiniAppPlatform,
   rawLaunchData: string
-): Promise<SessionResponse> {
+): Promise<SessionResponse> => {
   try {
     const { data } = await authInstance.post<SessionResponse>(
       "session",
@@ -65,12 +64,12 @@ async function requestSession(
     }
     throw error;
   }
-}
+};
 
-export async function establishSession(
+export const establishSession = async (
   platform: MiniAppPlatform,
   rawLaunchData: string
-): Promise<SessionResponse> {
+): Promise<SessionResponse> => {
   if (current?.platform === platform) return current;
   // Share the startup request when React Strict Mode initializes twice.
   if (!pending) pending = requestSession(platform, rawLaunchData);
@@ -79,4 +78,4 @@ export async function establishSession(
   } finally {
     pending = null;
   }
-}
+};

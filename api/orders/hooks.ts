@@ -3,21 +3,16 @@ import { useMiniApp } from "@/context";
 
 import { ListRequest } from "./types";
 import { key, ordersApi } from "./index";
+import { orderListOptions, createOrderOptions } from "./queries";
 
-export const useCreateOrder = () =>
-  useMutation({
-    mutationKey: key,
-    mutationFn: ordersApi.create,
-  });
+export const useCreateOrder = () => {
+  const queryClient = useQueryClient();
+  return useMutation(createOrderOptions(queryClient));
+};
 
 export const useListQuery = (params: ListRequest) => {
-  const { user, error } = useMiniApp();
-  return useQuery({
-    queryKey: [...key, user?.id, "list", params],
-    enabled:
-      !!user && !error && (params.scope !== "all" || user.role === "ADMIN"),
-    queryFn: () => ordersApi.list(params),
-  });
+  const { user, error, loading } = useMiniApp();
+  return useQuery(orderListOptions(params, user, !loading && !error));
 };
 
 export const useDetailsQuery = (id: string) => {

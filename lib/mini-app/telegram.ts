@@ -8,10 +8,20 @@ import type { MiniAppAdapter } from "./types";
 
 let initialized = false;
 
+export const isTelegramMiniApp = () => {
+  if (typeof window === "undefined") return false;
+  try {
+    return isTMA();
+  } catch {
+    // SDK discovery can fail when browser storage is unavailable in an iframe.
+    return false;
+  }
+};
+
 export const telegramAdapter: MiniAppAdapter = {
   platform: "telegram",
-  async initialize() {
-    if (typeof window === "undefined" || !isTMA()) {
+  initialize: async () => {
+    if (!isTelegramMiniApp()) {
       throw new Error("Откройте приложение внутри Telegram или ВКонтакте.");
     }
     if (!initialized) {

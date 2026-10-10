@@ -38,17 +38,15 @@ test("uploaded order payload omits ASAP deadline and preserves scheduled date", 
       { ...data, deadlineAt },
       upload
     );
-    assert.equal(result.success, true);
-    assert.equal(result.data.urgency, "ASAP");
-    assert.equal(Object.hasOwn(result.data, "deadlineAt"), false);
-    assert.equal(createOrderSchema.safeParse(result.data).success, true);
+    assert.equal(result.urgency, "ASAP");
+    assert.equal(Object.hasOwn(result, "deadlineAt"), false);
+    assert.equal(createOrderSchema.safeParse(result).success, true);
   }
   const deadlineAt = "2026-10-04T08:00:00.000Z";
   const scheduled = await prepareOrderWithUploads(
     { ...data, urgency: Urgency.SCHEDULED, deadlineAt },
     upload
   );
-  assert.equal(scheduled.success, true);
-  assert.equal(scheduled.data.deadlineAt, deadlineAt);
-  assert.equal(createOrderSchema.safeParse(scheduled.data).success, true);
+  assert.equal(scheduled.deadlineAt, deadlineAt);
+  assert.equal(createOrderSchema.safeParse(scheduled).success, true);
 });

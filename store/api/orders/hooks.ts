@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMiniApp } from "@/context";
 
 import { ListRequest } from "./types";
+import type { OrderStatus } from "@/app/generated/prisma/enums";
 import { key, ordersApi } from "./index";
 import { orderListOptions, createOrderOptions } from "./queries";
 
@@ -28,11 +29,9 @@ export const useUpdateStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: any }) =>
+    mutationFn: ({ id, status }: { id: string; status: OrderStatus }) =>
       ordersApi.updateStatus(id, status),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: key });
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
   });
 };
 
@@ -41,8 +40,6 @@ export const useDeleteOrder = () => {
 
   return useMutation({
     mutationFn: (id: string) => ordersApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: key });
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
   });
 };

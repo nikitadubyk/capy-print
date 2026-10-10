@@ -61,6 +61,11 @@ export const getWorkingHoursDescription = (date: dayjs.Dayjs): string => {
   return "Будние дни: с 8:00 до 13:00";
 };
 
+export const getDeadlineCalendarBounds = (now = dayjs()) => ({
+  minDate: now.startOf("day").toDate(),
+  maxDate: now.add(3, "day").endOf("day").toDate(),
+});
+
 export const orderSchema = z
   .object({
     comment: z.string().optional(),

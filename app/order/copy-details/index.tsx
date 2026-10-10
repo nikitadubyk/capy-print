@@ -1,6 +1,7 @@
 "use client";
 
-import { Button } from "@mantine/core";
+import { Button, Text } from "@mantine/core";
+import { Plus, ArrowRight } from "lucide-react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
 import { defaultPrintJob, OrderFormData } from "../config";
@@ -34,23 +35,28 @@ export const CopyDetails = () => {
         <Button
           fullWidth
           variant="light"
-          className="mb-4"
+          size="md"
+          leftSection={<Plus size={18} aria-hidden="true" />}
           onClick={() => appendPrintJob(defaultPrintJob)}
         >
-          Добавить еще одну печать
+          Добавить ещё одну печать
         </Button>
       </div>
 
-      <Button
-        size="lg"
-        fullWidth
-        radius="md"
-        color="teal"
-        type="submit"
-        className="mt-auto"
-      >
-        Далее
-      </Button>
+      <div className="mt-auto pt-8">
+        <Text size="sm" c="dimmed" className="mb-3">
+          На следующем шаге — срок получения и комментарий.
+        </Text>
+        <Button
+          size="lg"
+          fullWidth
+          radius="lg"
+          type="submit"
+          rightSection={<ArrowRight size={20} aria-hidden="true" />}
+        >
+          Далее
+        </Button>
+      </div>
     </>
   );
 };

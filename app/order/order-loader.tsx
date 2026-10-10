@@ -1,6 +1,6 @@
 "use client";
 
-import { Overlay, Progress, Loader } from "@mantine/core";
+import { Overlay, Progress, Loader, Text } from "@mantine/core";
 
 import { ProcessStage } from "./types";
 
@@ -27,7 +27,9 @@ export const OrderLoader = ({
         <div className="w-full max-w-sm px-6 text-center">
           {isUploading ? (
             <>
-              <p className="mb-4 text-lg font-medium">Загрузка файлов</p>
+              <Text size="lg" fw={500} className="mb-4">
+                {progress >= 100 ? "Завершаем загрузку" : "Загрузка файлов"}
+              </Text>
               <Progress
                 striped
                 animated
@@ -35,15 +37,19 @@ export const OrderLoader = ({
                 radius="xl"
                 value={progress}
               />
-              <p className="mt-2 text-sm text-gray-500">{progress}%</p>
+              <Text size="sm" c="dimmed" className="mt-2">
+                {progress}%
+              </Text>
             </>
           ) : (
             <>
               <Loader size="lg" className="mx-auto mb-4" />
-              <p className="text-lg font-medium">Создаём заказ</p>
-              <p className="mt-1 text-sm text-gray-500">
+              <Text size="lg" fw={500}>
+                Создаём заказ
+              </Text>
+              <Text size="sm" c="dimmed" className="mt-1">
                 Пожалуйста, подождите
-              </p>
+              </Text>
             </>
           )}
         </div>

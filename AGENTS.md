@@ -23,44 +23,45 @@ Capy Print — приложение копицентра для заказа п�
 
 ## Карта репозитория
 
-| Путь                                              | Назначение                                                                              |
-| ------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `app/layout.tsx`                                  | Корневой layout, Mantine, QueryProvider, DatesProvider, MiniAppProvider                 |
-| `app/page.tsx`                                    | Главная страница с капибарой и переходами к заказам                                     |
-| `app/order/`                                      | Двухшаговое оформление, схемы формы, загрузка и экран успеха                            |
-| `app/order/copy-details/`                         | Файлы и параметры наборов печати                                                        |
-| `app/order/additional-info/`                      | Срочность, дата, время и комментарий                                                    |
-| `app/my-orders/`                                  | Список и детали заказов клиента                                                         |
-| `app/admin-orders/`                               | Список и редактирование заказов сотрудником                                             |
-| `app/info/`                                       | Справочная информация                                                                   |
-| `app/api/user/route.ts`                           | GET текущего пользователя и PATCH профиля VK с проверкой identity; POST отсутствует     |
-| `app/api/orders/`                                 | Создание, списки, детали и изменение заказов                                            |
-| `app/api/telegram/webhook/`                       | Команды, меню и callbacks Telegram-бота                                                 |
-| `app/api/uploadthing/`                            | Серверный файловый роутер и ограничения загрузки                                        |
-| `store/api/`                                      | Клиентские API-функции, hooks TanStack Query и Axios instance                           |
-| `context/mini-app.tsx`                            | Общий MiniAppProvider/useMiniApp; пользователь и платформа из сессии, состояние запуска |
-| `lib/mini-app/`                                   | Клиентские адаптеры Telegram SDK и VK Bridge; получение launch data и VKWebAppInit      |
-| `lib/auth.ts`, `lib/session.ts`                   | Серверные Bearer-сессии, identities, текущие роли и доступ к заказам                    |
-| `store/api/session.ts`                            | Токен только в памяти клиента, вход через подписанные launch data                       |
-| `app/api/auth/session/route.ts`                   | Создание, чтение и отзыв серверной сессии Telegram/VK                                   |
-| `lib/mini-app-auth/`, `types/mini-app-auth.ts`    | Общий контракт и серверная проверка launch data Telegram/VK                             |
-| `app/api/auth/verify/route.ts`                    | Диагностическая проверка launch data без выдачи сессии                                  |
-| `tests/auth/`                                     | Подписи, сессии, доступ к API/загрузке и SQL-миграция в PostgreSQL WASM в памяти        |
-| `lib/telegram.ts`                                 | Telegram transport, таймаут и безопасные коды ошибок                                    |
-| `lib/order-notifications.ts`                      | Общий текст нового заказа и независимая отправка сотрудникам Telegram/VK                |
-| `lib/vk.ts`, `lib/notifications.ts`               | Серверный VK transport, проверка разрешения и уведомления клиента о статусе             |
-| `app/api/vk/messages/permission/route.ts`         | GET разрешения и POST выбора сообщений текущей VK identity; без токена в ответе         |
-| `components/vk-messages-permission.tsx`           | Единый диалог VK после входа; согласие/отказ сохраняются на сервере                     |
-| `store/api/vk/server.ts`, `config/vk-server.ts`   | Серверный Axios transport VK и настройки сообщества; URL в config/url.ts                |
-| `store/api/vk-messages/`, `config/vk-messages.ts` | Клиентский API, hooks/query options и тексты диалога сообщений VK                       |
-| `lib/prisma.ts`, `lib/serialize.ts`               | Клиент базы и сериализация BigInt                                                       |
-| `config/`                                         | Env, маршруты, URL API и настройки загрузки                                             |
-| `types/`                                          | Типы, enum, подписи и расписание                                                        |
-| `components/`                                     | Общие компоненты и представление заказов                                                |
-| `public/images/`                                  | Существующие иллюстрации капибар                                                        |
-| `prisma/schema.prisma`                            | User, UserIdentity, Session, Order, PrintJob, PrintFile и enum                          |
-| `prisma/migrations/`                              | История миграций PostgreSQL                                                             |
-| `app/generated/prisma/`                           | Сгенерированный Prisma Client; вручную не редактировать                                 |
+| Путь                                              | Назначение                                                                                                              |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `app/layout.tsx`                                  | Корневой layout, общая светлая тема Mantine через app/theme-provider.tsx, QueryProvider, DatesProvider, MiniAppProvider |
+| `app/page.tsx`                                    | Главная страница с капибарой и переходами к заказам                                                                     |
+| `app/home/`                                       | Главная: компоненты на Tailwind, данные из config/home.ts, капибара и Motion                                            |
+| `app/order/`                                      | Двухшаговое оформление, схемы формы, загрузка и экран успеха                                                            |
+| `app/order/copy-details/`                         | Файлы и параметры наборов печати                                                                                        |
+| `app/order/additional-info/`                      | Срочность, дата, время и комментарий                                                                                    |
+| `app/my-orders/`                                  | Список и детали заказов клиента                                                                                         |
+| `app/admin-orders/`                               | Список и редактирование заказов сотрудником                                                                             |
+| `app/info/`                                       | Справочная информация                                                                                                   |
+| `app/api/user/route.ts`                           | GET текущего пользователя и PATCH профиля VK с проверкой identity; POST отсутствует                                     |
+| `app/api/orders/`                                 | Создание, списки, детали и изменение заказов                                                                            |
+| `app/api/telegram/webhook/`                       | Команды, меню и callbacks Telegram-бота                                                                                 |
+| `app/api/uploadthing/`                            | Серверный файловый роутер и ограничения загрузки                                                                        |
+| `store/api/`                                      | Клиентские API-функции, hooks TanStack Query и Axios instance                                                           |
+| `context/mini-app.tsx`                            | Общий MiniAppProvider/useMiniApp; пользователь и платформа из сессии, состояние запуска                                 |
+| `lib/mini-app/`                                   | Клиентские адаптеры Telegram SDK и VK Bridge; получение launch data и VKWebAppInit                                      |
+| `lib/auth.ts`, `lib/session.ts`                   | Серверные Bearer-сессии, identities, текущие роли и доступ к заказам                                                    |
+| `store/api/session.ts`                            | Токен только в памяти клиента, вход через подписанные launch data                                                       |
+| `app/api/auth/session/route.ts`                   | Создание, чтение и отзыв серверной сессии Telegram/VK                                                                   |
+| `lib/mini-app-auth/`, `types/mini-app-auth.ts`    | Общий контракт и серверная проверка launch data Telegram/VK                                                             |
+| `app/api/auth/verify/route.ts`                    | Диагностическая проверка launch data без выдачи сессии                                                                  |
+| `tests/auth/`                                     | Подписи, сессии, доступ к API/загрузке и SQL-миграция в PostgreSQL WASM в памяти                                        |
+| `lib/telegram.ts`                                 | Telegram transport, таймаут и безопасные коды ошибок                                                                    |
+| `lib/order-notifications.ts`                      | Общий текст нового заказа и независимая отправка сотрудникам Telegram/VK                                                |
+| `lib/vk.ts`, `lib/notifications.ts`               | Серверный VK transport, проверка разрешения и уведомления клиента о статусе                                             |
+| `app/api/vk/messages/permission/route.ts`         | GET разрешения и POST выбора сообщений текущей VK identity; без токена в ответе                                         |
+| `components/vk-messages-permission.tsx`           | Единый диалог VK после входа; согласие/отказ сохраняются на сервере                                                     |
+| `store/api/vk/server.ts`, `config/vk-server.ts`   | Серверный Axios transport VK и настройки сообщества; URL в config/url.ts                                                |
+| `store/api/vk-messages/`, `config/vk-messages.ts` | Клиентский API, hooks/query options и тексты диалога сообщений VK                                                       |
+| `lib/prisma.ts`, `lib/serialize.ts`               | Клиент базы и сериализация BigInt                                                                                       |
+| `config/`                                         | Env, маршруты, URL API, загрузка, данные главной и общая тема Mantine                                                   |
+| `types/`                                          | Типы, enum, подписи и расписание                                                                                        |
+| `components/`                                     | Общие компоненты и представление заказов                                                                                |
+| `public/images/`                                  | Существующие иллюстрации капибар                                                                                        |
+| `prisma/schema.prisma`                            | User, UserIdentity, Session, Order, PrintJob, PrintFile и enum                                                          |
+| `prisma/migrations/`                              | История миграций PostgreSQL                                                                                             |
+| `app/generated/prisma/`                           | Сгенерированный Prisma Client; вручную не редактировать                                                                 |
 
 `@/` указывает на корень проекта. Отдельного каталога `src/` нет. Не путайте клиентский `store/api/` с серверным `app/api/`.
 

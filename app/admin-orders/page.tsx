@@ -2,46 +2,34 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { LoadingOverlay, Title } from "@mantine/core";
-
-import { Routes } from "@/config";
+import { Routes } from "@/config/routes";
 import { useMiniApp } from "@/context";
 import { useListQuery } from "@/store/api/orders/hooks";
-import { OrderList, BackButton } from "@/components";
-
+import { OrdersView } from "@/components/orders-view";
 import { UserRole } from "../generated/prisma/enums";
 
-export default function AdminOrders() {
+const AdminOrders = () => {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const { user, loading } = useMiniApp();
   const role = user?.role;
-
   const isAdmin = role === UserRole.ADMIN;
-
-  const { data, isPending } = useListQuery({ page, scope: "all" });
+  const query = useListQuery({ page, scope: "all" });
 
   useEffect(() => {
-    if (!loading && !isAdmin && role) {
-      router.push(Routes.Home);
-    }
+    if (!loading && !isAdmin && role) router.push(Routes.Home);
   }, [loading, isAdmin, router, role]);
 
-  if (loading || isPending) {
-    return <LoadingOverlay visible={loading || isPending} />;
-  }
-
-  if (!isAdmin) {
-    return null;
-  }
-
+  if (!loading && !isAdmin) return null;
   return (
-    <div className="p-4">
-      <div>
-        <BackButton url={Routes.Home} />
-      </div>
-      <Title order={2}>Все заказы</Title>
-      <OrderList isAdmin data={data} page={page} setPage={setPage} />
-    </div>
+    <OrdersView
+      {...query}
+      isAdmin
+      isPending={loading || query.isPending}
+      page={page}
+      setPage={setPage}
+    />
   );
-}
+};
+
+export default AdminOrders;

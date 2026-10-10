@@ -1,23 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@mantine/core";
+import { Button, type ButtonProps } from "@mantine/core";
 import { ArrowLeft } from "lucide-react";
+import { twMerge } from "tailwind-merge";
 
 interface BackButtonProps {
-  url: string;
   text?: string;
   className?: string;
 }
 
-export const BackButton = ({ url, text, className }: BackButtonProps) => (
-  <Button
-    href={url}
-    component={Link}
-    variant="transparent"
-    className={className}
-    leftSection={<ArrowLeft />}
-  >
-    {text || "Вернуться назад"}
-  </Button>
-);
+type BackButtonAction =
+  { url: string; onClick?: never } | { url?: never; onClick: () => void };
+
+export const BackButton = ({
+  url,
+  onClick,
+  text,
+  className,
+}: BackButtonProps & BackButtonAction) => {
+  const buttonProps: ButtonProps & { "aria-label": string } = {
+    variant: "light",
+    size: "md",
+    radius: "xl",
+    "aria-label": text || "Вернуться назад",
+    className: twMerge("shrink-0", !text && "w-12 px-0", className),
+    leftSection: text ? <ArrowLeft size={20} aria-hidden="true" /> : undefined,
+  };
+  const content = text || <ArrowLeft size={20} aria-hidden="true" />;
+  return url ? (
+    <Button {...buttonProps} component={Link} href={url}>
+      {content}
+    </Button>
+  ) : (
+    <Button {...buttonProps} type="button" onClick={onClick}>
+      {content}
+    </Button>
+  );
+};

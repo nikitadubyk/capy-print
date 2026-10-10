@@ -1,23 +1,27 @@
-import { cloneElement, JSX } from "react";
-import { Paper } from "@mantine/core";
+import { Text, Title } from "@mantine/core";
+import { SectionCard } from "@/components/section-card";
+import type { LucideIcon } from "lucide-react";
 
 interface CardProps {
   text: string;
   title: string;
-  icon: JSX.Element;
+  icon: LucideIcon;
+  number: number;
 }
 
-export const Card = ({ icon, text, title }: CardProps) => (
-  <Paper radius="md" p="md" withBorder>
-    <div className="flex gap-3 items-start">
-      {cloneElement(icon, {
-        size: 24,
-        className: "text-teal-600 mt-1 shrink-0",
-      })}
-      <div>
-        <p className="font-medium">{title}</p>
-        <p className="text-sm text-gray-600">{text}</p>
-      </div>
+export const Card = ({ icon: Icon, text, title, number }: CardProps) => (
+  <SectionCard className="h-full md:p-5">
+    <div className="mb-4 flex items-center justify-between">
+      <span className="flex size-11 items-center justify-center rounded-2xl bg-capy-blue text-capy-accent">
+        <Icon size={22} aria-hidden="true" />
+      </span>
+      <Text variant="eyebrow" c="dimmed">
+        0{number}
+      </Text>
     </div>
-  </Paper>
+    <Title order={3}>{title}</Title>
+    <Text c="dimmed" className="mt-2">
+      {text}
+    </Text>
+  </SectionCard>
 );

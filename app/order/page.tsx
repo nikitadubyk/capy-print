@@ -2,91 +2,70 @@
 
 import { clearClientSession, getSessionHeaders } from "@/store/api/session";
 
-import { useState } from "react";
-import toast from "react-hot-toast";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FormProvider, useForm } from "react-hook-form";
-
-import { Routes } from "@/config";
-import { Urgency } from "@/types";
-import { BackButton } from "@/components";
+import { Routes } from "@/config/routes";
 import { useUploadThing } from "@/lib/uploadthing";
 import { useCreateOrder } from "@/store/api/orders/hooks";
 
-import { Step, ProcessStage } from "./types";
-import { CopyDetails } from "./copy-details";
+import { ProcessStage } from "./types";
+import { OrderForm } from "./order-form";
 import { OrderLoader } from "./order-loader";
-import { AdditionalInfo } from "./additional-info";
+import { getErrorDiagnostics } from "@/lib/error-diagnostics";
 import { prepareOrderWithUploads } from "./helpers";
-import { orderSchema, OrderFormData, defaultPrintJob } from "./config";
+import type { OrderFormData } from "./config";
 
-export default function Order() {
+const Order = () => {
   const router = useRouter();
-  const [step, setStep] = useState<Step>(Step.CopyDetails);
+
   const [stage, setStage] = useState<ProcessStage>("idle");
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const submitting = useRef(false);
 
   const { mutateAsync } = useCreateOrder();
 
   const { startUpload } = useUploadThing("fileUploader", {
     headers: getSessionHeaders,
     onUploadProgress: (p) => {
+      if (!submitting.current) return;
       setUploadProgress(p);
-    },
-    onClientUploadComplete: () => {
-      setUploadProgress(100);
-      setStage("creating");
     },
     onUploadError: (error) => {
       if (error.code === "FORBIDDEN") clearClientSession();
-      console.error("Ошибка загрузки файлов");
-      toast.error("Не удалось загрузить файлы. Попробуйте еще раз.");
-      setStage("idle");
+      // UploadThing otherwise resolves startUpload with undefined after this callback.
+      throw error;
     },
   });
-
-  const methods = useForm<OrderFormData>({
-    resolver: zodResolver(orderSchema),
-    defaultValues: {
-      comment: "",
-      deadlineAt: "",
-      urgency: Urgency.ASAP,
-      printJobs: [defaultPrintJob],
-    },
-  });
-
-  const { handleSubmit } = methods;
-
-  const isFirstStep = step === Step.CopyDetails;
-  const isLastStep = step === Step.AdditionalInfo;
 
   const onSubmit = async (data: OrderFormData) => {
-    if (isFirstStep) {
-      setStep(Step.AdditionalInfo);
-      return;
-    }
-
+    if (submitting.current) return;
+    submitting.current = true;
+    setSubmitError(null);
+    let phase = "uploading";
     try {
       setStage("uploading");
       setUploadProgress(0);
-
-      const result = await prepareOrderWithUploads(data, startUpload);
-
-      if (!result?.success) {
-        return;
-      }
-
+      console.info("[Capy Print][order] Загрузка файлов");
+      const payload = await prepareOrderWithUploads(data, startUpload);
+      phase = "creating";
       setStage("creating");
-      const response = await mutateAsync(result.data);
-      if (response.id) {
-        router.push(Routes.SuccessOrder.replace(":id", String(response.id)));
-      }
-    } catch {
-      console.error("Ошибка создания заказа");
-      toast.error("Не удалось создать заказ. Попробуйте ещё раз.");
-    } finally {
+      console.info("[Capy Print][order] Создание заказа");
+      const response = await mutateAsync(payload);
+      if (!response.id) throw new Error("Сервер не вернул номер заказа");
+      console.info("[Capy Print][order] Заказ создан, открываем экран успеха", {
+        orderId: response.id,
+      });
+      router.push(Routes.SuccessOrder.replace(":id", String(response.id)));
+    } catch (error) {
+      setSubmitError("Не удалось оформить заказ. Попробуйте ещё раз.");
+      console.error("[Capy Print][order] Ошибка оформления", {
+        phase,
+        ...getErrorDiagnostics(error),
+      });
       setStage("idle");
+      window.scrollTo({ top: 0, behavior: "instant" });
+      submitting.current = false;
     }
   };
 
@@ -98,25 +77,9 @@ export default function Order() {
         visible={stage !== "idle"}
       />
 
-      <div className="flex flex-col min-h-dvh p-4">
-        {isFirstStep && (
-          <div>
-            <BackButton url={Routes.Home} className="mb-2" />
-          </div>
-        )}
-
-        <FormProvider {...methods}>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col flex-1"
-          >
-            {isFirstStep && <CopyDetails />}
-            {isLastStep && (
-              <AdditionalInfo onBack={() => setStep(Step.CopyDetails)} />
-            )}
-          </form>
-        </FormProvider>
-      </div>
+      <OrderForm onSubmit={onSubmit} submitError={submitError} />
     </>
   );
-}
+};
+
+export default Order;

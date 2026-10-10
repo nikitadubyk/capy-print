@@ -8,7 +8,11 @@ interface OrderStatusBadgeProps {
 }
 
 export const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => (
-  <Badge size="lg" color={OrderStatusColor[status]}>
+  <Badge
+    variant="light"
+    color={`${OrderStatusColor[status]}.8`}
+    className="shrink-0"
+  >
     {OrderStatusTitle[status]}
   </Badge>
 );

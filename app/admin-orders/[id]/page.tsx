@@ -1,36 +1,23 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { LoadingOverlay } from "@mantine/core";
-
-import { Routes } from "@/config";
+import { Routes } from "@/config/routes";
 import { useDetailsQuery } from "@/store/api/orders/hooks";
-import { BackButton, OrderDetails } from "@/components";
+import { OrderDetailsView } from "@/components/order-details-view";
+import { useMiniApp } from "@/context";
 
-export default function AdminOrder() {
+const AdminOrder = () => {
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading } = useDetailsQuery(id);
-
-  if (isLoading) {
-    return <LoadingOverlay visible={isLoading} />;
-  }
-
-  if (!data) {
-    return (
-      <div className="p-4">
-        <BackButton url={Routes.AdminOrders} />
-        <p className="mt-4 text-gray-500">Заказ не найден</p>
-      </div>
-    );
-  }
-
+  const query = useDetailsQuery(id);
+  const { user } = useMiniApp();
   return (
-    <div className="p-4 max-w-4xl mx-auto">
-      <div>
-        <BackButton url={Routes.AdminOrders} />
-      </div>
-
-      <OrderDetails data={data} id={id} />
-    </div>
+    <OrderDetailsView
+      {...query}
+      id={id}
+      isAdmin={user?.role === "ADMIN"}
+      backUrl={Routes.AdminOrders}
+    />
   );
-}
+};
+
+export default AdminOrder;

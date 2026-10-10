@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type { Prisma } from "@/app/generated/prisma/client";
 import { Order, PaperSize, Urgency } from "@/types";
 import { orderUserSelect } from "@/lib/customer";
+import { getErrorDiagnostics } from "@/lib/error-diagnostics";
 import {
   createOrderSchema,
   listOrdersSchema,
@@ -89,6 +90,7 @@ export const POST = async (request: NextRequest) => {
       },
     });
 
+    console.info("[Capy Print][order] Заказ сохранён", { orderId: order.id });
     await sendOrderNotification(order as Order);
 
     return NextResponse.json(serializeBigInt(order), {
@@ -96,7 +98,10 @@ export const POST = async (request: NextRequest) => {
       headers: sessionHeaders,
     });
   } catch (error) {
-    console.error("Ошибка при создании заказа:", error);
+    console.error(
+      "[Capy Print][order] Ошибка создания заказа на сервере",
+      getErrorDiagnostics(error)
+    );
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },
       { status: 500 }

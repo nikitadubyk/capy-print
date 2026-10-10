@@ -1,4 +1,4 @@
-import { URL } from "@/config";
+import { URL } from "@/config/url";
 
 import { addParamsToUrl } from "@/utils";
 import { Order as OrderDTO } from "@/types";

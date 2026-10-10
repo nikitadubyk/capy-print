@@ -1,20 +1,18 @@
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
-import {
-  MantineProvider,
-  mantineHtmlProps,
-  ColorSchemeScript,
-} from "@mantine/core";
+import { mantineHtmlProps, ColorSchemeScript } from "@mantine/core";
 
 import "./globals.css";
-import "@mantine/core/styles.css";
-import "@mantine/dates/styles.css";
+import "@mantine/core/styles.layer.css";
+import "@mantine/dates/styles.layer.css";
+import "@mantine/dropzone/styles.layer.css";
 
 import { MiniAppProvider } from "@/context";
 import { VkMessagesPermission } from "@/components/vk-messages-permission";
 
 import { DatesProvider } from "./dates-provider";
 import { QueryProvider } from "./query-provider";
+import { ThemeProvider } from "./theme-provider";
 
 export const metadata: Metadata = {
   title: "Capy Print - Онлайн печать документов и фотографий",
@@ -27,29 +25,28 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+const RootLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
-  return (
-    <html lang="ru" {...mantineHtmlProps}>
-      <head>
-        <ColorSchemeScript />
-      </head>
-      <body className="bg-zinc-100">
-        <MantineProvider>
-          <DatesProvider>
-            <QueryProvider>
-              <MiniAppProvider>
-                {children}
-                <VkMessagesPermission />
-              </MiniAppProvider>
-            </QueryProvider>
-          </DatesProvider>
-        </MantineProvider>
-        <Toaster position="top-center" />
-      </body>
-    </html>
-  );
-}
+}>) => (
+  <html lang="ru" {...mantineHtmlProps}>
+    <head>
+      <ColorSchemeScript defaultColorScheme="light" forceColorScheme="light" />
+    </head>
+    <body className="bg-capy-canvas text-capy-ink">
+      <ThemeProvider>
+        <DatesProvider>
+          <QueryProvider>
+            <MiniAppProvider>
+              <VkMessagesPermission>{children}</VkMessagesPermission>
+            </MiniAppProvider>
+          </QueryProvider>
+        </DatesProvider>
+      </ThemeProvider>
+      <Toaster position="top-center" />
+    </body>
+  </html>
+);
+
+export default RootLayout;

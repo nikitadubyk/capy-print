@@ -4,6 +4,7 @@ import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { allowedMimeTypes } from "@/config";
 import { requireRole } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { getErrorDiagnostics } from "@/lib/error-diagnostics";
 
 const f = createUploadthing();
 
@@ -30,12 +31,24 @@ export const ourFileRouter = {
         }
       }
 
+      console.info("[Capy Print][upload] Загрузка разрешена", {
+        fileCount: files.length,
+      });
       return { uploadedBy: auth.user.id };
     })
-    .onUploadComplete(async ({ metadata, file }) => ({
-      uploadedBy: metadata.uploadedBy,
-      fileUrl: file.ufsUrl,
-    })),
+    .onUploadError(({ error }) => {
+      console.error(
+        "[Capy Print][upload] Ошибка UploadThing",
+        getErrorDiagnostics(error)
+      );
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      console.info("[Capy Print][upload] Загрузка подтверждена");
+      return {
+        uploadedBy: metadata.uploadedBy,
+        fileUrl: file.ufsUrl,
+      };
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

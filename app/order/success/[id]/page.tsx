@@ -1,42 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
 import { useParams } from "next/navigation";
-import { Button, Title } from "@mantine/core";
-
-import { Routes } from "@/config";
 import { useMiniApp } from "@/context";
-import CapybaraDelivery from "@/public/images/delivery.png";
+import { OrderSuccessPage } from "../success-page";
 
-export default function Success() {
+const Success = () => {
   const { id } = useParams<{ id: string }>();
   const { platform } = useMiniApp();
+  return <OrderSuccessPage id={id} platform={platform} />;
+};
 
-  return (
-    <div className="flex flex-col min-h-dvh p-4">
-      <div className="flex flex-col gap-4 items-center text-center m-auto">
-        <Image src={CapybaraDelivery} alt="Доставка капибара" height={250} />
-
-        <Title order={2}>Заказ #{id} принят!</Title>
-        <div>
-          <p>Мы уже греем принтеры.</p>
-          {platform !== "vk" && (
-            <p>Пришлем вам уведомление в чат когда все будет готово.</p>
-          )}
-        </div>
-      </div>
-
-      <Button
-        size="lg"
-        radius="md"
-        color="gray"
-        component={Link}
-        href={Routes.Home}
-        className="mt-auto"
-      >
-        Вернуться на главную
-      </Button>
-    </div>
-  );
-}
+export default Success;

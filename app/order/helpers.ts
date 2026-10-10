@@ -3,13 +3,10 @@ import type { CreateOrderRequest } from "../api/orders/route";
 
 import type { OrderFormData } from "./config";
 
-type PrepareOrderResult =
-  | { success: true; data: CreateOrderRequest }
-  | { success: false; error: string };
-
-type StartUploadFn = (files: File[]) => Promise<
+export type StartUploadFn = (files: File[]) => Promise<
   | {
-      url: string;
+      url?: string;
+      ufsUrl?: string;
       name: string;
       size: number;
       type: string;
@@ -20,57 +17,44 @@ type StartUploadFn = (files: File[]) => Promise<
 export const prepareOrderWithUploads = async (
   data: OrderFormData,
   startUpload: StartUploadFn
-): Promise<PrepareOrderResult> => {
-  const filesToUpload: File[] = [];
+): Promise<CreateOrderRequest> => {
+  const filesToUpload = data.printJobs.flatMap((job) =>
+    job.files.filter((file) => file instanceof File)
+  );
 
-  data.printJobs.forEach((job) => {
-    job.files.forEach((file) => {
-      if (file instanceof File) {
-        filesToUpload.push(file);
-      }
-    });
-  });
+  const uploadedFiles = filesToUpload.length
+    ? await startUpload(filesToUpload)
+    : [];
 
-  try {
-    const uploadedFiles = await startUpload(filesToUpload);
-
-    if (!uploadedFiles) {
-      return {
-        success: false,
-        error: "Не удалось загрузить файлы",
-      };
-    }
-
-    let uploadedIndex = 0;
-
-    const { deadlineAt, ...orderData } = data;
-    const preparedData: CreateOrderRequest = {
-      ...orderData,
-      ...(data.urgency === Urgency.SCHEDULED ? { deadlineAt } : {}),
-      printJobs: data.printJobs.map((job) => ({
-        ...job,
-        files: job.files.map((file) => {
-          if (file instanceof File) {
-            const uploaded = uploadedFiles[uploadedIndex++];
-            return {
-              fileUrl: uploaded.url,
-              fileName: uploaded.name,
-              fileSize: uploaded.size,
-              mimeType: uploaded.type,
-            };
-          }
-
-          return file;
-        }),
-      })),
-    };
-
-    return { success: true, data: preparedData };
-  } catch (error) {
-    console.error("Upload error:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Ошибка загрузки",
-    };
+  if (!uploadedFiles || uploadedFiles.length !== filesToUpload.length) {
+    throw new Error("Не удалось загрузить все файлы");
   }
+
+  let uploadedIndex = 0;
+
+  const { deadlineAt, ...orderData } = data;
+  const preparedData: CreateOrderRequest = {
+    ...orderData,
+    ...(data.urgency === Urgency.SCHEDULED ? { deadlineAt } : {}),
+    printJobs: data.printJobs.map((job) => ({
+      ...job,
+      files: job.files.map((file) => {
+        if (file instanceof File) {
+          const uploaded = uploadedFiles[uploadedIndex++];
+          const fileUrl = uploaded.ufsUrl ?? uploaded.url;
+          if (!fileUrl) throw new Error("Не удалось получить ссылку на файл");
+          return {
+            fileUrl,
+            fileName: uploaded.name,
+            fileSize: uploaded.size,
+            mimeType: uploaded.type,
+          };
+        }
+
+        return file;
+      }),
+    })),
+  };
+
+  return preparedData;
 };

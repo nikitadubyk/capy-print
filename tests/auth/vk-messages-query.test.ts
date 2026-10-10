@@ -175,3 +175,51 @@ test("an older permission GET cannot overwrite the saved VK decision", async (t)
   await new Promise<void>((resolve) => setImmediate(resolve));
   assert.equal(observer.getCurrentResult().data?.enabled, false);
 });
+
+test("VK notification settings can be enabled, disabled and enabled again without losing another user's preference", async (t) => {
+  const previousAdapter = apiInstance.defaults.adapter;
+  const client = new QueryClient();
+  t.after(() => {
+    apiInstance.defaults.adapter = previousAdapter;
+    client.clear();
+  });
+  const permission = {
+    configured: true,
+    groupId: 123,
+    allowed: false,
+    enabled: false,
+  };
+  const options = vkMessagesPermissionOptions(7, true);
+  const otherOptions = vkMessagesPermissionOptions(8, true);
+  client.setQueryData(options.queryKey, permission);
+  client.setQueryData(otherOptions.queryKey, permission);
+  const choices: boolean[] = [];
+  apiInstance.defaults.adapter = async (config) => {
+    assert.equal(config.method, "post");
+    assert.equal(config.url, "vk/messages/permission");
+    const { enabled } = JSON.parse(config.data) as { enabled: boolean };
+    choices.push(enabled);
+    return {
+      data: { ...permission, enabled, allowed: enabled },
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config,
+    };
+  };
+  const mutation = client
+    .getMutationCache()
+    .build(client, saveVkMessagesPreferenceOptions(client, 7));
+  for (const enabled of [true, false, true]) {
+    await mutation.execute(enabled);
+    assert.equal(
+      client.getQueryData<{ enabled: boolean }>(options.queryKey)?.enabled,
+      enabled
+    );
+    assert.equal(
+      client.getQueryData<{ enabled: boolean }>(otherOptions.queryKey)?.enabled,
+      false
+    );
+  }
+  assert.deepEqual(choices, [true, false, true]);
+});

@@ -1,6 +1,6 @@
 import { generateReactHelpers } from "@uploadthing/react";
 
-import { OurFileRouter } from "@/app/api/uploadthing/core";
+import type { OurFileRouter } from "@/app/api/uploadthing/core";
 
 export const { useUploadThing, uploadFiles: uploadToUploadThing } =
   generateReactHelpers<OurFileRouter>();

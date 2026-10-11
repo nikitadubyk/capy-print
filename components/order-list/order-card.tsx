@@ -9,6 +9,7 @@ import { getCustomerContact } from "@/lib/customer";
 import { type Order, Urgency, UrgencyViewTitle } from "@/types";
 import { OrderStatusBadge } from "../order-status-badge";
 import { SectionCard } from "../section-card";
+import { OrderDiscountBanner } from "../order-discount-banner";
 
 interface OrderCardProps {
   order: Order;
@@ -72,6 +73,14 @@ export const OrderCard = ({
             </Text>
           </div>
         </div>
+      )}
+      {isAdmin && (
+        <OrderDiscountBanner
+          discountPercent={order.discountPercent}
+          isFirstOrder={order.isFirstOrder}
+          isAdmin
+          className="mt-5"
+        />
       )}
       <dl className="mt-5 grid grid-cols-2 gap-4">
         <div className="flex items-start gap-2">

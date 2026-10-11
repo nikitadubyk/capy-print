@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import dayjs from "dayjs";
 import { Urgency, PaperSizeTitle, type Order } from "@/types";
 import { getVkAdminPeerIds } from "@/config/vk-server";
+import { getFirstOrderStaffReminder } from "@/config/first-order";
+import { getLoyaltyProgressText } from "./order-discounts";
 import { getCustomerContact } from "./customer";
 import { sendTelegramMessage } from "./telegram";
 import {
@@ -39,6 +41,9 @@ export const formatOrderNotification = (
     ${bold(`Новый заказ #${order.id}`)}
 
     ${urgencyText}
+    ${order.isFirstOrder && order.discountPercent > 0 ? `🎁 ${bold(getFirstOrderStaffReminder(order.discountPercent))}` : ""}
+    ${!order.isFirstOrder && order.discountPercent > 0 ? `🎁 ${bold(`Обязательно примените скидку ${order.discountPercent}% от стоимости заказа при оплате.`)}` : ""}
+    🎟️ ${text(getLoyaltyProgressText(order.user.completedOrdersCount))} Бонус за выполненные заказы определяется при завершении заказа.
     👤 Клиент: ${text(customer.name)}
     📱 Платформа: ${customer.platform}
     🆔 ID клиента: ${order.user.id}${customer.externalId ? ` · ${customer.platform} ID: ${text(String(customer.externalId))}` : ""}
@@ -91,7 +96,7 @@ const sendTelegramOrderNotification = async (
   }
   return (await sendTelegramMessage({
     chatId,
-    text: formatOrderNotification(order),
+    text: formatOrderNotification(order, "telegram"),
   }))
     ? "sent"
     : "failed";

@@ -1,4 +1,9 @@
 import { Order } from "@/types";
+import type { OrderStatus } from "@/app/generated/prisma/enums";
+
+export type UpdateOrderStatusRequest =
+  | { status: "CANCELLED"; cancellationReason: string }
+  | { status: Exclude<OrderStatus, "CANCELLED">; cancellationReason?: never };
 
 export interface ListRequest {
   page: number;

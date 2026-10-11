@@ -1,4 +1,4 @@
-import type { SessionUser } from "@/types/session";
+import type { CurrentUser, SessionUser } from "@/types/session";
 import type { VkProfile } from "@/types/vk-profile";
 import { URL } from "@/config/url";
 import { MINI_APP_STARTUP_TIMEOUT_MS } from "@/config/mini-app";
@@ -20,7 +20,7 @@ export const usersApi = {
     return data.user;
   },
   me: async () => {
-    const { data } = await apiInstance.get<{ user: SessionUser }>(
+    const { data } = await apiInstance.get<{ user: CurrentUser }>(
       URL.UPSERT_USER
     );
     return data.user;

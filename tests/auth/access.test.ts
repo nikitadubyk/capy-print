@@ -7,6 +7,12 @@ import { installDatabaseStub } from "./database-stub";
 test("business API: user and access come exclusively from the server session", async (t) => {
   installDatabaseStub(t);
   const { prisma } = await import("@/lib/prisma");
+  t.mock.method(prisma, "$transaction", async (callback: any) =>
+    callback(prisma)
+  );
+  t.mock.method(prisma.user, "findUniqueOrThrow", async () => ({
+    completedOrdersCount: 0,
+  }));
   const { GET: list, POST: create } = await import("@/app/api/orders/route");
   const {
     GET: details,
@@ -17,6 +23,7 @@ test("business API: user and access come exclusively from the server session", a
   const { ourFileRouter } = await import("@/app/api/uploadthing/core");
   const user = {
     id: 7,
+    completedOrdersCount: 0,
     role: "USER",
     telegramId: BigInt(42),
     firstName: "Капи",

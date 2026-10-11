@@ -8,6 +8,7 @@ export const orderUserSelect = {
   firstName: true,
   lastName: true,
   telegramId: true,
+  completedOrdersCount: true,
   identities: {
     select: { provider: true, externalUserId: true, vkMessagesEnabled: true },
   },

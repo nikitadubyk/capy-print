@@ -1,0 +1,2 @@
+export const LOYALTY_DISCOUNT_PERCENT = 5;
+export const LOYALTY_ORDER_INTERVAL = 3;

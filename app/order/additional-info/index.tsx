@@ -10,6 +10,7 @@ import { twMerge } from "tailwind-merge";
 import { Urgency, UrgencyTitle } from "@/types";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
+import { OrderOffers } from "@/components/order-offers";
 import {
   type OrderFormData,
   getWorkingHoursDescription,
@@ -44,6 +45,7 @@ export const AdditionalInfo = ({ onBack }: AdditionalInfoProps) => {
         description="Шаг 2 из 2 · Срок получения и комментарий"
       />
       <div className="flex flex-col gap-6">
+        <OrderOffers />
         <SectionCard>
           <Controller
             name="urgency"

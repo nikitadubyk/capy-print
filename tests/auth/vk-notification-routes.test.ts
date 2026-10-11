@@ -19,6 +19,15 @@ test("VK permission and status routes use verified identity, preserve status on 
   process.env.VK_GROUP_ID = "123";
   process.env.VK_GROUP_TOKEN = "test-community-token";
   const { prisma } = await import("@/lib/prisma");
+  t.mock.method(prisma, "$transaction", async (callback: any) =>
+    callback(prisma)
+  );
+  t.mock.method(prisma.user, "findUniqueOrThrow", async () => ({
+    completedOrdersCount: 0,
+  }));
+  t.mock.method(prisma.user, "update", async () => ({
+    completedOrdersCount: 1,
+  }));
   const { GET, POST } = await import("@/app/api/vk/messages/permission/route");
   const { PATCH } = await import("@/app/api/orders/details/route");
   const user = {
@@ -58,7 +67,14 @@ test("VK permission and status routes use verified identity, preserve status on 
         ...(authorized && { Authorization: `Bearer vk_${"a".repeat(43)}` }),
         "Content-Type": "application/json",
       },
-      ...(status && { body: JSON.stringify({ status }) }),
+      ...(status && {
+        body: JSON.stringify({
+          status,
+          ...(status === "CANCELLED" && {
+            cancellationReason: "Не удалось открыть файл",
+          }),
+        }),
+      }),
     });
   assert.equal(
     (await GET(request("vk/messages/permission?user_id=999", undefined, false)))
@@ -98,6 +114,8 @@ test("VK permission and status routes use verified identity, preserve status on 
 
   let order = {
     id: 11,
+    userId: 7,
+    discountPercent: 0,
     status: "PENDING",
     updatedAt: new Date("2026-10-09T10:00:00Z"),
     user: {
@@ -166,7 +184,14 @@ test("VK permission and status routes use verified identity, preserve status on 
       : { response: { is_allowed: 1 } },
   }));
   calls = send.mock.callCount();
-  const cancelled = await PATCH(request("orders/details?id=11", "CANCELLED"));
+  assert.equal(
+    (await PATCH(request("orders/details?id=11", "CANCELLED"))).status,
+    409
+  );
+  assert.equal(send.mock.callCount(), calls);
+  // A different order can still be cancelled before completion.
+  order = { ...order, id: 12, status: "PRINTING" };
+  const cancelled = await PATCH(request("orders/details?id=12", "CANCELLED"));
   assert.equal(cancelled.status, 200);
   assert.equal((await cancelled.json()).status, "CANCELLED");
   assert.equal(send.mock.callCount(), calls + 2);

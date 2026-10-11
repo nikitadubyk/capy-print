@@ -17,9 +17,13 @@ test("VK creation refreshes the cached My orders list using the same Bearer owne
   clearClientSession();
   t.after(clearClientSession);
   const { prisma } = await import("@/lib/prisma");
+  t.mock.method(prisma, "$transaction", async (callback: any) =>
+    callback(prisma)
+  );
   const { GET, POST } = await import("@/app/api/orders/route");
   const user = {
     id: 6,
+    completedOrdersCount: 0,
     role: "USER" as const,
     telegramId: null,
     firstName: "Анна",
@@ -34,6 +38,7 @@ test("VK creation refreshes the cached My orders list using the same Bearer owne
   await establishSession("vk", "test-launch-data");
   login.mock.restore();
   const orders: any[] = [];
+  t.mock.method(prisma.order, "findFirst", async () => orders[0] ?? null);
   t.mock.method(prisma.session, "findFirst", async () => ({ identity }));
   t.mock.method(prisma.order, "count", async ({ where }: any) => {
     assert.equal(where.userId, 6);

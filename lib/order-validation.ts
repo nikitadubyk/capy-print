@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CANCELLATION_REASON_MAX_LENGTH } from "@/config/order-cancellation";
 import {
   OrderStatus,
   PaperSize,
@@ -50,11 +51,31 @@ export const createOrderSchema = z
 export const updateOrderSchema = z
   .object({
     status: z.enum(OrderStatus).optional(),
+    cancellationReason: z
+      .string()
+      .trim()
+      .min(1, "Укажите причину отмены")
+      .max(CANCELLATION_REASON_MAX_LENGTH)
+      .optional(),
     comment: z.string().max(5000).nullable().optional(),
     urgency: z.enum(UrgencyType).optional(),
     deadlineAt: deadline.nullable().optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((data, context) => {
+    if (data.status === "CANCELLED" && !data.cancellationReason)
+      context.addIssue({
+        code: "custom",
+        path: ["cancellationReason"],
+        message: "Укажите причину отмены",
+      });
+    if (data.cancellationReason !== undefined && data.status !== "CANCELLED")
+      context.addIssue({
+        code: "custom",
+        path: ["cancellationReason"],
+        message: "Причину можно указать только при отмене заказа",
+      });
+  });
 
 export const listOrdersSchema = z.object({
   page: z.coerce.number().int().positive().default(1),

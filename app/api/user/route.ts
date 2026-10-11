@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireRole, sessionHeaders, sessionUserDto } from "@/lib";
 import { getSession, prisma, sessionUserSelect } from "@/lib";
 import { z } from "zod";
+import { orderDiscounts } from "@/lib/order-discounts.server";
 
 const vkProfileSchema = z
   .object({
@@ -68,8 +69,21 @@ export const PATCH = async (request: Request) => {
 export const GET = async (request: Request) => {
   const result = await requireRole(request, "USER");
   if (result instanceof NextResponse) return result;
-  return NextResponse.json(
-    { user: sessionUserDto(result.user) },
-    { headers: sessionHeaders }
-  );
+  try {
+    const discounts = await orderDiscounts.getUserState(result.user.id);
+    return NextResponse.json(
+      {
+        user: {
+          ...sessionUserDto(result.user),
+          ...discounts,
+        },
+      },
+      { headers: sessionHeaders }
+    );
+  } catch {
+    return NextResponse.json(
+      { error: "Не удалось загрузить данные пользователя" },
+      { status: 500, headers: sessionHeaders }
+    );
+  }
 };

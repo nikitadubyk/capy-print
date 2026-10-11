@@ -86,7 +86,8 @@ export const UserScalarFieldEnum = {
   photoUrl: 'photoUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  role: 'role'
+  role: 'role',
+  completedOrdersCount: 'completedOrdersCount'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -117,6 +118,9 @@ export const OrderScalarFieldEnum = {
   userId: 'userId',
   status: 'status',
   comment: 'comment',
+  cancellationReason: 'cancellationReason',
+  isFirstOrder: 'isFirstOrder',
+  discountPercent: 'discountPercent',
   urgency: 'urgency',
   deadlineAt: 'deadlineAt',
   createdAt: 'createdAt',

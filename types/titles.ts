@@ -7,7 +7,6 @@ export const OrderStatusTitle = {
   [OrderStatus.CANCELLED]: "Отменен",
   [OrderStatus.PRINTING]: "Печатаем",
   [OrderStatus.COMPLETED]: "Выполнено",
-  [OrderStatus.PROCESSING]: "В процессе",
 };
 
 export const UrgencyTitle = {

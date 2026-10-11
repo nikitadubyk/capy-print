@@ -7,6 +7,7 @@ import { Trash2 } from "lucide-react";
 import { OrderStatus } from "@/app/generated/prisma/enums";
 import { useDeleteOrder, useUpdateStatus } from "@/store/api/orders/hooks";
 import { statusOptions } from "./config";
+import { CancelOrderDialog } from "./cancel-order-dialog";
 
 export const AdminOrderControls = ({
   id,
@@ -19,18 +20,41 @@ export const AdminOrderControls = ({
   const deleteOrder = useDeleteOrder();
   const [error, setError] = useState<string | null>(null);
   const [deleteOpened, setDeleteOpened] = useState(false);
+  const [cancelOpened, setCancelOpened] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
   const busy = updateStatus.isPending || deleteOrder.isPending;
 
   const handleStatusChange = (value: string | null) => {
     if (!value || value === status || busy) return;
     setError(null);
+    const nextStatus = value as OrderStatus;
+    if (nextStatus === "CANCELLED") {
+      setCancelError(null);
+      setCancelOpened(true);
+      return;
+    }
     updateStatus.mutate(
-      { id: String(id), status: value as OrderStatus },
+      { id: String(id), status: nextStatus },
       {
         onError: () =>
           setError("Не удалось изменить статус. Попробуйте ещё раз."),
       }
     );
+  };
+
+  const handleCancel = async (cancellationReason: string) => {
+    if (busy) return;
+    setCancelError(null);
+    try {
+      await updateStatus.mutateAsync({
+        id: String(id),
+        status: "CANCELLED",
+        cancellationReason,
+      });
+      setCancelOpened(false);
+    } catch {
+      setCancelError("Не удалось отменить заказ. Попробуйте ещё раз.");
+    }
   };
 
   const handleDelete = () => {
@@ -49,11 +73,16 @@ export const AdminOrderControls = ({
         aria-label={`Статус заказа #${id}`}
         value={status}
         data={statusOptions}
-        disabled={busy}
+        disabled={busy || status === "COMPLETED"}
         onChange={handleStatusChange}
         rightSection={updateStatus.isPending ? <Loader size={20} /> : undefined}
         comboboxProps={{ dropdownPadding: 6 }}
       />
+      {status === "COMPLETED" && (
+        <Text size="sm" c="dimmed" className="mt-2">
+          Статус «Выполнено» окончательный.
+        </Text>
+      )}
       {error && !deleteOpened && (
         <Alert color="red" className="mt-3" role="alert">
           {error}
@@ -112,6 +141,15 @@ export const AdminOrderControls = ({
           </Button>
         </div>
       </Modal>
+      {cancelOpened && (
+        <CancelOrderDialog
+          id={id}
+          busy={busy}
+          error={cancelError}
+          onClose={() => setCancelOpened(false)}
+          onConfirm={handleCancel}
+        />
+      )}
     </div>
   );
 };

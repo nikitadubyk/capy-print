@@ -15,6 +15,7 @@ export interface UserDTO {
   lastName: string | null;
   firstName: string | null;
   telegramId: string | null;
+  completedOrdersCount: number;
   identities?: Array<{
     provider: "TELEGRAM" | "VK";
     externalUserId: string;
@@ -40,9 +41,12 @@ export interface PrintJob {
 
 export interface Order {
   id: number;
+  isFirstOrder: boolean;
+  discountPercent: number;
   user: UserDTO;
   createdAt: Date;
   comment?: string;
+  cancellationReason?: string | null;
   urgency: Urgency;
   status: OrderStatus;
   deadlineAt?: string;
@@ -54,7 +58,6 @@ export const OrderStatusColor: Record<OrderStatus, DefaultMantineColor> = {
   [OrderStatus.CANCELLED]: "red",
   [OrderStatus.COMPLETED]: "green",
   [OrderStatus.PRINTING]: "yellow",
-  [OrderStatus.PROCESSING]: "yellow",
 };
 
 export const WorkSchedule = {

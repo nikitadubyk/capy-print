@@ -9,12 +9,15 @@ import { type Order, Urgency } from "@/types";
 
 const order: Order = {
   id: 41,
+  isFirstOrder: false,
+  discountPercent: 0,
   createdAt: new Date("2026-10-10T08:00:00Z"),
   status: OrderStatus.PENDING,
   urgency: Urgency.ASAP,
   printJobs: [],
   user: {
     id: 7,
+    completedOrdersCount: 0,
     firstName: "Тестовый",
     lastName: "Клиент",
     username: null,
@@ -52,4 +55,29 @@ test("administrator order details retain customer identity and contact actions",
   assert.ok(html.includes("Написать клиенту"));
   assert.ok(html.includes('href="https://vk.com/id123"'));
   assert.ok(html.includes('href="https://vk.com/im?sel=123"'));
+});
+
+test("saved first order displays the discount and mandatory staff reminder only in admin view", () => {
+  for (const isAdmin of [false, true]) {
+    const html = renderToStaticMarkup(
+      createElement(
+        ThemeProvider,
+        null,
+        createElement(OrderDetails, {
+          data: { ...order, isFirstOrder: true, discountPercent: 15 },
+          isAdmin,
+        })
+      )
+    );
+    assert.ok(html.includes("15%"));
+    assert.equal(html.includes("Обязательно примените скидку"), isAdmin);
+  }
+  const html = renderToStaticMarkup(
+    createElement(
+      ThemeProvider,
+      null,
+      createElement(OrderDetails, { data: order, isAdmin: true })
+    )
+  );
+  assert.ok(!html.includes("15%"));
 });

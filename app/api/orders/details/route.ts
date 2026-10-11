@@ -3,6 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { orderUserSelect } from "@/lib/customer";
 import { sendCustomerStatusNotification } from "@/lib/notifications";
 import {
+  orderDiscounts,
+  CompletedOrderStatusError,
+} from "@/lib/order-discounts.server";
+import {
   orderId,
   updateOrderSchema,
   sessionHeaders,
@@ -84,36 +88,23 @@ export const PATCH = async (request: NextRequest) => {
 
     const currentOrder = await prisma.order.findUnique({
       where: { id: +id },
-      select: { status: true, updatedAt: true },
+      select: {
+        id: true,
+        status: true,
+        updatedAt: true,
+        userId: true,
+        discountPercent: true,
+      },
     });
 
     if (!currentOrder) {
       return NextResponse.json({ error: "Заказ не найден" }, { status: 404 });
     }
 
-    const updateData = { ...parsed.data };
-
-    const order = await prisma.order.update({
-      // Only one competing status transition can update this version.
-      where: {
-        id: +id,
-        ...(status && {
-          status: currentOrder.status,
-          updatedAt: currentOrder.updatedAt,
-        }),
-      },
-      data: updateData,
-      include: {
-        printJobs: {
-          include: {
-            files: true,
-          },
-        },
-        user: {
-          select: orderUserSelect,
-        },
-      },
-    });
+    const { order } = await orderDiscounts.updateOrder(
+      currentOrder,
+      parsed.data
+    );
 
     if (status && status !== currentOrder.status) {
       await sendCustomerStatusNotification(order);
@@ -123,6 +114,11 @@ export const PATCH = async (request: NextRequest) => {
       headers: sessionHeaders,
     });
   } catch (error) {
+    if (error instanceof CompletedOrderStatusError)
+      return NextResponse.json(
+        { error: error.message },
+        { status: 409, headers: sessionHeaders }
+      );
     if (
       error &&
       typeof error === "object" &&

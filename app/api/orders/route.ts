@@ -4,6 +4,7 @@ import type { Prisma } from "@/app/generated/prisma/client";
 import { Order, PaperSize, Urgency } from "@/types";
 import { orderUserSelect } from "@/lib/customer";
 import { getErrorDiagnostics } from "@/lib/error-diagnostics";
+import { orderDiscounts } from "@/lib/order-discounts.server";
 import {
   createOrderSchema,
   listOrdersSchema,
@@ -55,38 +56,25 @@ export const POST = async (request: NextRequest) => {
       );
     const { printJobs, comment, urgency, deadlineAt } = parsed.data;
 
-    const order = await prisma.order.create({
-      data: {
-        urgency,
-        userId: user.id,
-        comment: comment || null,
-        deadlineAt: deadlineAt || null,
-        printJobs: {
-          create: printJobs.map((job) => ({
-            copies: job.copies || 1,
-            isColor: job.isColor || false,
-            paperSize: job.paperSize || PaperSize.A4Basic,
-            duplex: job.duplex || false,
-            files: {
-              create: job.files.map((file) => ({
-                fileUrl: file.fileUrl,
-                fileName: file.fileName,
-                fileSize: file.fileSize,
-                mimeType: file.mimeType || null,
-              })),
-            },
-          })),
-        },
-      },
-      include: {
-        printJobs: {
-          include: {
-            files: true,
+    const order = await orderDiscounts.createOrder(user.id, {
+      urgency,
+      comment: comment || null,
+      deadlineAt: deadlineAt || null,
+      printJobs: {
+        create: printJobs.map((job) => ({
+          copies: job.copies || 1,
+          isColor: job.isColor || false,
+          paperSize: job.paperSize || PaperSize.A4Basic,
+          duplex: job.duplex || false,
+          files: {
+            create: job.files.map((file) => ({
+              fileUrl: file.fileUrl,
+              fileName: file.fileName,
+              fileSize: file.fileSize,
+              mimeType: file.mimeType || null,
+            })),
           },
-        },
-        user: {
-          select: orderUserSelect,
-        },
+        })),
       },
     });
 

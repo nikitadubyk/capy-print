@@ -3,11 +3,14 @@ import { Urgency, type Order } from "@/types";
 
 export const notificationOrder: Order = {
   id: 62,
+  isFirstOrder: false,
+  discountPercent: 0,
   status: "PENDING",
   urgency: Urgency.ASAP,
   createdAt: new Date("2026-10-08T15:26:00Z"),
   user: {
     id: 6,
+    completedOrdersCount: 0,
     telegramId: null,
     firstName: "Анна <&>",
     lastName: "Иванова",

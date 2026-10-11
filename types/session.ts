@@ -14,3 +14,8 @@ export interface SessionResponse {
   platform: MiniAppPlatform;
   user: SessionUser;
 }
+
+export interface CurrentUser extends SessionUser {
+  isFirstOrder: boolean;
+  completedOrdersCount: number;
+}

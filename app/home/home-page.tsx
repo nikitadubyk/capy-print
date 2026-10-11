@@ -2,6 +2,7 @@
 
 import { Text } from "@mantine/core";
 import { PageContainer } from "@/components/page-container";
+import { OrderOffers } from "@/components/order-offers";
 
 import { HomeActions } from "./actions";
 import { HomeContacts } from "./contacts";
@@ -19,6 +20,7 @@ export const HomePage = ({ isAdmin = false }: { isAdmin?: boolean }) => (
     />
     <HomeHeader />
     <HomeHero />
+    {!isAdmin && <OrderOffers className="mb-6" />}
     <HomeActions isAdmin={isAdmin} />
     <HomeServices />
     <HomeSteps />

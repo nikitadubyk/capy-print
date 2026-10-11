@@ -8,19 +8,20 @@ datasource db {
 }
 
 model User {
-  id           Int            @id @default(autoincrement())
-  telegramId   BigInt?        @unique
-  username     String?
-  firstName    String?
-  lastName     String?
-  languageCode String?
-  isPremium    Boolean        @default(false)
-  photoUrl     String?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  role         UserRole       @default(USER)
-  orders       Order[]
-  identities   UserIdentity[]
+  id                   Int            @id @default(autoincrement())
+  telegramId           BigInt?        @unique
+  username             String?
+  firstName            String?
+  lastName             String?
+  languageCode         String?
+  isPremium            Boolean        @default(false)
+  photoUrl             String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  role                 UserRole       @default(USER)
+  completedOrdersCount Int            @default(0)
+  orders               Order[]
+  identities           UserIdentity[]
 }
 
 enum IdentityProvider {
@@ -55,8 +56,11 @@ model Order {
   userId Int
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  status  OrderStatus @default(PENDING)
-  comment String?
+  status             OrderStatus @default(PENDING)
+  comment            String?
+  cancellationReason String?
+  isFirstOrder       Boolean     @default(false)
+  discountPercent    Int         @default(0)
 
   urgency    UrgencyType @default(ASAP)
   deadlineAt String?
@@ -107,7 +111,6 @@ model PrintFile {
 
 enum OrderStatus {
   PENDING
-  PROCESSING
   PRINTING
   COMPLETED
   CANCELLED

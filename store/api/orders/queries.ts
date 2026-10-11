@@ -1,7 +1,8 @@
 import { queryOptions, type QueryClient } from "@tanstack/react-query";
 import { key, ordersApi } from "./index";
 import type { ListRequest } from "./types";
-import type { SessionUser } from "@/types/session";
+import type { CurrentUser, SessionUser } from "@/types/session";
+import { key as usersKey } from "../users";
 
 export const orderListOptions = (
   params: ListRequest,
@@ -17,5 +18,15 @@ export const orderListOptions = (
 export const createOrderOptions = (queryClient: QueryClient) => ({
   mutationKey: key,
   mutationFn: ordersApi.create,
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
+  onSuccess: async (order: Awaited<ReturnType<typeof ordersApi.create>>) => {
+    await queryClient.cancelQueries({ queryKey: [...usersKey, order.userId] });
+    queryClient.setQueryData<CurrentUser>(
+      [...usersKey, order.userId],
+      (user) => (user ? { ...user, isFirstOrder: false } : undefined)
+    );
+    return Promise.all([
+      queryClient.invalidateQueries({ queryKey: key }),
+      queryClient.invalidateQueries({ queryKey: [...usersKey, order.userId] }),
+    ]);
+  },
 });

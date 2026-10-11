@@ -10,6 +10,7 @@ import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { Routes } from "@/config/routes";
 import { homeLocation } from "@/config/home";
 import type { MiniAppPlatform } from "@/types/mini-app-auth";
+import { OrderOffers } from "@/components/order-offers";
 import Capybara from "@/public/images/capybara-success-v2.webp";
 
 export const OrderSuccessPage = ({
@@ -95,6 +96,7 @@ export const OrderSuccessPage = ({
               </div>
             </div>
           </SectionCard>
+          <OrderOffers className="mt-4 w-full text-left" />
         </div>
         <div className="flex flex-col gap-3 pb-2">
           <Button

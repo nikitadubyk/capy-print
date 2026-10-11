@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import type { OrderStatus } from "@/app/generated/prisma/enums";
 import { sendTelegramMessage } from "./telegram";
+import { getLoyaltyProgressText } from "./order-discounts";
 import {
   getVkMessagingConfig,
   isVkMessagesAllowed,
@@ -17,17 +18,29 @@ import type {
 export const formatCustomerStatusMessage = (
   id: number,
   status: OrderStatus,
-  platform: "telegram" | "vk"
+  platform: "telegram" | "vk",
+  discountPercent = 0,
+  completedOrdersCount?: number,
+  cancellationReason?: string | null
 ) => {
   const title =
     platform === "telegram"
       ? (text: string) => `<b>${text}</b>`
       : (text: string) => text;
+  const text =
+    platform === "telegram"
+      ? (value: string) =>
+          value
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+      : (value: string) => value;
   switch (status) {
     case "CANCELLED":
-      return `❌ ${title(`Ваш заказ #${id} отменен`)}\n\n`;
+      return `❌ ${title(`Ваш заказ #${id} отменен`)}${cancellationReason ? `\n\nПричина отмены:\n${text(cancellationReason)}` : "\n\n"}`;
     case "COMPLETED":
-      return `✅ ${title(`Ваш заказ #${id} готов!`)}\n\nМожете забрать его по адресу: Изотова 7 (Центральный рынок).`;
+      return `✅ ${title(`Ваш заказ #${id} готов!`)}\n\nМожете забрать его по адресу: Изотова 7 (Центральный рынок).${discountPercent > 0 ? `\n\n🎁 К этому заказу будет применена скидка ${discountPercent}% от стоимости при оплате в копицентре.` : ""}${completedOrdersCount !== undefined ? `\n\n${getLoyaltyProgressText(completedOrdersCount)}` : ""}`;
     case "PRINTING":
       return `🖨️ ${title(`Ваш заказ #${id} принят в работу!`)}\n\nМы начали печатать ваши документы. Как только заказ будет готов, вы получите уведомление.`;
     default:
@@ -50,7 +63,14 @@ const sendVkStatusNotification = async (
   order: StatusNotificationOrder,
   identity: StatusNotificationIdentity
 ): Promise<NotificationResult> => {
-  const message = formatCustomerStatusMessage(order.id, order.status, "vk");
+  const message = formatCustomerStatusMessage(
+    order.id,
+    order.status,
+    "vk",
+    order.discountPercent,
+    order.user.completedOrdersCount,
+    order.cancellationReason
+  );
   if (!message) return "skipped";
   if (identity.vkMessagesEnabled !== true) return "denied";
   if (!getVkMessagingConfig()) return "unconfigured";
@@ -69,7 +89,10 @@ const sendTelegramStatusNotification = async (
   const message = formatCustomerStatusMessage(
     order.id,
     order.status,
-    "telegram"
+    "telegram",
+    order.discountPercent,
+    order.user.completedOrdersCount,
+    order.cancellationReason
   );
   if (!message) return "skipped";
   const telegramId =

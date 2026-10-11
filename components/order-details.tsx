@@ -9,6 +9,7 @@ import { getCustomerContact } from "@/lib/customer";
 import { OrderStatusBadge } from "./order-status-badge";
 import { OrderDetailField } from "./order-detail-field";
 import { SectionCard } from "./section-card";
+import { OrderDiscountBanner } from "./order-discount-banner";
 
 interface OrderDetailsProps {
   data: Order;
@@ -40,6 +41,13 @@ export const OrderDetails = ({ data, isAdmin = false }: OrderDetailsProps) => {
           </div>
         </div>
       </div>
+
+      <OrderDiscountBanner
+        discountPercent={data.discountPercent}
+        isFirstOrder={data.isFirstOrder}
+        isAdmin={isAdmin}
+        className="mb-6"
+      />
 
       <SectionCard className="mb-6">
         <Title order={3} className="mb-4">
@@ -101,6 +109,13 @@ export const OrderDetails = ({ data, isAdmin = false }: OrderDetailsProps) => {
             <OrderDetailField icon={FileText} label="Комментарий">
               <Text fw={500} className="whitespace-pre-wrap">
                 {data.comment}
+              </Text>
+            </OrderDetailField>
+          )}
+          {data.status === "CANCELLED" && data.cancellationReason && (
+            <OrderDetailField icon={FileText} label="Причина отмены">
+              <Text fw={500} className="whitespace-pre-wrap wrap-anywhere">
+                {data.cancellationReason}
               </Text>
             </OrderDetailField>
           )}

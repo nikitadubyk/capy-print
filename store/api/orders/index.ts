@@ -3,11 +3,15 @@ import { URL } from "@/config/url";
 import { addParamsToUrl } from "@/utils";
 import { Order as OrderDTO } from "@/types";
 import { CreateOrderRequest } from "@/app/api/orders/route";
-import { Order, OrderStatus } from "@/app/generated/prisma/client";
+import { Order } from "@/app/generated/prisma/client";
 
 import { apiInstance } from "../instance";
 
-import { ListRequest, ListResponse } from "./types";
+import {
+  ListRequest,
+  ListResponse,
+  type UpdateOrderStatusRequest,
+} from "./types";
 
 export const key = ["orders"];
 
@@ -31,10 +35,10 @@ export const ordersApi = {
     return data;
   },
 
-  updateStatus: async (id: string, status: OrderStatus) => {
+  updateStatus: async (id: string, payload: UpdateOrderStatusRequest) => {
     const { data } = await apiInstance.patch<OrderDTO>(
       addParamsToUrl(URL.ORDER_DETAILS, { id }),
-      { status }
+      payload
     );
     return data;
   },

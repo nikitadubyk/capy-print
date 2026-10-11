@@ -8,7 +8,8 @@ export function installDatabaseStub(t: TestContext) {
     throw new Error("Unexpected database call in test");
   };
   root.prisma = {
-    user: { upsert: unused, update: unused },
+    $transaction: unused,
+    user: { upsert: unused, update: unused, findUniqueOrThrow: unused },
     userIdentity: { upsert: unused, findUniqueOrThrow: unused, update: unused },
     session: { create: unused, findFirst: unused, deleteMany: unused },
     order: {

@@ -19,7 +19,6 @@ export type IdentityProvider = (typeof IdentityProvider)[keyof typeof IdentityPr
 
 export const OrderStatus = {
   PENDING: 'PENDING',
-  PROCESSING: 'PROCESSING',
   PRINTING: 'PRINTING',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED'

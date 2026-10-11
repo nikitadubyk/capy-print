@@ -29,11 +29,13 @@ export type AggregateOrder = {
 export type OrderAvgAggregateOutputType = {
   id: number | null
   userId: number | null
+  discountPercent: number | null
 }
 
 export type OrderSumAggregateOutputType = {
   id: number | null
   userId: number | null
+  discountPercent: number | null
 }
 
 export type OrderMinAggregateOutputType = {
@@ -41,6 +43,9 @@ export type OrderMinAggregateOutputType = {
   userId: number | null
   status: $Enums.OrderStatus | null
   comment: string | null
+  cancellationReason: string | null
+  isFirstOrder: boolean | null
+  discountPercent: number | null
   urgency: $Enums.UrgencyType | null
   deadlineAt: string | null
   createdAt: Date | null
@@ -52,6 +57,9 @@ export type OrderMaxAggregateOutputType = {
   userId: number | null
   status: $Enums.OrderStatus | null
   comment: string | null
+  cancellationReason: string | null
+  isFirstOrder: boolean | null
+  discountPercent: number | null
   urgency: $Enums.UrgencyType | null
   deadlineAt: string | null
   createdAt: Date | null
@@ -63,6 +71,9 @@ export type OrderCountAggregateOutputType = {
   userId: number
   status: number
   comment: number
+  cancellationReason: number
+  isFirstOrder: number
+  discountPercent: number
   urgency: number
   deadlineAt: number
   createdAt: number
@@ -74,11 +85,13 @@ export type OrderCountAggregateOutputType = {
 export type OrderAvgAggregateInputType = {
   id?: true
   userId?: true
+  discountPercent?: true
 }
 
 export type OrderSumAggregateInputType = {
   id?: true
   userId?: true
+  discountPercent?: true
 }
 
 export type OrderMinAggregateInputType = {
@@ -86,6 +99,9 @@ export type OrderMinAggregateInputType = {
   userId?: true
   status?: true
   comment?: true
+  cancellationReason?: true
+  isFirstOrder?: true
+  discountPercent?: true
   urgency?: true
   deadlineAt?: true
   createdAt?: true
@@ -97,6 +113,9 @@ export type OrderMaxAggregateInputType = {
   userId?: true
   status?: true
   comment?: true
+  cancellationReason?: true
+  isFirstOrder?: true
+  discountPercent?: true
   urgency?: true
   deadlineAt?: true
   createdAt?: true
@@ -108,6 +127,9 @@ export type OrderCountAggregateInputType = {
   userId?: true
   status?: true
   comment?: true
+  cancellationReason?: true
+  isFirstOrder?: true
+  discountPercent?: true
   urgency?: true
   deadlineAt?: true
   createdAt?: true
@@ -206,6 +228,9 @@ export type OrderGroupByOutputType = {
   userId: number
   status: $Enums.OrderStatus
   comment: string | null
+  cancellationReason: string | null
+  isFirstOrder: boolean
+  discountPercent: number
   urgency: $Enums.UrgencyType
   deadlineAt: string | null
   createdAt: Date
@@ -240,6 +265,9 @@ export type OrderWhereInput = {
   userId?: Prisma.IntFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   comment?: Prisma.StringNullableFilter<"Order"> | string | null
+  cancellationReason?: Prisma.StringNullableFilter<"Order"> | string | null
+  isFirstOrder?: Prisma.BoolFilter<"Order"> | boolean
+  discountPercent?: Prisma.IntFilter<"Order"> | number
   urgency?: Prisma.EnumUrgencyTypeFilter<"Order"> | $Enums.UrgencyType
   deadlineAt?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
@@ -253,6 +281,9 @@ export type OrderOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   comment?: Prisma.SortOrderInput | Prisma.SortOrder
+  cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  isFirstOrder?: Prisma.SortOrder
+  discountPercent?: Prisma.SortOrder
   urgency?: Prisma.SortOrder
   deadlineAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -269,6 +300,9 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.IntFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   comment?: Prisma.StringNullableFilter<"Order"> | string | null
+  cancellationReason?: Prisma.StringNullableFilter<"Order"> | string | null
+  isFirstOrder?: Prisma.BoolFilter<"Order"> | boolean
+  discountPercent?: Prisma.IntFilter<"Order"> | number
   urgency?: Prisma.EnumUrgencyTypeFilter<"Order"> | $Enums.UrgencyType
   deadlineAt?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
@@ -282,6 +316,9 @@ export type OrderOrderByWithAggregationInput = {
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   comment?: Prisma.SortOrderInput | Prisma.SortOrder
+  cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  isFirstOrder?: Prisma.SortOrder
+  discountPercent?: Prisma.SortOrder
   urgency?: Prisma.SortOrder
   deadlineAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -301,6 +338,9 @@ export type OrderScalarWhereWithAggregatesInput = {
   userId?: Prisma.IntWithAggregatesFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
   comment?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  cancellationReason?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  isFirstOrder?: Prisma.BoolWithAggregatesFilter<"Order"> | boolean
+  discountPercent?: Prisma.IntWithAggregatesFilter<"Order"> | number
   urgency?: Prisma.EnumUrgencyTypeWithAggregatesFilter<"Order"> | $Enums.UrgencyType
   deadlineAt?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -310,6 +350,9 @@ export type OrderScalarWhereWithAggregatesInput = {
 export type OrderCreateInput = {
   status?: $Enums.OrderStatus
   comment?: string | null
+  cancellationReason?: string | null
+  isFirstOrder?: boolean
+  discountPercent?: number
   urgency?: $Enums.UrgencyType
   deadlineAt?: string | null
   createdAt?: Date | string
@@ -323,6 +366,9 @@ export type OrderUncheckedCreateInput = {
   userId: number
   status?: $Enums.OrderStatus
   comment?: string | null
+  cancellationReason?: string | null
+  isFirstOrder?: boolean
+  discountPercent?: number
   urgency?: $Enums.UrgencyType
   deadlineAt?: string | null
   createdAt?: Date | string
@@ -333,6 +379,9 @@ export type OrderUncheckedCreateInput = {
 export type OrderUpdateInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFirstOrder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  discountPercent?: Prisma.IntFieldUpdateOperationsInput | number
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
   deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -346,6 +395,9 @@ export type OrderUncheckedUpdateInput = {
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFirstOrder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  discountPercent?: Prisma.IntFieldUpdateOperationsInput | number
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
   deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -358,6 +410,9 @@ export type OrderCreateManyInput = {
   userId: number
   status?: $Enums.OrderStatus
   comment?: string | null
+  cancellationReason?: string | null
+  isFirstOrder?: boolean
+  discountPercent?: number
   urgency?: $Enums.UrgencyType
   deadlineAt?: string | null
   createdAt?: Date | string
@@ -367,6 +422,9 @@ export type OrderCreateManyInput = {
 export type OrderUpdateManyMutationInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFirstOrder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  discountPercent?: Prisma.IntFieldUpdateOperationsInput | number
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
   deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -378,6 +436,9 @@ export type OrderUncheckedUpdateManyInput = {
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFirstOrder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  discountPercent?: Prisma.IntFieldUpdateOperationsInput | number
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
   deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -399,6 +460,9 @@ export type OrderCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   comment?: Prisma.SortOrder
+  cancellationReason?: Prisma.SortOrder
+  isFirstOrder?: Prisma.SortOrder
+  discountPercent?: Prisma.SortOrder
   urgency?: Prisma.SortOrder
   deadlineAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -408,6 +472,7 @@ export type OrderCountOrderByAggregateInput = {
 export type OrderAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  discountPercent?: Prisma.SortOrder
 }
 
 export type OrderMaxOrderByAggregateInput = {
@@ -415,6 +480,9 @@ export type OrderMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   comment?: Prisma.SortOrder
+  cancellationReason?: Prisma.SortOrder
+  isFirstOrder?: Prisma.SortOrder
+  discountPercent?: Prisma.SortOrder
   urgency?: Prisma.SortOrder
   deadlineAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -426,6 +494,9 @@ export type OrderMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   comment?: Prisma.SortOrder
+  cancellationReason?: Prisma.SortOrder
+  isFirstOrder?: Prisma.SortOrder
+  discountPercent?: Prisma.SortOrder
   urgency?: Prisma.SortOrder
   deadlineAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -435,6 +506,7 @@ export type OrderMinOrderByAggregateInput = {
 export type OrderSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  discountPercent?: Prisma.SortOrder
 }
 
 export type OrderScalarRelationFilter = {
@@ -509,6 +581,9 @@ export type OrderUpdateOneRequiredWithoutPrintJobsNestedInput = {
 export type OrderCreateWithoutUserInput = {
   status?: $Enums.OrderStatus
   comment?: string | null
+  cancellationReason?: string | null
+  isFirstOrder?: boolean
+  discountPercent?: number
   urgency?: $Enums.UrgencyType
   deadlineAt?: string | null
   createdAt?: Date | string
@@ -520,6 +595,9 @@ export type OrderUncheckedCreateWithoutUserInput = {
   id?: number
   status?: $Enums.OrderStatus
   comment?: string | null
+  cancellationReason?: string | null
+  isFirstOrder?: boolean
+  discountPercent?: number
   urgency?: $Enums.UrgencyType
   deadlineAt?: string | null
   createdAt?: Date | string
@@ -561,6 +639,9 @@ export type OrderScalarWhereInput = {
   userId?: Prisma.IntFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   comment?: Prisma.StringNullableFilter<"Order"> | string | null
+  cancellationReason?: Prisma.StringNullableFilter<"Order"> | string | null
+  isFirstOrder?: Prisma.BoolFilter<"Order"> | boolean
+  discountPercent?: Prisma.IntFilter<"Order"> | number
   urgency?: Prisma.EnumUrgencyTypeFilter<"Order"> | $Enums.UrgencyType
   deadlineAt?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
@@ -570,6 +651,9 @@ export type OrderScalarWhereInput = {
 export type OrderCreateWithoutPrintJobsInput = {
   status?: $Enums.OrderStatus
   comment?: string | null
+  cancellationReason?: string | null
+  isFirstOrder?: boolean
+  discountPercent?: number
   urgency?: $Enums.UrgencyType
   deadlineAt?: string | null
   createdAt?: Date | string
@@ -582,6 +666,9 @@ export type OrderUncheckedCreateWithoutPrintJobsInput = {
   userId: number
   status?: $Enums.OrderStatus
   comment?: string | null
+  cancellationReason?: string | null
+  isFirstOrder?: boolean
+  discountPercent?: number
   urgency?: $Enums.UrgencyType
   deadlineAt?: string | null
   createdAt?: Date | string
@@ -607,6 +694,9 @@ export type OrderUpdateToOneWithWhereWithoutPrintJobsInput = {
 export type OrderUpdateWithoutPrintJobsInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFirstOrder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  discountPercent?: Prisma.IntFieldUpdateOperationsInput | number
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
   deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -619,6 +709,9 @@ export type OrderUncheckedUpdateWithoutPrintJobsInput = {
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFirstOrder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  discountPercent?: Prisma.IntFieldUpdateOperationsInput | number
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
   deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -629,6 +722,9 @@ export type OrderCreateManyUserInput = {
   id?: number
   status?: $Enums.OrderStatus
   comment?: string | null
+  cancellationReason?: string | null
+  isFirstOrder?: boolean
+  discountPercent?: number
   urgency?: $Enums.UrgencyType
   deadlineAt?: string | null
   createdAt?: Date | string
@@ -638,6 +734,9 @@ export type OrderCreateManyUserInput = {
 export type OrderUpdateWithoutUserInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFirstOrder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  discountPercent?: Prisma.IntFieldUpdateOperationsInput | number
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
   deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -649,6 +748,9 @@ export type OrderUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFirstOrder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  discountPercent?: Prisma.IntFieldUpdateOperationsInput | number
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
   deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -660,6 +762,9 @@ export type OrderUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFirstOrder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  discountPercent?: Prisma.IntFieldUpdateOperationsInput | number
   urgency?: Prisma.EnumUrgencyTypeFieldUpdateOperationsInput | $Enums.UrgencyType
   deadlineAt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -702,6 +807,9 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   userId?: boolean
   status?: boolean
   comment?: boolean
+  cancellationReason?: boolean
+  isFirstOrder?: boolean
+  discountPercent?: boolean
   urgency?: boolean
   deadlineAt?: boolean
   createdAt?: boolean
@@ -716,6 +824,9 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   userId?: boolean
   status?: boolean
   comment?: boolean
+  cancellationReason?: boolean
+  isFirstOrder?: boolean
+  discountPercent?: boolean
   urgency?: boolean
   deadlineAt?: boolean
   createdAt?: boolean
@@ -728,6 +839,9 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   userId?: boolean
   status?: boolean
   comment?: boolean
+  cancellationReason?: boolean
+  isFirstOrder?: boolean
+  discountPercent?: boolean
   urgency?: boolean
   deadlineAt?: boolean
   createdAt?: boolean
@@ -740,13 +854,16 @@ export type OrderSelectScalar = {
   userId?: boolean
   status?: boolean
   comment?: boolean
+  cancellationReason?: boolean
+  isFirstOrder?: boolean
+  discountPercent?: boolean
   urgency?: boolean
   deadlineAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "status" | "comment" | "urgency" | "deadlineAt" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "status" | "comment" | "cancellationReason" | "isFirstOrder" | "discountPercent" | "urgency" | "deadlineAt" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   printJobs?: boolean | Prisma.Order$printJobsArgs<ExtArgs>
@@ -770,6 +887,9 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     userId: number
     status: $Enums.OrderStatus
     comment: string | null
+    cancellationReason: string | null
+    isFirstOrder: boolean
+    discountPercent: number
     urgency: $Enums.UrgencyType
     deadlineAt: string | null
     createdAt: Date
@@ -1203,6 +1323,9 @@ export interface OrderFieldRefs {
   readonly userId: Prisma.FieldRef<"Order", 'Int'>
   readonly status: Prisma.FieldRef<"Order", 'OrderStatus'>
   readonly comment: Prisma.FieldRef<"Order", 'String'>
+  readonly cancellationReason: Prisma.FieldRef<"Order", 'String'>
+  readonly isFirstOrder: Prisma.FieldRef<"Order", 'Boolean'>
+  readonly discountPercent: Prisma.FieldRef<"Order", 'Int'>
   readonly urgency: Prisma.FieldRef<"Order", 'UrgencyType'>
   readonly deadlineAt: Prisma.FieldRef<"Order", 'String'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>

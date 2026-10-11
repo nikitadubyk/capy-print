@@ -12,6 +12,10 @@ test("order creation persists before delivery and remains successful when any/al
   installNotificationEnv(t);
   installDatabaseStub(t);
   const { prisma } = await import("@/lib/prisma");
+  t.mock.method(prisma, "$transaction", async (callback: any) =>
+    callback(prisma)
+  );
+  t.mock.method(prisma.order, "findFirst", async () => null);
   const { POST } = await import("@/app/api/orders/route");
   t.mock.method(console, "error", () => {});
   const user = { ...notificationOrder.user, role: "USER" as const };

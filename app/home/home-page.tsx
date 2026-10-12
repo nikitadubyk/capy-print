@@ -11,6 +11,7 @@ import { HomeHero } from "./hero";
 import { HomeLocation } from "./location";
 import { HomeServices } from "./services";
 import { HomeSteps } from "./steps";
+import { HomeWorks } from "./works";
 
 export const HomePage = ({ isAdmin = false }: { isAdmin?: boolean }) => (
   <PageContainer className="relative isolate max-w-5xl pt-[max(16px,env(safe-area-inset-top))] pr-[max(16px,env(safe-area-inset-right))] pb-[max(24px,env(safe-area-inset-bottom))] pl-[max(16px,env(safe-area-inset-left))] text-capy-ink md:px-10 [&_:focus-visible]:outline-3 [&_:focus-visible]:outline-offset-4 [&_:focus-visible]:outline-capy-accent">
@@ -24,6 +25,7 @@ export const HomePage = ({ isAdmin = false }: { isAdmin?: boolean }) => (
     <HomeActions isAdmin={isAdmin} />
     <HomeServices />
     <HomeSteps />
+    <HomeWorks />
     <HomeLocation />
     <HomeContacts />
     <footer className="flex w-full justify-between pt-6 md:mt-5">

@@ -6,6 +6,8 @@ import "./globals.css";
 import "@mantine/core/styles.layer.css";
 import "@mantine/dates/styles.layer.css";
 import "@mantine/dropzone/styles.layer.css";
+import "@mantine/carousel/styles.layer.css";
+import "@mantine/lightbox/styles.layer.css";
 
 import { MiniAppProvider } from "@/context";
 import { VkMessagesPermission } from "@/components/vk-messages-permission";

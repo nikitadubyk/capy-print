@@ -12,11 +12,11 @@ Capy Print — приложение копицентра для заказа п�
 
 ## Стек
 
-- Next.js 16, App Router, React 19, TypeScript со strict-режимом.
-- Mantine 8 и Tailwind CSS 4 для интерфейса; Lucide для иконок.
+- Next.js 16, App Router, React 19, TypeScript 7 со strict-режимом; API TypeScript 6 через npm alias для ESLint и других инструментов.
+- Mantine 9 и Tailwind CSS 4 для интерфейса; Lucide 1 для иконок. `config/theme.ts` сохраняет прежние цвета light через `v8CssVariablesResolver`.
 - React Hook Form и Zod для клиентских форм.
 - TanStack Query и Axios для клиентских запросов.
-- PostgreSQL, Prisma 7 и PostgreSQL adapter для базы.
+- PostgreSQL, Prisma и PostgreSQL adapter закреплены на 7.10.0 без диапазона версий.
 - UploadThing для загрузки файлов.
 - `@tma.js/sdk-react` для Telegram Mini Apps.
 - Telegram Bot API вызывается через Axios; наличие `grammy` в зависимостях не означает, что webhook построен на нём.
@@ -73,6 +73,8 @@ Capy Print — приложение копицентра для заказа п�
 ## Команды и окружение
 
 Используйте npm и существующий `package-lock.json`.
+
+Обновление зависимостей от 12 октября 2026: [версии, документация переходов и проверки](docs/dependency-update-2026-10-12.md). Node.js — 22.13+ в ветке 22 или 24+; Docker использует ветку 22. `npm run compile` запускает TypeScript 7.0.2 (`@typescript/native` — alias `typescript`), пакет `typescript` — alias `@typescript/typescript6` для совместимости API. Установку выполняйте с существующим `.npmrc`: peer ranges трёх ESLint-плагинов пока не включают ESLint 10; `eslint-config-next` 16.4 содержит слой совместимости.
 
 | Команда                                  | Назначение                                                                                                           |
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |

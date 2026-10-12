@@ -2,6 +2,8 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+Dependencies were updated on October 12, 2026. Use Node.js 22.13+ (22.x) or 24+ and install with `npm ci`. Prisma is pinned to 7.10.0. See [migration notes and validation](docs/dependency-update-2026-10-12.md), including the TypeScript aliases and ESLint plugin peer-range limitation.
+
 First, run the development server:
 
 ```bash

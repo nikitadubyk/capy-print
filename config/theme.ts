@@ -12,6 +12,7 @@ import {
   rem,
   Text,
   Title,
+  v8CssVariablesResolver,
   type CSSVariablesResolver,
 } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
@@ -147,12 +148,20 @@ export const appTheme = createTheme({
   respectReducedMotion: true,
 });
 
-export const appCssVariables: CSSVariablesResolver = () => ({
-  variables: { "--capy-lilac": "#e6e1fa", "--capy-line": "#dedfe2" },
-  light: {
-    "--mantine-color-body": "#fafaf8",
-    "--mantine-color-text": "#101a2c",
-    "--mantine-color-dimmed": "#586271",
-  },
-  dark: {},
-});
+export const appCssVariables: CSSVariablesResolver = (theme) => {
+  const legacyVariables = v8CssVariablesResolver(theme);
+  return {
+    variables: {
+      ...legacyVariables.variables,
+      "--capy-lilac": "#e6e1fa",
+      "--capy-line": "#dedfe2",
+    },
+    light: {
+      ...legacyVariables.light,
+      "--mantine-color-body": "#fafaf8",
+      "--mantine-color-text": "#101a2c",
+      "--mantine-color-dimmed": "#586271",
+    },
+    dark: legacyVariables.dark,
+  };
+};

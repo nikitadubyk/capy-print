@@ -1,6 +1,7 @@
 import bridge from "@vkontakte/vk-bridge";
 import type { MiniAppAdapter } from "./types";
 import { MINI_APP_STARTUP_TIMEOUT_MS } from "@/config/mini-app";
+import { subscribeVkSafeArea } from "./vk-safe-area";
 
 let initialization: Promise<unknown> | null = null;
 
@@ -91,6 +92,14 @@ const getLaunchData = async () => {
 
 export const vkAdapter: MiniAppAdapter = {
   platform: "vk",
+  subscribeSafeArea: () =>
+    subscribeVkSafeArea(bridge, document.documentElement, async () => {
+      await initializeBridge();
+      return withBridgeTimeout(
+        () => bridge.send("VKWebAppGetConfig"),
+        "Не удалось получить отступы VK."
+      );
+    }),
   getProfile: () =>
     withBridgeTimeout(
       () => bridge.send("VKWebAppGetUserInfo"),

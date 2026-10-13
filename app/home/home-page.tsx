@@ -14,7 +14,7 @@ import { HomeSteps } from "./steps";
 import { HomeWorks } from "./works";
 
 export const HomePage = ({ isAdmin = false }: { isAdmin?: boolean }) => (
-  <PageContainer className="relative isolate max-w-5xl pt-[max(16px,env(safe-area-inset-top))] pr-[max(16px,env(safe-area-inset-right))] pb-[max(24px,env(safe-area-inset-bottom))] pl-[max(16px,env(safe-area-inset-left))] text-capy-ink md:px-10 [&_:focus-visible]:outline-3 [&_:focus-visible]:outline-offset-4 [&_:focus-visible]:outline-capy-accent">
+  <PageContainer className="relative isolate max-w-5xl text-capy-ink [--page-top:16px] [--page-bottom:24px] md:[--page-inline:40px] [&_:focus-visible]:outline-3 [&_:focus-visible]:outline-offset-4 [&_:focus-visible]:outline-capy-accent">
     <div
       aria-hidden="true"
       className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-128 bg-linear-155 from-capy-blue via-capy-lilac/30 via-30% to-capy-canvas to-80% md:h-176 md:rounded-b-3xl"

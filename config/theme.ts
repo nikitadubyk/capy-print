@@ -65,7 +65,12 @@ export const appTheme = createTheme({
     CloseButton: CloseButton.extend({ defaultProps: { size: 44 } }),
     Modal: Modal.extend({
       defaultProps: { centered: true, radius: "xl" },
-      classNames: { title: "font-semibold", close: "min-h-11 min-w-11" },
+      classNames: {
+        title: "font-semibold",
+        close: "min-h-11 min-w-11",
+        inner: "capy-modal-inner",
+        content: "capy-modal-content",
+      },
     }),
     Select: Select.extend({
       defaultProps: { size: "lg", allowDeselect: false },

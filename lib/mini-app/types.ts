@@ -4,6 +4,7 @@ import type { VkProfile } from "@/types/vk-profile";
 export interface MiniAppAdapter {
   platform: MiniAppPlatform;
   initialize(): Promise<string>;
+  subscribeSafeArea?(): () => void;
   getProfile?(): Promise<VkProfile>;
   allowMessagesFromGroup?(groupId: number): Promise<boolean>;
 }

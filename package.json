@@ -28,6 +28,7 @@
     "compile": "tsc -p ./tsconfig.json"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1150.0",
     "@hookform/resolvers": "^5.9.1",
     "@mantine/carousel": "9.7.2",
     "@mantine/core": "9.7.2",
@@ -42,7 +43,6 @@
     "@tanstack/react-query": "^5.104.2",
     "@tma.js/init-data-node": "^2.0.8",
     "@tma.js/sdk-react": "^3.0.23",
-    "@uploadthing/react": "^7.3.3",
     "@vkontakte/vk-bridge": "^3.0.2",
     "axios": "^1.20.0",
     "class-variance-authority": "^0.7.1",
@@ -61,7 +61,6 @@
     "react-hot-toast": "^2.6.1",
     "tailwind-merge": "^3.7.0",
     "tailwind-variants": "^3.3.1",
-    "uploadthing": "^7.7.4",
     "vk-launch-params": "^1.0.0",
     "zod": "^4.6.6"
   },

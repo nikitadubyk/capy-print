@@ -1,11 +1,9 @@
 "use client";
 
-import { clearClientSession, getSessionHeaders } from "@/store/api/session";
-
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Routes } from "@/config/routes";
-import { useUploadThing } from "@/lib/uploadthing";
+import { uploadFiles } from "@/store/api/uploads";
 import { useCreateOrder } from "@/store/api/orders/hooks";
 
 import { ProcessStage } from "./types";
@@ -25,19 +23,6 @@ const Order = () => {
 
   const { mutateAsync } = useCreateOrder();
 
-  const { startUpload } = useUploadThing("fileUploader", {
-    headers: getSessionHeaders,
-    onUploadProgress: (p) => {
-      if (!submitting.current) return;
-      setUploadProgress(p);
-    },
-    onUploadError: (error) => {
-      if (error.code === "FORBIDDEN") clearClientSession();
-      // UploadThing otherwise resolves startUpload with undefined after this callback.
-      throw error;
-    },
-  });
-
   const onSubmit = async (data: OrderFormData) => {
     if (submitting.current) return;
     submitting.current = true;
@@ -47,7 +32,9 @@ const Order = () => {
       setStage("uploading");
       setUploadProgress(0);
       console.info("[Capy Print][order] Загрузка файлов");
-      const payload = await prepareOrderWithUploads(data, startUpload);
+      const payload = await prepareOrderWithUploads(data, (files) =>
+        uploadFiles(files, setUploadProgress)
+      );
       phase = "creating";
       setStage("creating");
       console.info("[Capy Print][order] Создание заказа");

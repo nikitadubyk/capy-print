@@ -154,14 +154,18 @@ export const WorkGallery = ({
         vars={() => ({
           root: {
             "--lightbox-toolbar-height":
-              "calc(56px + env(safe-area-inset-top))",
+              "calc(56px + var(--capy-content-inset-top))",
             "--lightbox-thumbnails-height":
-              "calc(88px + env(safe-area-inset-bottom))",
+              "calc(88px + var(--capy-safe-area-bottom))",
           },
         })}
         styles={{
-          toolbar: { paddingTop: "env(safe-area-inset-top)" },
-          thumbnails: { paddingBottom: "env(safe-area-inset-bottom)" },
+          toolbar: {
+            paddingTop: "var(--capy-content-inset-top)",
+            paddingLeft: "var(--capy-safe-area-left)",
+            paddingRight: "var(--capy-safe-area-right)",
+          },
+          thumbnails: { paddingBottom: "var(--capy-safe-area-bottom)" },
           navigationButton: {
             minWidth: 44,
             minHeight: 44,

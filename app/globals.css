@@ -51,6 +51,23 @@
 }
 
 :root {
+  --capy-safe-area-top: max(
+    env(safe-area-inset-top, 0px),
+    var(--vk-safe-area-top, 0px)
+  );
+  --capy-safe-area-right: max(
+    env(safe-area-inset-right, 0px),
+    var(--vk-safe-area-right, 0px)
+  );
+  --capy-safe-area-bottom: max(
+    env(safe-area-inset-bottom, 0px),
+    var(--vk-safe-area-bottom, 0px)
+  );
+  --capy-safe-area-left: max(
+    env(safe-area-inset-left, 0px),
+    var(--vk-safe-area-left, 0px)
+  );
+  --capy-content-inset-top: var(--capy-safe-area-top);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -83,6 +100,65 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+}
+
+/* VK's floating menu occupies a row below the system status bar. */
+:root[data-vk-webview] {
+  --capy-safe-area-top: max(
+    env(safe-area-inset-top, 0px),
+    var(--vk-safe-area-top, 24px)
+  );
+  --capy-safe-area-bottom: max(
+    env(safe-area-inset-bottom, 0px),
+    var(--vk-safe-area-bottom, 16px)
+  );
+  --capy-content-inset-top: calc(var(--capy-safe-area-top) + 56px);
+}
+
+html {
+  scroll-padding-top: calc(var(--capy-content-inset-top) + 16px);
+  scroll-padding-bottom: calc(var(--capy-safe-area-bottom) + 24px);
+}
+
+@layer components {
+  .capy-page {
+    --page-top: 16px;
+    --page-bottom: 24px;
+    --page-inline: 16px;
+    padding-top: calc(var(--page-top) + var(--capy-content-inset-top));
+    padding-bottom: calc(var(--page-bottom) + var(--capy-safe-area-bottom));
+    padding-left: calc(var(--page-inline) + var(--capy-safe-area-left));
+    padding-right: calc(var(--page-inline) + var(--capy-safe-area-right));
+  }
+
+  @media (min-width: 48rem) {
+    .capy-page {
+      --page-top: 32px;
+      --page-bottom: 32px;
+      --page-inline: 32px;
+    }
+  }
+
+  .capy-startup-error {
+    margin-bottom: 16px;
+    margin-top: calc(16px + var(--capy-content-inset-top));
+    margin-left: calc(16px + var(--capy-safe-area-left));
+    margin-right: calc(16px + var(--capy-safe-area-right));
+  }
+
+  .capy-modal-inner {
+    padding-top: calc(var(--modal-y-offset) + var(--capy-content-inset-top));
+    padding-bottom: calc(var(--modal-y-offset) + var(--capy-safe-area-bottom));
+    padding-left: calc(var(--modal-x-offset) + var(--capy-safe-area-left));
+    padding-right: calc(var(--modal-x-offset) + var(--capy-safe-area-right));
+  }
+
+  .capy-modal-content {
+    max-height: calc(
+      100dvh - var(--modal-y-offset) * 2 - var(--capy-content-inset-top) -
+        var(--capy-safe-area-bottom)
+    );
+  }
 }
 
 @layer base {

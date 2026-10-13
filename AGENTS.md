@@ -17,7 +17,7 @@ Capy Print — приложение копицентра для заказа п�
 - React Hook Form и Zod для клиентских форм.
 - TanStack Query и Axios для клиентских запросов.
 - PostgreSQL, Prisma и PostgreSQL adapter закреплены на 7.10.0 без диапазона версий.
-- UploadThing для загрузки файлов.
+- AWS SDK S3 Client для загрузки файлов в Timeweb; настройки только серверные в env.
 - `@tma.js/sdk-react` для Telegram Mini Apps.
 - Telegram Bot API вызывается через Axios; наличие `grammy` в зависимостях не означает, что webhook построен на нём.
 
@@ -39,7 +39,7 @@ Capy Print — приложение копицентра для заказа п�
 | `app/api/user/route.ts`                                                                     | GET пользователя, isFirstOrder и completedOrdersCount; PATCH профиля VK с проверкой identity; POST отсутствует          |
 | `app/api/orders/`                                                                           | Создание, списки, детали и изменение заказов                                                                            |
 | `app/api/telegram/webhook/`                                                                 | Команды, меню и callbacks Telegram-бота                                                                                 |
-| `app/api/uploadthing/`                                                                      | Серверный файловый роутер и ограничения загрузки                                                                        |
+| `app/api/uploads/`, `lib/s3-upload.ts`, `config/s3.ts`                                      | Серверная загрузка в S3, проверка сессии/MIME/размера и постоянные URL                                                  |
 | `store/api/`                                                                                | Клиентские API-функции, hooks TanStack Query и Axios instance                                                           |
 | `context/mini-app.tsx`                                                                      | Общий MiniAppProvider/useMiniApp; пользователь и платформа из сессии, состояние запуска                                 |
 | `lib/mini-app/`                                                                             | Клиентские адаптеры Telegram SDK и VK Bridge; получение launch data и VKWebAppInit                                      |
@@ -96,7 +96,7 @@ Capy Print — приложение копицентра для заказа п�
 | `npm run docker:up` / `docker:down`      | Локальные Next.js и PostgreSQL через compose.yaml и общий .env проекта; контейнер использует db:5432                 |
 | `npm run docker:migrate` / `docker:seed` | Миграции и seed внутри локального контейнера приложения                                                              |
 
-Текущие env: `DATABASE_URL`, `TELEGRAM_BOT_TOKEN`, `ADMIN_GROUP_CHAT_ID`, `UPLOADTHING_TOKEN`, `NEXT_PUBLIC_BASE_URL`, `NEXT_PUBLIC_MINI_APP_URL`. Для серверной проверки VK: `VK_APP_ID`, `VK_APP_SECRET` (защищённый ключ приложения). Для сообщений VK: `VK_GROUP_ID`, `VK_GROUP_TOKEN` (серверный токен сообщества с правом messages), `VK_ADMIN_PEER_IDS` (служебные получатели новых заказов через запятую, только сервер). Контракт и настройки: [авторизация](docs/vk-mini-apps-ui-ux/authentication.md), [сообщения](docs/vk-mini-apps-ui-ux/notifications.md). Подключение базы определено также в `prisma.config.ts`.
+Текущие env: `DATABASE_URL`, `TELEGRAM_BOT_TOKEN`, `ADMIN_GROUP_CHAT_ID`, `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_PUBLIC_BASE_URL`, `NEXT_PUBLIC_BASE_URL`, `NEXT_PUBLIC_MINI_APP_URL`. Для серверной проверки VK: `VK_APP_ID`, `VK_APP_SECRET` (защищённый ключ приложения). Для сообщений VK: `VK_GROUP_ID`, `VK_GROUP_TOKEN` (серверный токен сообщества с правом messages), `VK_ADMIN_PEER_IDS` (служебные получатели новых заказов через запятую, только сервер). Контракт и настройки: [авторизация](docs/vk-mini-apps-ui-ux/authentication.md), [сообщения](docs/vk-mini-apps-ui-ux/notifications.md). Подключение базы определено также в `prisma.config.ts`.
 
 Не выводите значения токенов, URL базы с паролем, полные `.env` или сырые данные авторизации в логи и ответы. `.env*` игнорируются Git. Только публичные настройки получают префикс `NEXT_PUBLIC_`.
 
@@ -123,7 +123,7 @@ Capy Print — приложение копицентра для заказа п�
 Это задачи для исправления, а не образцы архитектуры:
 
 - Для сессий нужны миграции `20261003000000_mini_app_sessions` и `20261003010000_persistent_sessions`; к текущей базе они пока не применены. Bearer с префиксом vk_/telegram_ хранится только в памяти и действует до отзыва. После reload без query VK восстанавливает launch params через Bridge в iframe/WebView; старые или недоступные параметры требуют повторного открытия Mini App. Автоматические запросы запуска имеют таймаут 10 секунд, окно согласия не ограничено. Нативные VK/Telegram клиенты ещё не проверены.
-- Telegram webhook не проверяет secret token. Upload middleware уже требует серверную сессию и проверяет MIME.
+- Telegram webhook не проверяет secret token. POST /api/uploads требует серверную сессию и проверяет MIME и размер. Для постоянных ссылок требуется публичное чтение объектов S3, а лимит тела запроса на хостинге — минимум 16 МБ плюс 64 КБ; реальный бакет пока не проверен.
 - `User.telegramId` остаётся nullable переходным полем Telegram-уведомлений; аккаунты Telegram/VK разделены через UserIdentity. VK Bridge получает профиль во время загрузки приложения, PATCH сохраняет его в существующий User, затем скрывается лоадер. Темы/платформенные действия ещё не реализованы. Запрос разрешения и отправка сообщений сообщества реализованы; внешние настройки и нативная проверка VK ещё нужны.
 - Общий сервис клиентских сообщений вызывается после изменения заказа; ошибка отправки не сохраняется для повторения. Нет журнала доставки и очереди; сбой после сохранения статуса может потерять уведомление.
 - Для однократного диалога сообщений нужна миграция `20261009000000_vk_messages_preference`, к текущей базе не применена. `UserIdentity.vkMessagesEnabled`: null — выбор не сделан, true — согласие, false — отказ; перед отправкой дополнительно проверяется разрешение VK.
@@ -133,6 +133,8 @@ Capy Print — приложение копицентра для заказа п�
 - Для скидки 15% на первый заказ нужна миграция `20261011000000_first_order_discount`, к текущей базе не применена. GET пользователя возвращает `isFirstOrder`, если нет никаких заказов (включая отменённые). POST определяет и сохраняет `Order.isFirstOrder` в транзакции Prisma Serializable; старые заказы получают false. Сотрудник применяет скидку при оплате, автоматического расчёта стоимости нет. При удалении всех заказов пользователь снова считается новым; Telegram/VK аккаунты пока независимы.
 
 ## UI/UX
+
+Safe area задаётся общими CSS-переменными в `app/globals.css` и применяется в `PageContainer`, диалогах Mantine, Lightbox и toast. `lib/mini-app/vk-safe-area.ts` подписывается на `VKWebAppUpdateConfig`/`VKWebAppUpdateInsets` до `VKWebAppInit`, получает начальные insets через `VKWebAppGetConfig`, снимает подписку при размонтировании. Для нативного VK (`bridge.isWebView()`) сверху дополнительно резервируется 56 px под плавающее меню; при отсутствии данных Bridge используются fallback 24 px сверху и 16 px снизу. Системные CSS env и VK insets объединяются через max, а не складываются. `viewportFit: cover` включён в корневом layout. Новые страницы должны использовать общий контейнер, без собственного повторного safe-area padding. Нативная повторная проверка iOS/Android после изменения остаётся необходимой.
 
 - Пользовательские тексты — на русском. Сохраняйте узнаваемость капибары и зелёной палитры.
 - Основной сценарий — телефон в WebView Telegram/VK. Проверяйте маленький экран, клавиатуру, safe areas, темы и кнопку назад.

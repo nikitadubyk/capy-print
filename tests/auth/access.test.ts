@@ -20,7 +20,7 @@ test("business API: user and access come exclusively from the server session", a
     DELETE,
   } = await import("@/app/api/orders/details/route");
   const { GET: me } = await import("@/app/api/user/route");
-  const { ourFileRouter } = await import("@/app/api/uploadthing/core");
+  const { POST: upload } = await import("@/app/api/uploads/route");
   const user = {
     id: 7,
     completedOrdersCount: 0,
@@ -111,6 +111,7 @@ test("business API: user and access come exclusively from the server session", a
         ],
         [DELETE, req("orders/details?id=11", "DELETE", undefined, false)],
         [me, req("user?telegramId=999", "GET", undefined, false)],
+        [upload, req("uploads", "POST", undefined, false)],
       ] as const)
         assert.equal((await handler(request)).status, 401);
       assert.equal(sessionMock.mock.callCount(), 0);
@@ -155,44 +156,6 @@ test("business API: user and access come exclusively from the server session", a
       assert.equal(
         (await DELETE(req("orders/details?id=11", "DELETE"))).status,
         403
-      );
-    }
-  );
-  await t.test(
-    "upload middleware requires a session and records internal ownership",
-    async () => {
-      const middleware = ourFileRouter.fileUploader.middleware;
-      const files = [
-        {
-          name: "test.pdf",
-          size: 10,
-          type: "application/pdf",
-          lastModified: 0,
-        },
-      ];
-      await assert.rejects(
-        async () =>
-          middleware({
-            req: req("uploadthing", "POST", undefined, false),
-            files,
-            input: undefined,
-          }),
-        /Сессия недействительна/
-      );
-      const metadata = await middleware({
-        req: req("uploadthing", "POST"),
-        files,
-        input: undefined,
-      });
-      assert.equal(metadata.uploadedBy, 7);
-      await assert.rejects(
-        async () =>
-          middleware({
-            req: req("uploadthing", "POST"),
-            files: [{ ...files[0], type: "application/x-executable" }],
-            input: undefined,
-          }),
-        /Неподдерживаемый тип/
       );
     }
   );

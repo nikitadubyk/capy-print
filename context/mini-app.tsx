@@ -53,9 +53,12 @@ export const MiniAppProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     let active = true;
+    let unsubscribeSafeArea: (() => void) | undefined;
     const initialize = async () => {
       try {
         const adapter = await getMiniAppAdapter(window.location.search);
+        if (!active) return;
+        unsubscribeSafeArea = adapter.subscribeSafeArea?.();
         const rawLaunchData = await adapter.initialize();
         const { token } = await establishSession(
           adapter.platform,
@@ -85,6 +88,7 @@ export const MiniAppProvider = ({ children }: PropsWithChildren) => {
     void initialize();
     return () => {
       active = false;
+      unsubscribeSafeArea?.();
     };
   }, [attempt]);
 
@@ -99,7 +103,12 @@ export const MiniAppProvider = ({ children }: PropsWithChildren) => {
     >
       <LoadingOverlay visible={state.loading} />
       {error && (
-        <Alert role="alert" color="red" title="Не удалось войти" m="md">
+        <Alert
+          role="alert"
+          color="red"
+          title="Не удалось войти"
+          className="capy-startup-error"
+        >
           {error}
           <Button
             mt="sm"

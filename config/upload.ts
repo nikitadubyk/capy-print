@@ -1,3 +1,6 @@
+export const MAX_UPLOAD_FILE_SIZE = 16 * 1024 * 1024;
+export const MAX_UPLOAD_FILE_COUNT = 20;
+
 export const allowedMimeTypes = [
   "application/pdf",
   "image/jpeg",

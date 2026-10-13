@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Toaster } from "react-hot-toast";
 import { mantineHtmlProps, ColorSchemeScript } from "@mantine/core";
 
@@ -27,6 +27,12 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 const RootLayout = ({
   children,
 }: Readonly<{
@@ -46,7 +52,14 @@ const RootLayout = ({
           </QueryProvider>
         </DatesProvider>
       </ThemeProvider>
-      <Toaster position="top-center" />
+      <Toaster
+        position="top-center"
+        containerStyle={{
+          top: "calc(var(--capy-content-inset-top) + 16px)",
+          left: "calc(var(--capy-safe-area-left) + 16px)",
+          right: "calc(var(--capy-safe-area-right) + 16px)",
+        }}
+      />
     </body>
   </html>
 );

@@ -19,7 +19,7 @@ const data = {
   ],
 };
 const uploaded = {
-  ufsUrl: "https://example.test/photo.png",
+  url: "https://example.test/photo.png",
   name: file.name,
   size: file.size,
   type: file.type,
@@ -50,21 +50,21 @@ test("upload error propagates unchanged for logging", async () => {
 
 test("missing file URL is reported instead of preparing an incomplete order", async () => {
   await assert.rejects(
-    prepareOrderWithUploads(data, async () => [{ ...uploaded, ufsUrl: "" }]),
+    prepareOrderWithUploads(data, async () => [{ ...uploaded, url: "" }]),
     /Не удалось получить ссылку на файл/
   );
 });
 
 test("confirmed file URL and print settings are preserved", async () => {
   const payload = await prepareOrderWithUploads(data, async () => [uploaded]);
-  assert.equal(payload.printJobs[0].files[0].fileUrl, uploaded.ufsUrl);
+  assert.equal(payload.printJobs[0].files[0].fileUrl, uploaded.url);
   assert.equal(payload.printJobs[0].files[0].mimeType, file.type);
   assert.equal(payload.printJobs[0].copies, 2);
 });
 
 test("already uploaded files do not cause an empty upload request", async () => {
   const existing = {
-    fileUrl: uploaded.ufsUrl,
+    fileUrl: uploaded.url,
     fileName: uploaded.name,
     fileSize: uploaded.size,
     mimeType: uploaded.type,

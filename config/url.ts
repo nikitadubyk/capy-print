@@ -1,4 +1,5 @@
 export const URL = {
+  UPLOAD_FILE: "uploads",
   UPSERT_USER: "user",
   CREATE_ORDER: "orders",
   ORDER_DETAILS: "orders/details",

@@ -1,4 +1,5 @@
 import { Urgency } from "@/types";
+import { MAX_UPLOAD_FILE_COUNT } from "@/config/upload";
 import type { CreateOrderRequest } from "../api/orders/route";
 
 import type { OrderFormData } from "./config";
@@ -6,7 +7,6 @@ import type { OrderFormData } from "./config";
 export type StartUploadFn = (files: File[]) => Promise<
   | {
       url?: string;
-      ufsUrl?: string;
       name: string;
       size: number;
       type: string;
@@ -18,6 +18,8 @@ export const prepareOrderWithUploads = async (
   data: OrderFormData,
   startUpload: StartUploadFn
 ): Promise<CreateOrderRequest> => {
+  if (data.printJobs.some((job) => job.files.length > MAX_UPLOAD_FILE_COUNT))
+    throw new Error("Можно загрузить до 20 файлов в наборе");
   const filesToUpload = data.printJobs.flatMap((job) =>
     job.files.filter((file) => file instanceof File)
   );
@@ -41,7 +43,7 @@ export const prepareOrderWithUploads = async (
       files: job.files.map((file) => {
         if (file instanceof File) {
           const uploaded = uploadedFiles[uploadedIndex++];
-          const fileUrl = uploaded.ufsUrl ?? uploaded.url;
+          const fileUrl = uploaded.url;
           if (!fileUrl) throw new Error("Не удалось получить ссылку на файл");
           return {
             fileUrl,

@@ -8,7 +8,7 @@ export const PageContainer = ({
   <main
     {...props}
     className={twMerge(
-      "mx-auto min-h-dvh w-full max-w-4xl p-4 md:p-8",
+      "capy-page mx-auto min-h-dvh w-full max-w-4xl",
       className
     )}
   />

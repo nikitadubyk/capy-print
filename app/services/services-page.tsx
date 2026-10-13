@@ -29,7 +29,7 @@ const serviceIcons = {
 };
 
 export const ServicesPage = () => (
-  <PageContainer className="max-w-5xl pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(16px,env(safe-area-inset-top))] md:px-10">
+  <PageContainer className="max-w-5xl [--page-top:16px] [--page-bottom:24px] md:[--page-inline:40px]">
     <PageHeader title="Услуги и наши работы" backUrl={Routes.Home} />
     <section
       className="rounded-3xl bg-capy-blue p-6 md:p-8"

@@ -12,6 +12,16 @@ export const getVkMessagingConfig = () => {
   return groupId.success && token ? { groupId: groupId.data, token } : null;
 };
 
+// Only presence/validity and the public community ID may appear in diagnostics.
+export const getVkMessagingConfigDiagnostics = () => {
+  const groupId = groupIdSchema.safeParse(process.env.VK_GROUP_ID);
+  return {
+    groupId: groupId.success ? groupId.data : null,
+    groupIdConfigured: groupId.success,
+    groupTokenConfigured: !!process.env.VK_GROUP_TOKEN?.trim(),
+  };
+};
+
 export const vkPeerIdSchema = z
   .string()
   .trim()

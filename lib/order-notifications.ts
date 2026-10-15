@@ -5,6 +5,10 @@ import { getVkAdminPeerIds } from "@/config/vk-server";
 import { getFirstOrderStaffReminder } from "@/config/first-order";
 import { getLoyaltyProgressText } from "./order-discounts";
 import { getCustomerContact } from "./customer";
+import {
+  getVkMessagingErrorDiagnostics,
+  logVkMessaging,
+} from "./vk-diagnostics";
 import { sendTelegramMessage } from "./telegram";
 import {
   getVkMessagingConfig,
@@ -107,22 +111,34 @@ const sendVkOrderNotification = async (
   peerId: number,
   message: string
 ): Promise<NotificationResult> => {
+  const startedAt = Date.now();
+  const randomId = vkStaffNotificationRandomId(order, peerId);
+  const context = {
+    orderId: order.id,
+    peerId,
+    randomId,
+    stage: "send_message",
+  };
+  logVkMessaging("info", "staff.started", context);
   try {
     if (!getVkMessagingConfig()) throw new VkMessagingError("config");
     // Staff destinations are a server-owned allowlist, independent of the customer's preference.
     // VK still enforces permission to receive community messages for the destination.
-    await sendVkPeerMessage(
-      peerId,
-      message,
-      vkStaffNotificationRandomId(order, peerId)
-    );
+    const messageId = await sendVkPeerMessage(peerId, message, randomId);
+    logVkMessaging("info", "staff.sent", {
+      ...context,
+      messageId,
+      result: "sent",
+      durationMs: Date.now() - startedAt,
+    });
     return "sent";
   } catch (error) {
     const code = error instanceof VkMessagingError ? error.code : "unknown";
-    console.error("Ошибка уведомления сотрудникам VK", {
-      orderId: order.id,
-      peerId,
-      code,
+    logVkMessaging("error", "staff.failed", {
+      ...context,
+      result: code === "config" ? "unconfigured" : "failed",
+      durationMs: Date.now() - startedAt,
+      ...getVkMessagingErrorDiagnostics(error),
     });
     return code === "config" ? "unconfigured" : "failed";
   }

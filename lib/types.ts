@@ -13,6 +13,7 @@ export interface StatusNotificationOrder {
   discountPercent?: number;
   cancellationReason?: string | null;
   user: {
+    id?: number;
     telegramId: bigint | string | null;
     completedOrdersCount?: number;
     identities?: readonly StatusNotificationIdentity[];

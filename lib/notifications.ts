@@ -3,6 +3,10 @@ import type { OrderStatus } from "@/app/generated/prisma/enums";
 import { sendTelegramMessage } from "./telegram";
 import { getLoyaltyProgressText } from "./order-discounts";
 import {
+  getVkMessagingErrorDiagnostics,
+  logVkMessaging,
+} from "./vk-diagnostics";
+import {
   getVkMessagingConfig,
   isVkMessagesAllowed,
   sendVkMessage,
@@ -63,6 +67,16 @@ const sendVkStatusNotification = async (
   order: StatusNotificationOrder,
   identity: StatusNotificationIdentity
 ): Promise<NotificationResult> => {
+  const startedAt = Date.now();
+  const context = {
+    orderId: order.id,
+    userId: order.user.id,
+    externalUserId: identity.externalUserId,
+    status: order.status,
+    transitionAt: order.updatedAt.toISOString(),
+    vkMessagesEnabled: identity.vkMessagesEnabled ?? null,
+  };
+  logVkMessaging("info", "status.started", context);
   const message = formatCustomerStatusMessage(
     order.id,
     order.status,
@@ -71,16 +85,74 @@ const sendVkStatusNotification = async (
     order.user.completedOrdersCount,
     order.cancellationReason
   );
-  if (!message) return "skipped";
-  if (identity.vkMessagesEnabled !== true) return "denied";
-  if (!getVkMessagingConfig()) return "unconfigured";
-  if (!(await isVkMessagesAllowed(identity.externalUserId))) return "denied";
-  await sendVkMessage(
-    identity.externalUserId,
-    message,
-    vkNotificationRandomId(order)
-  );
-  return "sent";
+  if (!message) {
+    logVkMessaging("info", "status.skipped", {
+      ...context,
+      result: "skipped",
+      reason: "Для этого статуса уведомление не предусмотрено",
+    });
+    return "skipped";
+  }
+  if (identity.vkMessagesEnabled !== true) {
+    logVkMessaging("warn", "status.denied", {
+      ...context,
+      result: "denied",
+      reason:
+        identity.vkMessagesEnabled === false
+          ? "Пользователь выключил уведомления в приложении"
+          : "В приложении ещё не сохранено согласие на сообщения",
+    });
+    return "denied";
+  }
+  if (!getVkMessagingConfig()) {
+    logVkMessaging("error", "status.unconfigured", {
+      ...context,
+      result: "unconfigured",
+      ...getVkMessagingErrorDiagnostics(new VkMessagingError("config")),
+    });
+    return "unconfigured";
+  }
+  let stage = "permission_check";
+  const randomId = vkNotificationRandomId(order);
+  try {
+    const allowed = await isVkMessagesAllowed(identity.externalUserId);
+    logVkMessaging(allowed ? "info" : "warn", "status.permission_checked", {
+      ...context,
+      stage,
+      allowed,
+      ...(!allowed && {
+        result: "denied",
+        reason: "VK не разрешает сообщения от этого сообщества пользователю",
+      }),
+    });
+    if (!allowed) return "denied";
+    stage = "send_message";
+    logVkMessaging("info", "status.sending", { ...context, stage, randomId });
+    const messageId = await sendVkMessage(
+      identity.externalUserId,
+      message,
+      randomId
+    );
+    logVkMessaging("info", "status.sent", {
+      ...context,
+      stage,
+      randomId,
+      messageId,
+      result: "sent",
+      durationMs: Date.now() - startedAt,
+    });
+    return "sent";
+  } catch (error) {
+    logVkMessaging("error", "status.failed", {
+      ...context,
+      stage,
+      randomId,
+      result: "failed",
+      durationMs: Date.now() - startedAt,
+      ...getVkMessagingErrorDiagnostics(error),
+    });
+    return "failed";
+  }
 };
 
 const sendTelegramStatusNotification = async (
@@ -114,6 +186,19 @@ export const sendCustomerStatusNotification = async (
     (identity) => identity.provider === "VK"
   );
   const platform = vkIdentity ? "vk" : "telegram";
+  if (!vkIdentity)
+    console.info(
+      "[Capy Print][notifications]",
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        event: "status.routed",
+        orderId: order.id,
+        userId: order.user.id,
+        status: order.status,
+        platform,
+        reason: "У владельца заказа нет VK identity; выбран Telegram",
+      })
+    );
   try {
     return vkIdentity
       ? await sendVkStatusNotification(order, vkIdentity)
@@ -122,7 +207,7 @@ export const sendCustomerStatusNotification = async (
     console.error("Ошибка уведомления о статусе заказа", {
       orderId: order.id,
       platform,
-      code: error instanceof VkMessagingError ? error.code : "unknown",
+      ...getVkMessagingErrorDiagnostics(error),
     });
     return "failed";
   }

@@ -108,6 +108,18 @@ export const PATCH = async (request: NextRequest) => {
 
     if (status && status !== currentOrder.status) {
       await sendCustomerStatusNotification(order);
+    } else if (status) {
+      console.info(
+        "[Capy Print][notifications]",
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          event: "status.unchanged",
+          orderId: order.id,
+          userId: currentOrder.userId,
+          status,
+          reason: "Статус не изменился; повторное уведомление не отправляется",
+        })
+      );
     }
 
     return NextResponse.json(serializeBigInt(order), {

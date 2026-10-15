@@ -59,7 +59,19 @@ test("VK permission and status routes use verified identity, preserve status on 
       },
     })
   );
-  t.mock.method(console, "error", () => {});
+  const errors = t.mock.method(console, "error", () => {});
+  const infos = t.mock.method(console, "info", () => {});
+  const warnings = t.mock.method(console, "warn", () => {});
+  t.after(() =>
+    assert.doesNotMatch(
+      JSON.stringify([
+        errors.mock.calls,
+        infos.mock.calls,
+        warnings.mock.calls,
+      ]),
+      /test-community-token|storage unavailable|Authorization|Bearer/
+    )
+  );
   const request = (path: string, status?: string, authorized = true) =>
     new NextRequest(`http://localhost/api/${path}`, {
       method: status ? "PATCH" : "GET",
@@ -105,6 +117,12 @@ test("VK permission and status routes use verified identity, preserve status on 
     data: { error: { error_code: 5 } },
   }));
   assert.equal((await GET(request("vk/messages/permission"))).status, 502);
+  const permissionFailure = JSON.parse(errors.mock.calls.at(-1)!.arguments[1]);
+  assert.equal(permissionFailure.event, "permission.load_failed");
+  assert.equal(permissionFailure.code, 5);
+  assert.equal(permissionFailure.externalUserId, "42");
+  assert.equal(permissionFailure.userId, 7);
+  assert.equal(permissionFailure.stage, "permission_check");
   delete process.env.VK_GROUP_TOKEN;
   assert.deepEqual(
     await (await GET(request("vk/messages/permission"))).json(),
@@ -255,6 +273,10 @@ test("VK permission and status routes use verified identity, preserve status on 
   }));
   assert.equal((await POST(saveRequest({ enabled: true }))).status, 200);
   assert.equal(identity.vkMessagesEnabled, true);
+  const saved = JSON.parse(infos.mock.calls.at(-1)!.arguments[1]);
+  assert.equal(saved.event, "permission.saved");
+  assert.equal(saved.externalUserId, "42");
+  assert.equal(saved.vkMessagesEnabled, true);
   calls = send.mock.callCount();
   assert.equal(
     (await (await GET(request("vk/messages/permission"))).json()).enabled,
@@ -262,8 +284,17 @@ test("VK permission and status routes use verified identity, preserve status on 
   );
   assert.equal(send.mock.callCount(), calls);
   save.mock.mockImplementation(async () => {
-    throw new Error("storage unavailable");
+    throw Object.assign(new Error("storage unavailable test-community-token"), {
+      code: "P2022",
+    });
   });
   assert.equal((await POST(saveRequest({ enabled: false }))).status, 502);
   assert.equal(identity.vkMessagesEnabled, true);
+  const saveFailure = JSON.parse(errors.mock.calls.at(-1)!.arguments[1]);
+  assert.equal(saveFailure.event, "permission.save_failed");
+  assert.equal(saveFailure.stage, "preference_save");
+  assert.equal(saveFailure.code, "P2022");
+  assert.equal(saveFailure.externalUserId, "42");
+  assert.equal(saveFailure.vkMessagesEnabled, true);
+  assert.equal(saveFailure.requestedEnabled, false);
 });

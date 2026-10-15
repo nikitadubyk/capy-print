@@ -13,10 +13,16 @@ const positiveId = z.coerce
   .positive()
   .refine(Number.isSafeInteger);
 
+const vkUserId = (externalUserId: string) => {
+  const parsed = positiveId.safeParse(externalUserId);
+  if (!parsed.success) throw new VkMessagingError("recipient");
+  return String(parsed.data);
+};
+
 export const isVkMessagesAllowed = async (externalUserId: string) => {
   const config = getVkMessagingConfig();
   if (!config) throw new VkMessagingError("config");
-  const userId = positiveId.parse(externalUserId);
+  const userId = vkUserId(externalUserId);
   const data = await callVkMessages(VK_API.MESSAGES_PERMISSION, {
     group_id: String(config.groupId),
     user_id: String(userId),
@@ -26,7 +32,10 @@ export const isVkMessagesAllowed = async (externalUserId: string) => {
       response: z.object({ is_allowed: z.union([z.literal(0), z.literal(1)]) }),
     })
     .safeParse(data);
-  if (!parsed.success) throw new VkMessagingError("response");
+  if (!parsed.success)
+    throw new VkMessagingError("response", {
+      method: "messages.isMessagesFromGroupAllowed",
+    });
   return parsed.data.response.is_allowed === 1;
 };
 
@@ -43,7 +52,10 @@ const sendVkMessageToTarget = async (
   const parsed = z
     .object({ response: z.number().int().positive() })
     .safeParse(data);
-  if (!parsed.success) throw new VkMessagingError("response");
+  if (!parsed.success)
+    throw new VkMessagingError("response", {
+      method: "messages.send",
+    });
   return parsed.data.response;
 };
 
@@ -53,7 +65,7 @@ export const sendVkMessage = async (
   randomId: number
 ) =>
   sendVkMessageToTarget(
-    { user_id: String(positiveId.parse(externalUserId)) },
+    { user_id: vkUserId(externalUserId) },
     message,
     randomId
   );

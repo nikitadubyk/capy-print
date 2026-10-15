@@ -155,11 +155,13 @@ test("one denied VK peer cannot cancel Telegram or another VK peer; IDs remain s
       { peerId: 43, result: "sent" },
     ],
   });
-  assert.deepEqual(log.mock.calls[0].arguments[1], {
-    orderId: 62,
-    peerId: 42,
-    code: 901,
-  });
+  const failure = JSON.parse(log.mock.calls[0].arguments[1]);
+  assert.equal(failure.event, "staff.failed");
+  assert.equal(failure.orderId, 62);
+  assert.equal(failure.peerId, 42);
+  assert.equal(failure.code, 901);
+  assert.equal(failure.method, "messages.send");
+  assert.match(failure.reason, /разрешения/);
   assert.equal(
     vkStaffNotificationRandomId(order, 42),
     vkStaffNotificationRandomId({ ...order }, 42)
